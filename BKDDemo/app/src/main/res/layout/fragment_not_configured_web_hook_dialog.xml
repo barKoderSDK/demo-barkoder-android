@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingBottom="20dp"
+    android:background="@drawable/dialog_rounded_bg"
+    tools:context=".fragments.NotConfiguredWebHookDialog">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:text="Webhook configuration" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"
+            android:textAlignment="center"
+            android:text="The webhook configuration for this application is not set. To enable webhook functionality and ensure proper integration, please configure the webhook settings in your settings dashboard"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnShowMeHow"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
+                android:textAllCaps="false"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:text="Show me how"
+                android:textSize="14sp"
+                app:cornerRadius="20dp"
+                app:strokeColor="@color/brand_color"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnClose"
+            style="?attr/materialButtonOutlinedStyle"
+            app:strokeColor="@color/brand_color"
+            android:textSize="14sp"
+            app:cornerRadius="20dp"
+            android:layout_width="150dp"
+            android:layout_marginTop="10dp"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Close" />
+
+    </LinearLayout>
+
+
+
+
+</LinearLayout>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="about_screen_sides_margin">15dp</dimen>
+    <dimen name="scanner_screen_top_margin">20dp</dimen>
+    <dimen name="scanner_screen_bottom_margin">10dp</dimen>
+
+    <dimen name="default_button_width">170dp</dimen>
+    <dimen name="single_row_button_width">250dp</dimen>
+</resources>

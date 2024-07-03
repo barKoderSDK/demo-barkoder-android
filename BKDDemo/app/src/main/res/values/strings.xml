@@ -1,0 +1,179 @@
+<resources>
+    <string name="app_name">Barkoder Scanner</string>
+    <string name="activity_recent_title">Recent Scans</string>
+    <string name="activity_settings_title">Settings %s</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="continue_button">Continue</string>
+    <string name="close_button">Close</string>
+    <string name="delete_button">Delete</string>
+    <string name="copy_button">Copy</string>
+    <string name="save_button">Save</string>
+    <string name="reset_button">Reset</string>
+    <string name="warning_title">Warning</string>
+    <string name="storage_permission_rationale_message">This app requires the storage permission in order to pick images from gallery</string>
+    <string name="storage_final_warning_message">Scan image cannot work without the requested permissions.</string>
+    <string name="configuration_from_template_failed">Scanning configuration failed. %s</string>
+    <string name="please_wait_message">Please wait…</string>
+    <string name="title_barcodes_1d">1D Barcodes</string>
+    <string name="title_barcodes_2d">2D Barcodes</string>
+    <string name="title_barcodes_1d_retail">1D Retail</string>
+    <string name="title_barcodes_dotcode">DotCode</string>
+    <string name="title_barcodes_1d_industrial">1D Industrial</string>
+    <string name="title_barcodes_2d_qr">QR Codes</string>
+    <string name="title_barcodes_2d_pdf">PDF417</string>
+    <string name="title_barcodes_2d_all">All 2D</string>
+    <string name="title_barcodes_utility">Utility</string>
+    <string name="title_barcodes_showcase">Showcase</string>
+    <string name="title_batch_multiscan_mode">MultiScan</string>
+    <string name="title_recent">Recent</string>
+    <string name="title_about">About</string>
+    <string name="title_scan">Scan</string>
+    <string name="title_dpm_mode">DPM</string>
+    <string name="title_vin_mode">VIN</string>
+    <string name="title_logo_description">What would you like to scan?</string>
+    <string name="activity_main_menu_item_settings">Settings</string>
+    <string name="activity_recent_no_scans">Nothing scanned yet</string>
+    <string name="activity_recent_menu_item_delete_recents">Delete All</string>
+    <string name="activity_recent_menu_item_delete_recents_confirmation">This action permanently deletes all recent scans</string>
+    <string name="activity_recent_menu_item_delete_recent_confirmation">Delete selected Recent Scan?</string>
+
+
+    <string name="about_logo_description">version %s</string>
+    <string name="about_sdk_title">BarKoder SDK version %s</string>
+    <string name="about_lib_title">Barkoder LIB version %s</string>
+    <string name="about_sdk_description">Barcode Scanner by barKoder showcases the enterprise-grade performance of the barKoder Barcode Scanner SDK along with most of its features in a wide variety of scanning scenarios.\n\nWhether from 1D or 2D barcodes, the barKoder API can capture the data reliably, accurately and suprisingly fast, even under very challenging conditions and environments. \n\n
+You can test the barKoder Barcode Scanner SDK at your convenience by signing up for a free trial:</string>
+    <string name="about_test_barkoder_sdk">Test barKoder SDK</string>
+    <string name="about_changelog_title">Changelog</string>
+    <string name="about_learn_more">Learn more</string>
+    <string name="about_privacy_policy">Privacy Policy</string>
+    <string name="about_terms_of_use">Terms of Use</string>
+    <string name="about_learn_more_no_browser">You don\'t have any browser application installed on your device</string>
+
+    <!--region Preferences titles-->
+    <string name="auto_start_scan_title">Start scanner automatically</string>
+    <string name="auto_start_scan_desc">Use the selected settings to automatically start scanning next time I open the app</string>
+    <string name="scanner_settings_title">barKoder Settings</string>
+    <string name="scanner_decoding_speed_title">Decoding Speed</string>
+    <string name="scanner_resolution_title">barKoder Resolution</string>
+    <string name="continuous_scaning_title">Continuous Scanning</string>
+    <string name="continuous_threshold_title">Continuous threshold</string>
+    <string name="enable_location_in_preview_title">Enable location in preview</string>
+    <string name="allow_pinch_to_zoom_title">Allow pinch to zoom</string>
+    <string name="enable_roi_title">Enable region of interest</string>
+    <string name="beep_on_success_title">Beep on success</string>
+    <string name="vibrate_on_success_title">Vibrate on success</string>
+    <string name="misshapped_code_capture_title">Scan Deformed Codes - Segment Decoding</string>
+    <string name="blurred_scan_upcean_title">Scan blurred UPC/EAN</string>
+    <string name="bigger_viewfinder_dpm_title">Bigger viewfinder</string>
+    <string name="narrow_viewfinder_dpm_title">Narrow viewfinder</string>
+    <string name="automatically_show_bottomsheet_title">Automatically show bottomsheet</string>
+
+    <string name="symbologies_settings_title">Barcode Types %s</string>
+    <string name="symbology_aztec">Aztec</string>
+    <string name="symbology_aztec_compact">Aztec Compact</string>
+    <string name="symbology_qr">QR</string>
+    <string name="symbology_qr_micro">QR Micro</string>
+    <string name="symbology_c128">Code 128</string>
+    <string name="symbology_c93">Code 93</string>
+    <string name="symbology_c39">Code 39</string>
+    <string name="symbology_c11">Code 11</string>
+    <string name="symbology_codabar">Codabar</string>
+    <string name="symbology_msi">MSI</string>
+    <string name="symbology_upca">UPC-A</string>
+    <string name="symbology_upce">UPC-E</string>
+    <string name="symbology_upce1">UPC-E1</string>
+    <string name="symbology_ean13">EAN-13</string>
+    <string name="symbology_ean8">EAN-8</string>
+    <string name="symbology_pdf417">PDF417</string>
+    <string name="symbology_pdf417_micro">PDF417 Micro</string>
+    <string name="symbology_datamatrix">Data Matrix</string>
+    <string name="symbology_c25">Code 25</string>
+    <string name="symbology_i2o5">Interleaved 2 of 5</string>
+    <string name="symbology_itf14">ITF 14</string>
+    <string name="symbology_iata25">IATA 25</string>
+    <string name="symbology_matrix25">Matrix 25</string>
+    <string name="symbology_dataLogic25">Datalogic 25</string>
+    <string name="symbology_coop25">COOP 25</string>
+    <string name="symbology_c32">Code 32</string>
+    <string name="symbology_telepen">Telepen</string>
+    <string name="symbology_dotcode">DotCode</string>
+
+    <string name="result_settings_title">Result</string>
+    <string name="result_parser_title">Formatting Type</string>
+    <string name="result_charset_title">Charset</string>
+    <string name="result_searchEngine_title">Default search engine</string>
+
+
+    <string name="general_settings_title">General settings</string>
+    <string name="individual_templates_settings">Scanning Modes Settings</string>
+    <string name="general_reset_config_title">Reset config</string>
+    <string name="general_all_reset_title">Reset All Settings</string>
+    <string name="reset_config_confirm_message">Reset all settings values to defaults?</string>
+    <string name="reset_all_confirm_message">This will reset all settings to app defaults, are you sure?</string>
+
+    <string name="indusrial_settings_title">1D Industiral</string>
+    <string name="retail_settings_title">1D Retail</string>
+    <string name="PDF_settings_title">PDF417</string>
+    <string name="QR_settings_title">QR Codes</string>
+    <string name="all2d_settings_title">All 2D Codes</string>
+    <string name="all1d_settings_title">All 1D Codes</string>
+    <string name="batchmultiscan_settings_title">Batch MultiScan</string>
+    <string name="dpm_settings_title">DPM Mode</string>
+    <string name="vin_settings_title">VIN Mode</string>
+    <string name="dotcode_settings_title">DotCode</string>
+    <string name="deblur_settings_title">Deblur</string>
+    <string name="misshaped_settings_title">Misshaped</string>
+    <string name="anyscan_settings_title">Anycode</string>
+
+    <string name="scan_from_image_title">Gallery scan</string>
+
+    <string name="length_settings_title">Length</string>
+    <string name="length_min_title">Min</string>
+    <string name="length_max_title">Max</string>
+    <string name="length_range_not_set">Please set min and max values</string>
+    <string name="length_min_warning">Minimum value must be lower or equal to maximum value and greater or equal to 1</string>
+    <string name="length_max_warning">Maximum value must be greater or equal to minimum value and lower or equal to 100</string>
+
+    <string name="checksum_settings_title">Checksum</string>
+    <string name="checksum_type_title">Type</string>
+
+    <string name="additional_setting_title">Additional Settings</string>
+    <string name="expand_to_upca_title">Expand to UPC-A</string>
+
+    <string name="webhook_settings_title">Webhook settings</string>
+    <string name="webhook_configuration_title">Webhook configuration</string>
+    <string name="webhook_autosend_title">Auto send to webhook</string>
+    <string name="webhook_feedback_title">Webhook Confirmation Feedback</string>
+    <string name="webhook_encode_data_title">Encode webhook data</string>
+    <string name="enabled_webhook">Enabled webhook</string>
+    <string name="enabled_searchweb">Enabled search on Web</string>
+
+    <string name="webhook_symobology_title">symbology</string>
+    <string name="webhook_value_title">value</string>
+    <string name="webhook_date_title">date</string>
+    <string name="webhook_base64_title">date</string>
+
+
+    <string name="material_dialog_server_eror_title">Server Error</string>
+    <string name="material_dialog_server_eror_message">Error Domain: The webhook configuration for this application is not set. To enable webhook functionality and ensure proper integration, please configure the webhook settings in your settings dashboard Code=400 \"null\"</string>
+
+    <string name="material_dialog_invalid_url_key_title">Invalid URL or Secret Key</string>
+    <string name="material_dialog_invalid_url_key_message">The URL or secret key provided is incorrect or invalid.Please double-check your configuration and ensure that the URL and secret key match the exoected values</string>
+
+    <string name="material_dialog_network_error">No internet connection avlibalibe</string>
+
+    <string name="toast_network_error_autosend">No internet connection available to auto send webhook.</string>
+
+    //Dialog buttons names
+
+    <string name="button_copy_dialog">
+    <![CDATA[<big>C</big>opy]]>
+</string>
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!--endregion Preferences titles-->
+
+</resources>

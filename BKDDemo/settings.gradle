@@ -1,0 +1,3 @@
+rootProject.name = "BKDDemo"
+include ':app', ':barkoder'
+project(':barkoder').projectDir = new File(settingsDir, '../Submodules/barkoder-android/Sdk/barkoder')

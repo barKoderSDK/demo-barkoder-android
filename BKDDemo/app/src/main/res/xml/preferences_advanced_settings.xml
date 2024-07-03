@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <com.barkoder.demoscanner.customcontrols.ClickablePreferenceCategory
+        android:title="@string/length_settings_title"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
+        app:iconSpaceReserved="false"
+        app:isPreferenceVisible="false"
+        tools:isPreferenceVisible="true">
+
+        <com.barkoder.demoscanner.customcontrols.CustomRangePreference
+            android:key="@string/key_length"
+            android:persistent="false"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
+            app:iconSpaceReserved="false" />
+
+    </com.barkoder.demoscanner.customcontrols.ClickablePreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/checksum_settings_title"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
+        app:iconSpaceReserved="false"
+        app:isPreferenceVisible="false"
+        tools:isPreferenceVisible="true">
+
+        <ListPreference
+            android:key="@string/key_checksum_type"
+            android:persistent="false"
+            android:title="@string/checksum_type_title"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="@string/additional_setting_title"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
+        app:iconSpaceReserved="false"
+        app:isPreferenceVisible="false"
+        tools:isPreferenceVisible="true">
+
+        <!--In the future if we need more we should create them from code-->
+        <SwitchPreference
+            android:persistent="false"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true"
+            tools:title="Title" />
+
+    </PreferenceCategory>
+</PreferenceScreen>

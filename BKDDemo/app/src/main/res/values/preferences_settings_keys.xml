@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="key_defaults_are_stored">pref_key_defaults_are_stored</string>
+    <string name="key_continuous_defaults_are_stored">pref_key_continuous_defaults_are_stored</string>
+
+    <string name="key_auto_start_scan">pref_key_auto_start_scan</string>
+    <string name="key_barkoder_settings">pref_key_barkoder_settings</string>
+    <string name="key_barkode_types2D_settings">pref_key_barkode_types2D_settings</string>
+    <string name="key_barkode_types1D_settings">pref_key_barkode_types1D_settings</string>
+    <string name="key_barkoder_result_settings">pref_key_barkode_result_settings</string>
+    <string name="key_scanner_decoding_speed">pref_key_scanner_decoding_speed</string>
+    <string name="key_scanner_resolution">pref_key_scanner_resolution</string>
+    <string name="key_continuous_scaning">pref_key_continuous_scanning</string>
+    <string name="key_continuous_treshold">pref_key_continuous_treshold</string>
+    <string name="key_continuous_treshold2">pref_key_continuous_treshold2</string>
+    <string name="key_continuous_treshold_result">pref_key_continuous_treshold_value</string>
+    <string name="key_enable_location_in_preview">pref_key_enable_location_in_preview"</string>
+    <string name="key_allow_pinch_to_zoom">pref_key_allow_pinch_to_zoom"</string>
+    <string name="key_enable_roi">pref_key_enable_roi"</string>
+    <string name="key_beep">pref_key_beep_on_success"</string>
+    <string name="key_vibrate">pref_key_vibrate_on_success"</string>
+    <string name="key_misshaped_code_capture">pref_key_misshaped_code_capture</string>
+    <string name="key_blured_scan_eanupc">pref_key_blurred_scan_eanupc</string>
+    <string name="key_bigger_viewfinder">pref_key_bigger_viewfinder</string>
+    <string name="key_narrow_viewfinder">pref_key_narrow_viewfinder</string>
+    <string name="key_automatic_show_bottomsheet">pref_key_automatic_show_bottomsheet</string>
+    <string name="key_automatic_show_bottomsheet2">pref_key_automatic_show_bottomsheet2</string>
+
+    <string name="key_symbology_aztec">pref_key_symbology_aztec</string>
+    <string name="key_symbology_aztec_compact">pref_key_symbology_aztec_compact</string>
+    <string name="key_symbology_qr">pref_key_symbology_qr</string>
+    <string name="key_symbology_qr_micro">pref_key_symbology_qr_micro</string>
+    <string name="key_symbology_c128">pref_key_symbology_c128</string>
+    <string name="key_symbology_c93">pref_key_symbology_c93</string>
+    <string name="key_symbology_c39">pref_key_symbology_c39</string>
+    <string name="key_symbology_c11">pref_key_symbology_c11</string>
+    <string name="key_symbology_codabar">pref_key_symbology_codabar</string>
+    <string name="key_symbology_msi">pref_key_symbology_msi</string>
+    <string name="key_symbology_upca">pref_key_symbology_upca</string>
+    <string name="key_symbology_upce">pref_key_symbology_upce</string>
+    <string name="key_symbology_upce1">pref_key_symbology_upce1</string>
+    <string name="key_symbology_ean13">pref_key_symbology_ean13</string>
+    <string name="key_symbology_ean8">pref_key_symbology_ean8</string>
+    <string name="key_symbology_pdf417">pref_key_symbology_pdf417</string>
+    <string name="key_symbology_pdf417_micro">pref_key_symbology_pdf417_micro</string>
+    <string name="key_symbology_datamatrix">pref_key_symbology_datamatrix</string>
+    <string name="key_symbology_c25">pref_key_symbology_c25</string>
+    <string name="key_symbology_i2o5">pref_key_symbology_i2o5</string>
+    <string name="key_symbology_itf14">pref_key_symbology_itf14</string>
+    <string name="key_symbology_iata25">pref_key_symbology_iata25</string>
+    <string name="key_symbology_matrix25">pref_key_symbology_matrix25</string>
+    <string name="key_symbology_dataLogic25">pref_key_symbology_dataLogic25</string>
+    <string name="key_symbology_coop25">pref_key_symbology_coop25</string>
+    <string name="key_symbology_c32">pref_key_symbology_c32</string>
+    <string name="key_symbology_telepen">pref_key_symbology_telepen</string>
+    <string name="key_symbology_dotcode">pref_key_symbology_dotcode</string>
+
+    <string name="key_result_parser">pref_key_result_parser</string>
+    <string name="key_result_charset">pref_key_result_charset</string>
+    <string name="key_result_searchEngine">key_result_searchEngine</string>
+    <string name="key_result_searchEngine_value">key_result_searchEngine_value</string>
+
+    <string name="key_reset_config">pref_key_reset_config</string>
+    <string name="key_reset_all_settings">pref_key_reset_all_settings</string>
+
+    <string name="key_1d_industrial_settings">pref_key_1d_industrial_settings</string>
+    <string name="key_1d_retail_settings">pref_key_1d_retail_settings</string>
+    <string name="key_PDF_settings">pref_key_PDF_settings</string>
+    <string name="key_QR_settings">pref_key_QR_settings</string>
+    <string name="key_All2D_settings">pref_key_All2D_settings</string>
+    <string name="key_All1D_settings">pref_key_All1D_settings</string>
+    <string name="key_BatchMultiscan_settings">pref_key_BatchMultiscan_settings</string>
+    <string name="key_DPM_settings">pref_key_DPM_settings</string>
+    <string name="key_VIN_settings">pref_key_VIN_settings</string>
+    <string name="key_Dotcode_settings">pref_key_Dotcode_settings</string>
+    <string name="key_Deblur_settings">pref_key_Deblur_settings</string>
+    <string name="key_Misshaped_settings">pref_key_Misshaped_settings</string>
+    <string name="key_anyscan_settings">pref_key_Anyscan_settings</string>
+
+    <string name="key_length">_length</string>
+    <string name="key_min_length">_min_length</string>
+    <string name="key_max_length">_max_length</string>
+
+    <string name="key_checksum_type">_checksum_type</string>
+
+    <string name="key_expand_to_upca">_expand_to_upca</string>
+
+    <string name="key_webhook_configuration">pref_key_webhook_configuration</string>
+    <string name="key_webhook_autosend">pref_key_autosend_webhook</string>
+    <string name="key_webhook_feedback">pref_key_webhook_feedback</string>
+    <string name="key_webhook_encode_data">pref_key_webhook_encode</string>
+    <string name="key_enable_webhook">pref_key_enable_webhook</string>
+    <string name="key_enable_searchweb">pref_key_enable_searchweb</string>
+    <string name="key_url_webhook">key_url_webhook</string>
+    <string name="key_secret_word_webhook">key_key_webhook</string>
+    <string name="decodingSpeed">decodingSpeed</string>
+    <string name="key_individual_templates_settings">pref_key_individual_templates_settings</string>
+
+
+
+</resources>

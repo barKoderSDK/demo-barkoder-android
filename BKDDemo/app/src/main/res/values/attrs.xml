@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PreferenceCategoryWithPadding">
+        <attr name="prefCategoryPaddingStart" format="integer" />
+    </declare-styleable>
+    <declare-styleable name="SwitchWithPaddingPreference">
+        <attr name="prefPaddingStart" format="integer" />
+    </declare-styleable>
+</resources>
