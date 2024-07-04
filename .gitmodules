@@ -1,0 +1,3 @@
+[submodule "android-sdk"]
+	path = android-sdk
+	url = https://github.com/barKoderSDK/android-sdk
