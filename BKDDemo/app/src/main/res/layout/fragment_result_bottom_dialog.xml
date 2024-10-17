@@ -1,210 +1,311 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottomDialogLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".fragments.ResultBottomDialogFragment"
     android:background="@android:color/transparent"
     android:backgroundTint="@android:color/transparent"
     app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
-        <LinearLayout
-            android:id="@+id/layoutTapAnywhere"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:orientation="vertical"
+    <LinearLayout
+        android:id="@+id/layoutTapAnywhere"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTapAnyhere"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="195dp"
+            android:layout_height="53dp"
             android:layout_gravity="center"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/textBarcodeTypeResult"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="2dp"
+            android:backgroundTint="#40000000"
+            android:gravity="center"
+            android:text="Tap anywhere to continue"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="10dp"
+            app:cornerRadius="20dp"
+            app:icon="@drawable/ic_tap"
+            app:iconSize="20dp"
+            app:iconTint="@color/white"
+            app:layout_constraintEnd_toStartOf="@+id/btnCsvDialog"
+            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/resultsSize"
+            app:strokeColor="@color/transparent" />
 
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnTapAnyhere"
-                style="?attr/materialButtonOutlinedStyle"
-                android:layout_width="195dp"
-                android:layout_height="53dp"
-                android:layout_marginTop="2dp"
-                android:text="Tap anywhere to continue"
-                app:cornerRadius="20dp"
-                android:textSize="10dp"
-                android:textAllCaps="false"
-                android:backgroundTint="#40000000"
-                android:textColor="@color/white"
-                app:icon="@drawable/ic_tap"
-                app:iconTint="@color/white"
-                android:layout_gravity="center"
-                android:gravity="center"
-                app:iconSize="20dp"
-                app:layout_constraintEnd_toStartOf="@+id/btnCsvDialog"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/resultsSize"
-                app:strokeColor="@color/transparent" />
-
-        </LinearLayout>
+    </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layoutBottomSheet"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/dialog_rounded_bg"
-        android:paddingBottom="15dp">
+        android:backgroundTint="@color/white"
+        android:paddingBottom="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/layoutTapAnywhere">
 
-        <TextView
-            android:id="@+id/textBarcodeTypeResult"
-            android:layout_width="wrap_content"
+
+        <LinearLayout
+            android:id="@+id/bottomDialogLayoutButtons"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:text="TextView"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/imageView"
+            android:background="@android:color/transparent"
+            android:backgroundTint="@android:color/transparent"
+            android:orientation="horizontal"
+            app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView2" />
+            tools:context=".fragments.ResultBottomDialogFragment">
+
+            <LinearLayout
+                android:id="@+id/layoutCopyBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="2dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/btnCopyValue"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="2dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/white"
+                    android:gravity="center"
+                    android:src="@drawable/ico_copy"
+                    android:text="Copy"
+                    android:textAllCaps="false" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Copy"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/layoutCSVBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_weight="1"
+
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/btnCsvDialog"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:backgroundTint="@color/white"
+                    android:src="@drawable/ico_csv"
+                    android:text="CSV"
+                    android:textAllCaps="false" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="CSV"
+                    android:textSize="12sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutSearchBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_weight="1"
+
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/btnSearchWeb"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/white"
+                    android:src="@drawable/ico_search"
+                    android:text="Search"
+                    android:textAllCaps="false" />
+
+                <TextView
+                    android:id="@+id/txtOpenSearchButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Search"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutDetailsBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/btnDetails"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/white"
+                    android:src="@drawable/ico_webhook"
+                    android:text="Webhook"
+                    android:textAllCaps="false" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Details"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/layoutExpandBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="15dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/btnExpand"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/white"
+                    android:src="@drawable/expand_all"
+                    android:text="Expand"
+                    android:textAllCaps="false" />
+
+                <TextView
+                    android:id="@+id/txtBtnExpand"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Expand"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout4"
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/bottomDialogLayoutButtons"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/resultsSize">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recayclerview_gallery"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
         <TextView
             android:id="@+id/textBarcodeNumResult"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="10dp"
+            android:maxLines="6"
             android:text="TextView"
-            android:textSize="13sp"
-            android:maxLines="2"
-            app:layout_constraintBottom_toTopOf="@+id/resultsSize"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:textSize="16sp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toTopOf="@+id/bottomDialogLayoutButtons"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView" />
+            app:layout_constraintTop_toBottomOf="@+id/textBarcodeTypeResult" />
 
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="100dp"
             android:layout_height="60dp"
             android:layout_marginTop="5dp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textBarcodeTypeResult">
 
         </ImageView>
 
-        <GridLayout
-            android:id="@+id/bottomDialogLayoutGrid"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:backgroundTint="@android:color/transparent"
-            android:rowCount="2"
-            android:columnCount="2"
-            android:orientation="horizontal"
-            app:layout_behavior="android.support.design.widget.BottomSheetBehavior"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/resultsSize"
-            tools:context=".fragments.ResultBottomDialogFragment">
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCopyValue"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="170dp"
-            android:layout_height="45dp"
-            android:layout_marginTop="2dp"
-            android:gravity="center"
-            android:text="Copy"
-            app:cornerRadius="20dp"
-            app:iconSize="20dp"
-            app:icon="@drawable/ico_copy"
-            app:iconGravity="textStart"
-            android:textAllCaps="false"
-            app:layout_constraintEnd_toStartOf="@+id/btnCsvDialog"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/resultsSize"
-            app:strokeColor="@color/brand_color" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnWebHook"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="170dp"
-            android:layout_height="45dp"
-            android:text="Webhook"
-            android:textAllCaps="false"
-            android:textSize="14sp"
-            app:cornerRadius="20dp"
-            app:icon="@drawable/ico_webhook"
-            app:iconGravity="textStart"
-            app:iconSize="20dp"
-            app:layout_constraintEnd_toStartOf="@+id/btnSearchWeb"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnCopyValue"
-            app:strokeColor="@color/brand_color" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnSearchWeb"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="170dp"
-            android:layout_height="45dp"
-            android:text="Search"
-            android:textAllCaps="false"
-            app:cornerRadius="20dp"
-            app:icon="@drawable/ico_search"
-            app:iconGravity="textStart"
-            app:iconSize="20dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/btnWebHook"
-            app:layout_constraintTop_toBottomOf="@+id/btnCsvDialog"
-            app:strokeColor="@color/brand_color" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnCsvDialog"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="170dp"
-            android:layout_height="45dp"
-            android:layout_marginTop="2dp"
-            android:text="CSV"
-            app:iconGravity="textStart"
-            android:textAllCaps="false"
-            app:iconSize="20dp"
-            app:cornerRadius="20dp"
-            app:icon="@drawable/ico_csv"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/btnCopyValue"
-            app:layout_constraintTop_toBottomOf="@+id/resultsSize"
-            app:strokeColor="@color/brand_color" />
-
-        </GridLayout>
 
         <TextView
             android:id="@+id/resultsSize"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="35dp"
             android:text="TextView"
+            android:textColor="#666666"
             android:textSize="13sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.501"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textBarcodeNumResult" />
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textBarcodeTypeResult"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="5dp"
+            android:textSize="14sp"
+            android:text="TextView"
+            android:textColor="#666666"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/resultsSize" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/imageView2"
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="75dp"
             android:layout_height="19dp"
-            android:layout_marginTop="2dp"
-            android:backgroundTint="#6FC3BBBB"
-            app:layout_constraintBottom_toTopOf="@+id/textBarcodeTypeResult"
+            android:backgroundTint="#916E6D"
+            app:layout_constraintBottom_toTopOf="@+id/resultsSize"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:strokeColor="@color/white" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,11 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
+
+
+
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
+        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/header_background"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/white"
         app:elevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,35 +28,23 @@
             android:theme="@style/Theme.BKDDemo.Toolbar"
             app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
 
-        <!-- Textview drawable can't be aligned -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="65dp"
-            android:orientation="vertical"
-            tools:ignore="UseCompoundDrawables">
-
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_logo"
-                tools:ignore="ContentDescription" />
-
-            <TextView
-                android:id="@+id/txtLogo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:text="@string/title_logo_description"
-                android:textColor="@color/white" />
-
-        </LinearLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="118dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="20dp"
+        app:layout_constraintBottom_toBottomOf="@+id/appBarLayout"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/appBarLayout"
+        app:srcCompat="@drawable/logo_barkoder" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:background="@drawable/bg_shape_png"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/appBarLayout">
 
@@ -61,7 +54,7 @@
             android:paddingTop="50dp"
             android:paddingBottom="91dp"
             android:scaleType="fitXY"
-            android:src="@drawable/shape_background"
+
             tools:ignore="ContentDescription" />
 
         <ScrollView
@@ -70,7 +63,7 @@
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
             android:layout_marginHorizontal="5dp"
-            android:paddingBottom="90dp"
+            android:paddingBottom="60dp"
             android:gravity="center"
             android:scrollbars="vertical">
 
@@ -90,6 +83,8 @@
 
                     <TextView
                         style="@style/BarcodesGroupTitle"
+                        android:textColor="@color/black"
+                        android:layout_marginBottom="10dp"
                         android:text="@string/title_barcodes_1d" />
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -101,7 +96,6 @@
                             android:id="@+id/frameLayout6"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:background="@drawable/main_card_views_shadow"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
@@ -123,7 +117,6 @@
                         <FrameLayout
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:background="@drawable/main_card_views_shadow"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/frameLayout6"
                             app:layout_constraintTop_toTopOf="parent"
@@ -148,7 +141,6 @@
                             android:id="@+id/frameLayout20"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:background="@drawable/main_card_views_shadow"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
@@ -183,6 +175,8 @@
 
                     <TextView
                         style="@style/BarcodesGroupTitle"
+                        android:textColor="@color/black"
+                        android:layout_marginBottom="10dp"
                         android:text="@string/title_barcodes_2d" />
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -195,19 +189,19 @@
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             app:layout_constraintWidth_percent="0.33"
-                            android:background="@drawable/main_card_views_shadow"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent">
 
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/cardBarcodes2DAll"
+                                android:background="@drawable/card_shadow"
                                 style="@style/BarcodesTemplateCardView">
 
                                 <TextView
                                     style="@style/BarcodesTemplateTitle"
                                     android:text="@string/title_barcodes_2d_all"
-                                    app:drawableTopCompat="@drawable/ico_2d_all" />
+                                    app:drawableTopCompat="@drawable/ico_2d_qr_new" />
 
                             </androidx.cardview.widget.CardView>
 
@@ -220,7 +214,6 @@
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             app:layout_constraintWidth_percent="0.33"
-                            android:background="@drawable/main_card_views_shadow"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toStartOf="@+id/frameLayout4"
                             app:layout_constraintStart_toEndOf="@+id/frameLayout2"
@@ -233,7 +226,7 @@
                                 <TextView
                                     style="@style/BarcodesTemplateTitle"
                                     android:text="@string/title_barcodes_2d_pdf"
-                                    app:drawableTopCompat="@drawable/ico_2d_pdf" />
+                                    app:drawableTopCompat="@drawable/ico_2d_pdf417" />
 
                             </androidx.cardview.widget.CardView>
 
@@ -244,12 +237,11 @@
                             android:id="@+id/frameLayout4"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            app:layout_constraintWidth_percent="0.33"
-                            android:background="@drawable/main_card_views_shadow"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toStartOf="@+id/frameLayout3"
-                            app:layout_constraintStart_toEndOf="@+id/frameLayout5"
-                            app:layout_constraintTop_toTopOf="parent">
+                            app:layout_constraintEnd_toEndOf="parent"
+
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintWidth_percent="0.33">
 
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/cardDotCode"
@@ -277,6 +269,8 @@
 
                     <TextView
                         style="@style/BarcodesGroupTitle"
+                        android:textColor="@color/black"
+                        android:layout_marginBottom="10dp"
                         android:text="@string/title_barcodes_showcase" />
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -289,9 +283,7 @@
                             android:id="@+id/frameLayout7"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:background="@drawable/main_card_views_shadow"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toStartOf="@+id/frameLayout9"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintWidth_percent="0.33">
@@ -303,7 +295,7 @@
                                 <TextView
                                     style="@style/BarcodesTemplateTitle"
                                     android:text="@string/title_batch_multiscan_mode"
-                                    app:drawableTopCompat="@drawable/ico_showcase_batch_multi" />
+                                    app:drawableTopCompat="@drawable/ico_multi" />
 
                             </androidx.cardview.widget.CardView>
 
@@ -313,10 +305,8 @@
                             android:id="@+id/frameLayout9"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:background="@drawable/main_card_views_shadow"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toStartOf="@+id/frameLayout8"
-                            app:layout_constraintStart_toEndOf="@+id/frameLayout7"
+                            app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintWidth_percent="0.33">
 
@@ -327,7 +317,7 @@
                                 <TextView
                                     style="@style/BarcodesTemplateTitle"
                                     android:text="@string/title_dpm_mode"
-                                    app:drawableTopCompat="@drawable/ico_showcase_dpm" />
+                                    app:drawableTopCompat="@drawable/ico_dpm" />
 
                             </androidx.cardview.widget.CardView>
 
@@ -337,12 +327,12 @@
                             android:id="@+id/frameLayout8"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:background="@drawable/main_card_views_shadow"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/frameLayout9"
+                            app:layout_constraintEnd_toStartOf="@+id/frameLayout9"
+                            app:layout_constraintStart_toEndOf="@+id/frameLayout7"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintWidth_percent="0.33">
+                            app:layout_constraintWidth_percent="0.33"
+                        >
 
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/cardVinMode"
@@ -351,7 +341,7 @@
                                 <TextView
                                     style="@style/BarcodesTemplateTitle"
                                     android:text="@string/title_vin_mode"
-                                    app:drawableTopCompat="@drawable/ico_showcase_vin" />
+                                    app:drawableTopCompat="@drawable/ico_vin" />
 
                             </androidx.cardview.widget.CardView>
 
@@ -376,9 +366,7 @@
                             android:id="@+id/frameLayout11"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:background="@drawable/main_card_views_shadow"
                             app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toStartOf="@+id/frameLayout10"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintWidth_percent="0.33">
@@ -390,7 +378,7 @@
                                 <TextView
                                     style="@style/BarcodesTemplateTitle"
                                     android:text="Deblur"
-                                    app:drawableTopCompat="@drawable/ico_showcase_blurred" />
+                                    app:drawableTopCompat="@drawable/ico_deblur" />
 
                             </androidx.cardview.widget.CardView>
 
@@ -400,7 +388,6 @@
                             android:id="@+id/frameLayout10"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
-                            android:background="@drawable/main_card_views_shadow"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toStartOf="@+id/frameLayout15"
                             app:layout_constraintStart_toEndOf="@+id/frameLayout11"
@@ -414,22 +401,24 @@
                                 <TextView
                                     style="@style/BarcodesTemplateTitle"
                                     android:text="Misshaped"
-                                    app:drawableTopCompat="@drawable/ico_showcase_misshaped" />
+                                    app:drawableTopCompat="@drawable/ico_misshaped" />
 
                             </androidx.cardview.widget.CardView>
 
                         </FrameLayout>
 
 
+
+
+
                         <FrameLayout
                             android:id="@+id/frameLayout15"
                             android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/main_card_views_shadow"
+                            android:layout_height="wrap_content"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/frameLayout10"
                             app:layout_constraintTop_toTopOf="parent"
+                            android:visibility="visible"
                             app:layout_constraintWidth_percent="0.33">
 
                             <androidx.cardview.widget.CardView
@@ -439,13 +428,101 @@
                                 <TextView
                                     style="@style/BarcodesTemplateTitle"
                                     android:text="Gallery Scan"
-                                    app:drawableTopCompat="@drawable/ico_gallery_scan2" />
+                                    app:drawableTopCompat="@drawable/ico_gallery" />
 
                             </androidx.cardview.widget.CardView>
 
                         </FrameLayout>
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:backgroundTint="@color/transparent"
+                        android:layout_marginBottom="5dp"
+                        android:orientation="horizontal">
+
+                        <androidx.constraintlayout.widget.ConstraintLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/transparent">
+
+
+                            <FrameLayout
+                                android:id="@+id/frameLayout24"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintStart_toStartOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintWidth_percent="0.33">
+
+                                <androidx.cardview.widget.CardView
+                                    android:id="@+id/cardScanWebdemo"
+                                    style="@style/BarcodesTemplateCardView">
+
+                                    <TextView
+                                        style="@style/BarcodesTemplateTitle"
+                                        android:text="Web Demo"
+                                        app:drawableTopCompat="@drawable/ico_web_demo" />
+
+                                </androidx.cardview.widget.CardView>
+
+                            </FrameLayout>
+
+
+                            <FrameLayout
+                                android:id="@+id/frameLayout16"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toStartOf="@+id/frameLayout21"
+                                app:layout_constraintStart_toEndOf="@+id/frameLayout24"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintWidth_percent="0.33">
+
+                                <androidx.cardview.widget.CardView
+                                    android:id="@+id/cardScanIdDocument"
+                                    style="@style/BarcodesTemplateCardView">
+
+                                    <TextView
+                                        style="@style/BarcodesTemplateTitle"
+                                        android:text="MRZ Scan"
+                                        app:drawableTopCompat="@drawable/ico_mrz__1_" />
+
+                                </androidx.cardview.widget.CardView>
+
+                            </FrameLayout>
+
+                            <FrameLayout
+                                android:id="@+id/frameLayout21"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintWidth_percent="0.33">
+
+                                <androidx.cardview.widget.CardView
+                                    android:id="@+id/emptyCard"
+                                    style="@style/BarcodesTemplateCardView">
+
+                                    <TextView
+                                        style="@style/BarcodesTemplateTitle"
+                                        android:text=""
+                                        app:drawableTopCompat="@drawable/ic_settings_white" />
+
+                                </androidx.cardview.widget.CardView>
+
+                            </FrameLayout>
+                            <!-- Add other views as needed -->
+
+                        </androidx.constraintlayout.widget.ConstraintLayout>
+
 
                     </LinearLayout>
 
@@ -461,6 +538,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bottomContainer"
         android:layout_width="match_parent"
+        android:visibility="gone"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent">
 
@@ -471,7 +549,7 @@
             app:layout_constraintBottom_toBottomOf="parent">
 
             <TextView
-                android:id="@+id/txtRecent"
+                android:id="@+id/txtRecent2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="10dp"
@@ -489,7 +567,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/txtAbout"
+                android:id="@+id/txtAbout2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="10dp"
@@ -509,7 +587,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <TextView
-            android:id="@+id/txtScan"
+            android:id="@+id/txtScan2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingBottom="10dp"
@@ -539,5 +617,94 @@
             android:layout_gravity="center" />
 
     </FrameLayout>
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFAFA"
+        android:backgroundTint="#FFFAFA"
+        android:paddingVertical="5dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/txtScan"
+            android:layout_width="56dp"
+            android:layout_height="66dp"
+            android:layout_marginEnd="20dp"
+            android:backgroundTint="@color/brand_color"
+            app:cornerRadius="12dp"
+            app:icon="@drawable/icon__1_"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/txtRecent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
+            android:backgroundTint="@color/transparent"
+            android:src="@drawable/ico_recent_2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/txtAbout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/transparent"
+            android:src="@drawable/ic_about"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/txtRecent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/imageBackgroundLayout"
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:visibility="gone"
+        android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <ImageView
+        android:id="@+id/imageBarcodesLocations"
+        android:layout_width="0dp"
+    android:layout_height="0dp"
+        android:visibility="gone"
+        android:layout_marginTop="30dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintHeight_percent="0.55"
+        android:paddingBottom="20dp"
+    />
+
+    <ImageView
+        android:id="@+id/imageBarcodesSingleLocations"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
+        android:layout_marginTop="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:paddingBottom="20dp"
+        app:layout_constraintHeight_percent="0.65">
+
+    </ImageView>
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

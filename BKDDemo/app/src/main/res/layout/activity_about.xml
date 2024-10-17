@@ -6,12 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".AboutActivity">
 
+
+
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/header_background"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/white"
         app:elevation="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.appcompat.widget.Toolbar
@@ -22,191 +26,522 @@
             app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
 
 
-
-        <TextView
-            android:id="@+id/txtLogoDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="65dp"
-            android:drawablePadding="10dp"
-            android:text="@string/about_logo_description"
-            android:textColor="@color/white"
-            app:drawableTopCompat="@drawable/ic_logo" />
-
     </com.google.android.material.appbar.AppBarLayout>
 
     <ImageButton
-        android:id="@+id/btnQuestionMark"
+        android:id="@+id/btnLearnMore"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:padding="20dp"
-        android:src="@drawable/ic_question_mark"
+        android:layout_marginTop="15dp"
+        android:layout_marginEnd="20dp"
+        android:background="@color/transparent"
+        android:src="@drawable/ico_docs"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="140dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="60dp"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="ContentDescription" />
+        app:srcCompat="@drawable/logo_barkoder" />
 
-    <androidx.core.widget.NestedScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="20dp"
-        android:scrollbars="vertical"
-        app:layout_constraintBottom_toTopOf="@id/rlBottomBar"
-        app:layout_constraintTop_toBottomOf="@id/appBarLayout">
 
-        <LinearLayout
+
+
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="0dp"
+            android:paddingBottom="60dp"
+            android:scrollbars="vertical"
+            app:layout_constraintBottom_toTopOf="@id/rlBottomBar"
+            app:layout_constraintTop_toBottomOf="@id/appBarLayout">
 
-            <TextView
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/about_screen_sides_margin"
-                android:layout_marginTop="20dp"
-                android:lineSpacingExtra="4dp"
-                android:text="@string/about_sdk_description"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/txtTestBakoderSDK"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_margin="20dp"
-                android:background="@drawable/test_barkoder_sdk_background"
-                android:clickable="true"
-                android:focusable="true"
-                android:padding="10dp"
-                android:text="@string/about_test_barkoder_sdk"
-                android:textAlignment="center"
-                android:textColor="@color/white" />
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/about_screen_sides_margin"
-                android:layout_marginTop="10dp"
-                app:cardCornerRadius="30dp">
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/recent_header_background"
-                    android:orientation="vertical"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="15dp">
-
-                <TextView
-                    android:id="@+id/txtDeviceId"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:textStyle="bold" />
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/about_screen_sides_margin"
-                android:layout_marginVertical="20dp"
-                app:cardCornerRadius="30dp">
+                android:background="@drawable/bg_shape_png"
+                android:layout_marginTop="30dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/appBarLayout">
 
                 <LinearLayout
-                    android:id="@+id/llChangeLogContent"
+                    android:id="@+id/linearLayout4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/recent_header_background"
                     android:orientation="vertical"
-                    android:paddingHorizontal="10dp"
-                    android:paddingVertical="15dp">
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-                    <TextView
-                        android:id="@+id/txtSdkVersion"
-                        android:layout_width="wrap_content"
+                    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:text="@string/about_sdk_title"
-                        android:textStyle="bold" />
+                        android:layout_marginVertical="8dp"
+                        android:layout_marginHorizontal="16dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp">
 
-                    <TextView
-                        android:id="@+id/txtLibVersion"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginTop="5dp"
-                        android:text="@string/about_lib_title"
-                        android:textStyle="bold"
-                        tools:visibility="visible" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                            <!-- Title Text -->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:text="Barcode Scanner SDK by barKoder"
+                                android:textColor="#291716"
+                                android:textSize="16sp"
+                                android:textStyle="normal" />
+
+                            <!-- Description Text (First Paragraph) -->
+                            <TextView
+                                android:id="@+id/txtFirstDescription"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:lineSpacingExtra="4dp"
+                                android:text="Barcode Scanner Demo by barKoder showcases the enterprise-grade performance of the barKoder Barcode Scanner SDK along with most of its features in a wide variety of scanning scenarios."
+                                android:textColor="#000000"
+                                android:textSize="14sp" />
+
+                            <!-- Description Text (Second Paragraph) -->
+                            <TextView
+                                android:id="@+id/txtSecondDescription"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:lineSpacingExtra="4dp"
+                                android:text="Whether from One-Dimensional or Two-Dimensional barcodes, the barKoder API can capture the data reliably, accurately and surprisingly fast, even under very challenging conditions and environments."
+                                android:textColor="@android:color/black"
+                                android:textSize="14sp" />
+
+                            <!-- Description Text (Third Paragraph) -->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                android:lineSpacingExtra="4dp"
+                                android:text="You can test the barKoder Barcode Scanner SDK at your convenience by signing up for a free trial:"
+                                android:textColor="@android:color/black"
+                                android:textSize="14sp" />
+
+                            <!-- Free Trial Button -->
+                            <TextView
+                                android:id="@+id/btnGetTrialDemo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginTop="20dp"
+                                android:background="@drawable/learn_more_background"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:paddingHorizontal="15dp"
+                                android:paddingVertical="12dp"
+                                android:elevation="0dp"
+                                android:translationZ="0dp"
+                                android:text="Get a free trial demo"
+                                android:textAllCaps="false"
+                                android:textColor="@color/brand_color"
+                                android:textSize="16sp"
+                                android:textStyle="normal"
+                                app:cornerRadius="24dp"
+                                app:iconGravity="textStart"
+                                app:strokeWidth="1dp" />
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:layout_marginVertical="10dp"
-                        android:text="@string/about_changelog_title"
-                        android:textStyle="bold" />
+                        android:layout_marginVertical="8dp"
+                        android:layout_marginHorizontal="16dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:cardElevation="2dp"
+                            android:orientation="vertical">
+
+                            <!-- Title -->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="30dp"
+                                android:layout_marginStart="20dp"
+                                android:layout_marginBottom="25dp"
+                                android:text="Supported Platforms and Cross Platforms"
+                                android:textColor="@android:color/black"
+                                android:textSize="16sp"
+                                android:textStyle="normal" />
+
+                            <!-- GridLayout for icons -->
+                            <GridLayout
+                                android:id="@+id/platform_grid"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="30dp"
+                                android:layout_gravity="center_horizontal"
+                                android:alignmentMode="alignMargins"
+                                android:columnCount="3"
+                                android:rowCount="2"
+
+                                android:useDefaultMargins="true">
+
+                                <!-- Platform 1: Example React Native -->
+                                <androidx.cardview.widget.CardView
+                                    android:id="@+id/cardReactNative"
+                                    android:layout_width="90dp"
+                                    android:layout_height="90dp"
+                                    android:layout_margin="8dp"
+                                    app:cardCornerRadius="16dp"
+                                    app:cardBackgroundColor="#F5F7FA"
+                                    app:cardElevation="0dp">
+
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:contentDescription="React Native"
+                                        android:src="@drawable/ico_js_react" />
+                                </androidx.cardview.widget.CardView>
+
+                                <!-- Platform 2: Flutter -->
+                                <androidx.cardview.widget.CardView
+                                    android:id="@+id/cardFlutter"
+                                    android:layout_width="90dp"
+                                    android:layout_height="90dp"
+                                    android:layout_margin="8dp"
+                                    app:cardBackgroundColor="#F5F7FA"
+                                    app:cardCornerRadius="16dp"
+                                    app:cardElevation="0dp">
+
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:contentDescription="Flutter"
+                                        android:src="@drawable/ico_flutter" />
+                                </androidx.cardview.widget.CardView>
+
+                                <!-- Platform 3: Xamarin -->
+                                <androidx.cardview.widget.CardView
+                                    android:id="@+id/cardMaui"
+                                    android:layout_width="90dp"
+                                    android:layout_height="90dp"
+                                    android:layout_margin="8dp"
+                                    app:cardBackgroundColor="#F5F7FA"
+                                    app:cardCornerRadius="16dp"
+                                    app:cardElevation="0dp">
+
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:contentDescription="Xamarin"
+                                        android:src="@drawable/ico_netmaui" />
+                                </androidx.cardview.widget.CardView>
+
+                                <!-- Platform 4: Cordova -->
+                                <androidx.cardview.widget.CardView
+                                    android:id="@+id/cardCordova"
+                                    android:layout_width="90dp"
+                                    android:layout_height="90dp"
+                                    android:layout_margin="8dp"
+                                    app:cardCornerRadius="16dp"
+                                    app:cardBackgroundColor="#F5F7FA"
+                                    app:cardElevation="0dp">
+
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:contentDescription="Cordova"
+                                        android:src="@drawable/ico_cordova" />
+                                </androidx.cardview.widget.CardView>
+
+                                <!-- Platform 5: NativeScript -->
+                                <androidx.cardview.widget.CardView
+                                    android:id="@+id/cardCapacitor"
+                                    android:layout_width="90dp"
+                                    android:layout_height="90dp"
+                                    android:layout_margin="8dp"
+                                    app:cardCornerRadius="16dp"
+                                    app:cardBackgroundColor="#F5F7FA"
+                                    app:cardElevation="0dp">
+
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:contentDescription="NativeScript"
+                                        android:src="@drawable/ico_capacitor" />
+                                </androidx.cardview.widget.CardView>
+
+                                <!-- Platform 6: MAUI -->
+                                <androidx.cardview.widget.CardView
+                                    android:id="@+id/cardNativescript"
+                                    android:layout_width="90dp"
+                                    android:layout_height="90dp"
+                                    android:layout_margin="8dp"
+                                    app:cardCornerRadius="16dp"
+                                    app:cardBackgroundColor="#F5F7FA"
+                                    app:cardElevation="0dp">
+
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_gravity="center"
+                                        android:contentDescription="MAUI"
+                                        android:src="@drawable/ico_nativescript" />
+                                </androidx.cardview.widget.CardView>
+
+                            </GridLayout>
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+
+                    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="8dp"
+                        android:layout_marginHorizontal="16dp"
+                        app:cardCornerRadius="12dp"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <!-- Title Row -->
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="12dp"
+                                android:text="Info"
+                                android:layout_marginStart="15dp"
+                                android:layout_marginTop="15dp"
+                                android:textColor="@android:color/black"
+                                android:textSize="16sp"
+                                android:textStyle="normal" />
+
+                            <!-- Device ID Row -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal"
+                                android:paddingVertical="8dp">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_marginStart="15dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Device ID"
+                                    android:textColor="@android:color/darker_gray"
+                                    android:textSize="14sp" />
+
+                                <TextView
+                                    android:id="@+id/txtDeviceId"
+                                    android:layout_width="wrap_content"
+                                    android:layout_marginEnd="15dp"
+                                    android:layout_height="wrap_content"
+                                    android:text="123456"
+                                    android:textColor="@android:color/black"
+                                    android:textSize="18sp"
+                                    android:textStyle="normal"/>
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginVertical="4dp"
+                                android:background="#E3E1E1" />
+
+                            <!-- App Version Row -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal"
+                                android:paddingVertical="8dp">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="15dp"
+                                    android:text="App Version"
+                                    android:textColor="@android:color/darker_gray"
+                                    android:textSize="14sp" />
+
+                                <TextView
+                                    android:id="@+id/txtAppVersion"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="1.9.0"
+                                    android:layout_marginEnd="15dp"
+                                    android:textColor="@color/brand_color"
+                                    android:textSize="18sp"
+                                    android:textStyle="normal" />
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginVertical="4dp"
+                                android:background="#E3E1E1" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal"
+                                android:paddingVertical="8dp">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="15dp"
+                                    android:text="SDK Version"
+                                    android:textColor="@android:color/darker_gray"
+                                    android:textSize="14sp" />
+
+                                <TextView
+                                    android:id="@+id/txtSdkVersion"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/about_sdk_title"
+                                    android:layout_marginEnd="15dp"
+                                    android:textColor="@android:color/black"
+                                    android:textSize="18sp"
+                                    android:textStyle="normal" />
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginVertical="4dp"
+                                android:background="#E3E1E1" />
+
+                            <!-- SDK Version Row -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:orientation="horizontal"
+                                android:paddingVertical="16dp">
+
+                                <TextView
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="15dp"
+                                    android:text="Lib Version"
+                                    android:textColor="@android:color/darker_gray"
+                                    android:textSize="14sp" />
+
+                                <TextView
+                                    android:id="@+id/txtLibVersion"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/about_sdk_title"
+                                    android:layout_marginEnd="15dp"
+                                    android:textColor="@android:color/black"
+                                    android:textSize="18sp"
+                                    android:textStyle="normal" />
+                            </LinearLayout>
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
 
                 </LinearLayout>
 
-            </androidx.cardview.widget.CardView>
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:layout_marginHorizontal="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout4">
 
-        </LinearLayout>
 
-    </androidx.core.widget.NestedScrollView>
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/rlBottomBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
 
-    <RelativeLayout
-        android:id="@+id/rlBottomBar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="@dimen/about_screen_sides_margin"
-        android:layout_marginBottom="20dp"
-        app:layout_constraintBottom_toBottomOf="parent">
+                        <TextView
+                            android:id="@+id/txtPrivacyPolicy"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/learn_more_background"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:padding="10dp"
+                            android:text="@string/about_privacy_policy"
+                            android:textAlignment="center"
+                            android:textColor="@color/accent_color"
+                            android:textSize="13sp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/txtTermsOfUse"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/txtLearnMore"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:background="@drawable/learn_more_background"
-            android:clickable="true"
-            android:focusable="true"
-            android:paddingHorizontal="13dp"
-            android:paddingVertical="10dp"
-            android:text="@string/about_learn_more"
-            android:textAlignment="center"
-            android:textColor="@color/accent_color"
-            android:textSize="13sp" />
+                        <TextView
+                            android:id="@+id/txtTermsOfUse"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/learn_more_background"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:paddingHorizontal="11dp"
+                            android:paddingVertical="10dp"
+                            android:text="@string/about_terms_of_use"
+                            android:textAlignment="center"
+                            android:textColor="@color/accent_color"
+                            android:textSize="13sp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintStart_toEndOf="@+id/txtPrivacyPolicy"
+                            app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/txtPrivacyPolicy"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:background="@drawable/learn_more_background"
-            android:clickable="true"
-            android:focusable="true"
-            android:padding="10dp"
-            android:text="@string/about_privacy_policy"
-            android:textAlignment="center"
-            android:textColor="@color/accent_color"
-            android:textSize="13sp" />
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <TextView
-            android:id="@+id/txtTermsOfUse"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:background="@drawable/learn_more_background"
-            android:clickable="true"
-            android:focusable="true"
-            android:paddingHorizontal="11dp"
-            android:paddingVertical="10dp"
-            android:text="@string/about_terms_of_use"
-            android:textAlignment="center"
-            android:textColor="@color/accent_color"
-            android:textSize="13sp" />
+                </androidx.cardview.widget.CardView>
 
-    </RelativeLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+        </androidx.core.widget.NestedScrollView>
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

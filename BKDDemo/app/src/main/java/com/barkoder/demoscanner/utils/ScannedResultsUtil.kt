@@ -61,17 +61,12 @@ object ScannedResultsUtil {
         if (results!!.isNotEmpty()) {
             val recents = getResultsFromPref(context)
 
-//            val scannedDate =
-//                SimpleDateFormat(
-//                    "MMM dd, yyyy",
-//                    Locale.getDefault()
-//                ).format(Calendar.getInstance().time).uppercase()
-
             val scannedDate =
                 SimpleDateFormat(
-                    "yyyy/MM/dd",
+                    "yyyy/MM/dd/HH:mm:ss",
                     Locale.getDefault()
                 ).format(Date())
+
 
             for (result in results) {
                 recents.add(0, RecentScan(scannedDate, result))
@@ -81,6 +76,7 @@ object ScannedResultsUtil {
                 .putString(SCANNED_RESULTS_KEY, gson().toJson(recents))
                 .apply()
         }
+
     }
 
     fun deleteResultsFromPref(
@@ -114,15 +110,7 @@ object ScannedResultsUtil {
 
     fun getResultsTitle(results: Array<out Barkoder.Result>?): ArrayList<String> {
         return ArrayList(results?.take(50)?.map { it.barcodeTypeName } ?: listOf("No Read"))
-//        return when (results!!.size) {
-//            0 -> arrayListOf("No Read")
-//            1 -> arrayListOf<String>(results[0].barcodeTypeName)
-//            2 -> arrayListOf<String>(results[0].barcodeTypeName, results[1].barcodeTypeName)
-//            3 -> arrayListOf<String>(results[0].barcodeTypeName, results[1].barcodeTypeName,results[2].barcodeTypeName)
-//            4 -> arrayListOf<String>(results[0].barcodeTypeName, results[1].barcodeTypeName,
-//                results[2].barcodeTypeName, results[3].barcodeTypeName)
-//            else -> arrayListOf("No Read")
-//        }
+
     }
 
 
@@ -157,15 +145,6 @@ object ScannedResultsUtil {
 
     fun getResultsReadString(results: Array<out Barkoder.Result>?): ArrayList<String> {
         return ArrayList(results?.take(50)?.map { it.textualData } ?: listOf("No Read"))
-//        return when (results!!.size) {
-//            0 -> arrayListOf("No Read")
-//            1 -> arrayListOf<String>(results[0].textualData)
-//            2 -> arrayListOf<String>(results[0].textualData, results[1].textualData)
-//            3 -> arrayListOf<String>(results[0].textualData, results[1].textualData,results[2].textualData)
-//            4 -> arrayListOf<String>(results[0].textualData, results[1].textualData,
-//                results[2].textualData, results[3].textualData)
-//            else -> arrayListOf("No Read")
-//        }
     }
 
     private fun getResultReadString(
@@ -187,12 +166,16 @@ object ScannedResultsUtil {
         return resultTextualData
     }
 
-    fun isBarcode2D(barcodeType: Barkoder.BarcodeType?): Boolean {
-        return barcodeType == Barkoder.BarcodeType.Aztec ||
-                barcodeType == Barkoder.BarcodeType.AztecCompact ||
-                barcodeType == Barkoder.BarcodeType.QR ||
-                barcodeType == Barkoder.BarcodeType.QRMicro ||
-                barcodeType == Barkoder.BarcodeType.Datamatrix
+    fun isBarcode2D(barcodeType: String): Boolean {
+        return barcodeType == "Aztec" ||
+                barcodeType == "Aztec Compact" ||
+                barcodeType == "QR" ||
+                barcodeType == "QRMicro" ||
+                barcodeType == "Datamatrix"
+    }
+
+    fun isMRZ(barcodeType: String): Boolean {
+        return barcodeType == "ID Document"
     }
 
     private fun gson(): Gson {

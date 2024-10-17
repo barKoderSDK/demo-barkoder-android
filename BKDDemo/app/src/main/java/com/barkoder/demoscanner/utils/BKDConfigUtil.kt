@@ -7,6 +7,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.preference.PreferenceManager
 import com.barkoder.Barkoder
+import com.barkoder.Barkoder.DecodingSpeed
 import com.barkoder.BarkoderConfig
 import com.barkoder.BarkoderHelper
 import com.barkoder.demoscanner.R
@@ -18,13 +19,15 @@ import com.barkoder.interfaces.BarkoderConfigCallback
 
 object BKDConfigUtil {
     //TODO use Hilt for prefs and gson
-    private var TAG = BKDConfigUtil::class.java.simpleName
+    var TAG = BKDConfigUtil::class.java.simpleName
 
     fun configureBKD(
         context: Context,
         scanMode: ScanMode,
         forImage: Boolean = false
+
     ): BarkoderConfig {
+
         val config = createConfig(context.applicationContext)
 
         val sharedPref =
@@ -116,6 +119,7 @@ object BKDConfigUtil {
         }
     }
 
+
     private fun setBarkoderSettings(
         config: BarkoderConfig,
         resources: Resources,
@@ -175,6 +179,7 @@ object BKDConfigUtil {
 
         config.decoderConfig.upcEanDeblur =
             sharedPref.getBoolean(resources.getString(R.string.key_blured_scan_eanupc))
+
 
         var automaticShowBottomsheet = sharedPref.getBoolean(resources.getString(R.string.key_automatic_show_bottomsheet))
 
@@ -283,11 +288,17 @@ object BKDConfigUtil {
                 configureCode128Symbology(config, resources, sharedPref)
                 configureDatamatrixSymbology(config, resources, sharedPref)
                 configureQRSymbology(config,resources,sharedPref)
-                var narrrowViewfinderBoolean = sharedPref.getBoolean("pref_key_narrow_viewfinder", false)
+                var narrrowViewfinderBoolean = sharedPref.getBoolean("pref_key_narrow_viewfinder", true)
                 if(narrrowViewfinderBoolean){
                     config.isRegionOfInterestVisible = true
                     config.setRegionOfInterest(0f, 35f, 100f, 30f)
                 }
+            }
+            BarkoderConfigTemplate.MRZ -> {
+                setBarkoderSettings(config,resources,sharedPref)
+                config.setRegionOfInterest(0f, 0f, 100f, 100f)
+                config.thresholdBetweenDuplicatesScans = 0
+
             }
             BarkoderConfigTemplate.DOTCODE -> {
                 setBarkoderSettings(config,resources,sharedPref)
@@ -320,6 +331,41 @@ object BKDConfigUtil {
                 configureUpcE1Symbology(config, resources, sharedPref)
                 configureEan13Symbology(config, resources, sharedPref)
                 configureEan8Symbology(config, resources, sharedPref)
+
+            }
+            BarkoderConfigTemplate.GALLERY_SCAN -> {
+                configureMRZMode(config,resources,sharedPref)
+                setBarkoderSettings(config,resources,sharedPref)
+                setResultSettings(config, resources, sharedPref)
+                configureCode128Symbology(config, resources, sharedPref)
+                configureCode93Symbology(config, resources, sharedPref)
+                configureCode39Symbology(config, resources, sharedPref)
+                configureCode25Symbology(config, resources, sharedPref)
+                configureCodabarSymbology(config, resources, sharedPref)
+                configureCode11Symbology(config, resources, sharedPref)
+                configureMsiSymbology(config, resources, sharedPref)
+                configureCode32Symbology(config, resources, sharedPref)
+                configureInterleaved25Symbology(config, resources, sharedPref)
+                configureITF14Symbology(config, resources, sharedPref)
+                configureIATA25Symbology(config, resources, sharedPref)
+                configureMatrix25Symbology(config, resources, sharedPref)
+                configureDatalogic25Symbology(config, resources, sharedPref)
+                configureCOOP25Symbology(config, resources, sharedPref)
+                configureTelepenSymbology(config, resources, sharedPref)
+                configureUpcASymbology(config, resources, sharedPref)
+                configureUpcESymbology(config, resources, sharedPref)
+                configureUpcE1Symbology(config, resources, sharedPref)
+                configureEan13Symbology(config, resources, sharedPref)
+                configureEan8Symbology(config, resources, sharedPref)
+                configureAztecSymbology(config, resources, sharedPref)
+                configureAztecCompactSymbology(config, resources, sharedPref)
+                configureQRSymbology(config, resources, sharedPref)
+                configureQRMicroSymbology(config, resources, sharedPref)
+                configurePDF417Symbology(config, resources, sharedPref)
+                configurePDF417MicroSymbology(config, resources, sharedPref)
+                configureDatamatrixSymbology(config, resources, sharedPref)
+                configureDotCodeSymbology(config, resources, sharedPref)
+                configureDatamatrixDPMMode(config, resources, sharedPref)
             }
 
             else -> {
@@ -626,6 +672,30 @@ object BKDConfigUtil {
                 resources.getString(R.string.key_symbology_datamatrix)
             )
     }
+
+    private fun configureDatamatrixDPMMode(
+        config: BarkoderConfig,
+        resources: Resources,
+        sharedPref: SharedPreferences
+    ) {
+        config.decoderConfig.Datamatrix.dpmMode =
+            sharedPref.getBoolean(
+                resources.getString(R.string.key_dpm_mode)
+            )
+    }
+
+
+    private fun configureMRZMode(
+        config: BarkoderConfig,
+        resources: Resources,
+        sharedPref: SharedPreferences
+    ) {
+        config.decoderConfig.IDDocument.enabled =
+            sharedPref.getBoolean(
+                resources.getString(R.string.key_mrz_mode)
+            )
+    }
+
 
     private fun configureCode25Symbology(
         config: BarkoderConfig,
@@ -939,13 +1009,24 @@ object BKDConfigUtil {
 
         //region Barkoder Settings
         if(scanMode.template != null) {
-            prefsEditor.putStringWithOptions(
-                sharedPrefs,
-                context.getString(R.string.key_scanner_decoding_speed),
-                config?.decoderConfig?.decodingSpeed?.ordinal?.toString()
-                    ?: DemoDefaults.DECODING_SPEED_DEFAULT_TEMPLATE.ordinal.toString(),
-                onlyIfNotContains
-            )
+            if(scanMode == ScanMode.MRZ) {
+                prefsEditor.putStringWithOptions(
+                    sharedPrefs,
+                    context.getString(R.string.key_scanner_decoding_speed),
+                    config?.decoderConfig?.decodingSpeed?.ordinal?.toString()
+                        ?: 1.toString(),
+                    onlyIfNotContains
+                )
+            } else{
+                prefsEditor.putStringWithOptions(
+                    sharedPrefs,
+                    context.getString(R.string.key_scanner_decoding_speed),
+                    config?.decoderConfig?.decodingSpeed?.ordinal?.toString()
+                        ?: DemoDefaults.DECODING_SPEED_DEFAULT_TEMPLATE.ordinal.toString(),
+                    onlyIfNotContains
+                )
+            }
+
         } else {
             prefsEditor.putStringWithOptions(
                 sharedPrefs,
@@ -955,11 +1036,20 @@ object BKDConfigUtil {
                 onlyIfNotContains
             )
         }
-        if(scanMode.template == ScanMode.VIN.template || scanMode.template == ScanMode.DPM.template
-            || scanMode.template == ScanMode.RETAIL_1D.template || scanMode.template == ScanMode.PDF.template
-            || scanMode.template == ScanMode.QR.template || scanMode.template == ScanMode.ALL_2D.template
-            || scanMode.template == ScanMode.INDUSTRIAL_1D.template || scanMode.template == ScanMode.UPC_EAN_DEBLUR.template
-            || scanMode.template == ScanMode.MISSHAPED_1D.template || scanMode.template == ScanMode.DOTCODE.template) {
+        if(scanMode == ScanMode.CONTINUOUS || scanMode == ScanMode.ANYSCAN) {
+            prefsEditor.putStringWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_scanner_resolution),
+                config?.barkoderResolution?.ordinal?.toString()
+                    ?: DemoDefaults.BARKODER_RESOLUTION_DEFAULT.ordinal.toString(),
+                onlyIfNotContains
+            )
+        } else if
+        (scanMode.template == ScanMode.VIN.template || scanMode.template == ScanMode.DPM.template
+                || scanMode.template == ScanMode.RETAIL_1D.template || scanMode.template == ScanMode.PDF.template
+                || scanMode.template == ScanMode.QR.template || scanMode.template == ScanMode.ALL_2D.template
+                || scanMode.template == ScanMode.INDUSTRIAL_1D.template || scanMode.template == ScanMode.UPC_EAN_DEBLUR.template
+                || scanMode.template == ScanMode.MISSHAPED_1D.template || scanMode.template == ScanMode.DOTCODE.template || scanMode.template == ScanMode.MRZ.template) {
             prefsEditor.putStringWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_scanner_resolution),
@@ -967,7 +1057,8 @@ object BKDConfigUtil {
                     ?: DemoDefaults.BARKODER_RESOLUTION_DEFAULT_TEMPLATES_VIN_DPM.ordinal.toString(),
                 onlyIfNotContains
             )
-        } else {
+        }
+        else {
             prefsEditor.putStringWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_scanner_resolution),
@@ -1034,14 +1125,38 @@ object BKDConfigUtil {
             config?.isVibrateOnSuccessEnabled ?: DemoDefaults.VIBRATE_ON_SUCCESS_DEFAULT,
             onlyIfNotContains
         )
+        if(scanMode == ScanMode.GALLERY_SCAN) {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_blured_scan_eanupc),
+                config?.decoderConfig?.upcEanDeblur ?: true,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_blured_scan_eanupc),
+                config?.decoderConfig?.upcEanDeblur ?: DemoDefaults.DEBLUR_UPC_EAN_DEFAULT,
+                onlyIfNotContains
+            )
+        }
 
-        prefsEditor.putBooleanWithOptions(
-            sharedPrefs,
-            context.getString(R.string.key_blured_scan_eanupc),
-            config?.decoderConfig?.upcEanDeblur ?: DemoDefaults.DEBLUR_UPC_EAN_DEFAULT,
-            onlyIfNotContains
-        )
-        if(scanMode == ScanMode.RETAIL_1D) {
+        if(scanMode == ScanMode.GALLERY_SCAN) {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_dpm_mode),
+                config?.decoderConfig?.Datamatrix?.dpmMode ?: true,
+                onlyIfNotContains
+            )
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_mrz_mode),
+                config?.decoderConfig?.IDDocument?.enabled ?: true,
+                onlyIfNotContains
+            )
+        }
+
+        if(scanMode == ScanMode.RETAIL_1D || scanMode == ScanMode.GALLERY_SCAN) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_misshaped_code_capture),
@@ -1072,7 +1187,7 @@ object BKDConfigUtil {
         prefsEditor.putBooleanWithOptions(
             sharedPrefs,
             context.getString(R.string.key_narrow_viewfinder),
-            DemoDefaults.CONTINUOUS_MODE_DEFAULT,
+            true,
             onlyIfNotContains
         )
         prefsEditor.putStringWithOptions(
@@ -1209,7 +1324,7 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_C93_MAX_DEFAULT,
             onlyIfNotContains
         )
-        if(scanMode == ScanMode.RETAIL_1D || scanMode == ScanMode.ALL_1D) {
+        if(scanMode == ScanMode.RETAIL_1D) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_c128),
@@ -1382,12 +1497,22 @@ object BKDConfigUtil {
             config?.decoderConfig?.Datamatrix?.enabled ?: DemoDefaults.SYMBOLOGY_DM_DEFAULT,
             onlyIfNotContains
         )
-        prefsEditor.putBooleanWithOptions(
-            sharedPrefs,
-            context.getString(R.string.key_symbology_dotcode),
-            config?.decoderConfig?.Dotcode?.enabled ?: DemoDefaults.SYMBOLOGY_DOTCODE_DEFAULT,
-            onlyIfNotContains
-        )
+        if(scanMode == ScanMode.CONTINUOUS || scanMode == ScanMode.ANYSCAN) {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_dotcode),
+                config?.decoderConfig?.Dotcode?.enabled ?: false,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_dotcode),
+                config?.decoderConfig?.Dotcode?.enabled ?: DemoDefaults.SYMBOLOGY_DOTCODE_DEFAULT,
+                onlyIfNotContains
+            )
+        }
+
         prefsEditor.putBooleanWithOptions(
             sharedPrefs,
             context.getString(R.string.key_symbology_c25),
@@ -1650,7 +1775,18 @@ object BKDConfigUtil {
                     ?: DemoDefaults.PARSER_TYPE_PDF_DEFAULT.ordinal.toString(),
                 onlyIfNotContains
             )
-        } else {
+        }
+        else if(scanMode == ScanMode.GALLERY_SCAN) {
+            prefsEditor.putStringWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_result_parser),
+                config?.decoderConfig?.formattingType?.ordinal?.toString()
+                    ?: DemoDefaults.PARSER_TYPE_GALLERY_DEFAULT.ordinal.toString(),
+                onlyIfNotContains
+            )
+        }
+        else
+         {
             prefsEditor.putStringWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_result_parser),
@@ -1741,6 +1877,7 @@ object BKDConfigUtil {
         config.decoderConfig.Code25.enabled = false
         config.decoderConfig.PDF417Micro.enabled = false
         config.decoderConfig.Code128.enabled = false
+        config.isVibrateOnSuccessEnabled = false
     }
 
     private fun adaptConfigForMisshapedScanning(config: BarkoderConfig) {

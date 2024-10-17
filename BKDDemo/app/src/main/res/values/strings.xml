@@ -34,12 +34,13 @@
     <string name="activity_main_menu_item_settings">Settings</string>
     <string name="activity_recent_no_scans">Nothing scanned yet</string>
     <string name="activity_recent_menu_item_delete_recents">Delete All</string>
+    <string name="activity_recent_menu_item_sort_recents">Sort \n Ascending</string>
     <string name="activity_recent_menu_item_delete_recents_confirmation">This action permanently deletes all recent scans</string>
-    <string name="activity_recent_menu_item_delete_recent_confirmation">Delete selected Recent Scan?</string>
+    <string name="activity_recent_menu_item_delete_recent_confirmation">This action permanently deletes selected recent scans</string>
 
 
     <string name="about_logo_description">version %s</string>
-    <string name="about_sdk_title">BarKoder SDK version %s</string>
+    <string name="about_sdk_title">%s</string>
     <string name="about_lib_title">Barkoder LIB version %s</string>
     <string name="about_sdk_description">Barcode Scanner by barKoder showcases the enterprise-grade performance of the barKoder Barcode Scanner SDK along with most of its features in a wide variety of scanning scenarios.\n\nWhether from 1D or 2D barcodes, the barKoder API can capture the data reliably, accurately and suprisingly fast, even under very challenging conditions and environments. \n\n
 You can test the barKoder Barcode Scanner SDK at your convenience by signing up for a free trial:</string>
@@ -66,6 +67,8 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
     <string name="misshapped_code_capture_title">Scan Deformed Codes - Segment Decoding</string>
     <string name="blurred_scan_upcean_title">Scan blurred UPC/EAN</string>
     <string name="bigger_viewfinder_dpm_title">Bigger viewfinder</string>
+    <string name="setting_dpm_title">DPM Mode</string>
+    <string name="setting_mrz_title">MRZ Mode</string>
     <string name="narrow_viewfinder_dpm_title">Narrow viewfinder</string>
     <string name="automatically_show_bottomsheet_title">Automatically show bottomsheet</string>
 
@@ -103,6 +106,7 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
     <string name="result_parser_title">Formatting Type</string>
     <string name="result_charset_title">Charset</string>
     <string name="result_searchEngine_title">Default search engine</string>
+    <string name="copyTerminator_title">Choose terminator</string>
 
 
     <string name="general_settings_title">General settings</string>
@@ -125,6 +129,8 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
     <string name="deblur_settings_title">Deblur</string>
     <string name="misshaped_settings_title">Misshaped</string>
     <string name="anyscan_settings_title">Anycode</string>
+    <string name="mrz_settings_title">MRZ Mode</string>
+    <string name="gallery_scan_settings_title">Gallery Scan</string>
 
     <string name="scan_from_image_title">Gallery scan</string>
 
@@ -164,6 +170,8 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
     <string name="material_dialog_network_error">No internet connection avlibalibe</string>
 
     <string name="toast_network_error_autosend">No internet connection available to auto send webhook.</string>
+
+    <string name="accessibility_service_description">This is the description of my accessibility service.</string>
 
     //Dialog buttons names
 

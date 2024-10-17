@@ -19,6 +19,18 @@
         <item>Brave</item>
     </string-array>
 
+    <string-array name="copy_terminator_entries">
+        <item>Comma (,)</item>
+        <item>Semicolon (;)</item>
+        <item>New line</item>
+    </string-array>
+
+    <string-array name="copy_terminator_values">
+        <item>Comma (,)</item>
+        <item>Semicolon (;)</item>
+        <item>New line</item>
+    </string-array>
+
     <string-array name="continuous_treshold_entries">
         <item>1</item>
         <item>2</item>

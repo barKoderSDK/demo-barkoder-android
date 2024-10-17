@@ -20,7 +20,7 @@ object DemoDefaults {
     const val ROI_WIDTH_DEFAULT_VALUE = 94f
     const val ROI_HEIGHT_DEFAULT_VALUE = 60f
     const val BEEP_ON_SUCCESS_DEFAULT = true
-    const val VIBRATE_ON_SUCCESS_DEFAULT = true
+    const val VIBRATE_ON_SUCCESS_DEFAULT = false
     const val CONTINUOUS_MODE_DEFAULT = false
     const val AUTOMATIC_SHOWBOTTOMSHEET_DEFAULT = true
     const val ENABLED_WEBHOOK_DEFAULT = true
@@ -28,6 +28,7 @@ object DemoDefaults {
     const val CONTINUOUS_TRESHOLD_DEFAULT = "5"
     const val DEBLUR_UPC_EAN_DEFAULT = false
     const val MISSHAPED_1D_DEFAULT = false
+    const val DPM_MODE = true
     const val BIGGER_VIEWFINDER_DEFAULT = false
 
     const val SYMBOLOGY_AZTEC_DEFAULT = true
@@ -102,6 +103,7 @@ object DemoDefaults {
 
     val PARSER_TYPE_DEFAULT = Barkoder.FormattingType.Disabled
     val PARSER_TYPE_PDF_DEFAULT = Barkoder.FormattingType.AAMVA
+    val PARSER_TYPE_GALLERY_DEFAULT = Barkoder.FormattingType.Automatic
     const val RESULT_CHARSET_DEFAULT = ""
 
     const val SEARCH_ENGINE_BROWSER_DEFAULT = "Google"

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Bottom layer: red shadow -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#FF0000"/> <!-- Red shadow color -->
+            <corners android:radius="20dp"/> <!-- Match card corner radius -->
+        </shape>
+    </item>
+
+    <!-- Top layer: actual card background -->
+    <item android:bottom="4dp" android:right="4dp"> <!-- Adjust these values for shadow offset -->
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF"/> <!-- Card background color -->
+            <corners android:radius="20dp"/> <!-- Match card corner radius -->
+        </shape>
+    </item>
+</layer-list>

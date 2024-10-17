@@ -3,8 +3,13 @@ package com.barkoder.demoscanner
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -12,6 +17,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.ViewModelProvider
 import com.barkoder.Barkoder
@@ -34,6 +40,7 @@ class AboutActivity : AppCompatActivity() {
         binding = ActivityAboutBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         //Config for Device ID to use Barkoder.GetDeviceId()
         var config = BarkoderConfig(this, "license_key", null)
 
@@ -43,21 +50,62 @@ class AboutActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
         supportActionBar?.setDisplayShowTitleEnabled(false)
 
-        binding.txtLogoDescription.text =
-            getString(R.string.about_logo_description, BuildConfig.VERSION_NAME)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.statusBarColor = ContextCompat.getColor(this, R.color.swipeCheckBackground2)
+        }
 
-        binding.txtSdkVersion.text = getString(R.string.about_sdk_title, Barkoder.GetVersion())
-        binding.txtLibVersion.text = getString(R.string.about_lib_title, Barkoder.GetLibVersion())
-        binding.txtDeviceId.text = "Device id : ${Barkoder.GetDeviceId()}"
-        binding.txtTestBakoderSDK.setOnClickListener {
+        val fullTextFirstDescription = "Barcode Scanner Demo by barKoder showcases the enterprise-grade performance of the barKoder Barcode Scanner SDK along with most of its features in a wide variety of scanning scenarios."
+        val fullTextSecondDescription = "Whether from One-Dimensional or Two-Dimensional barcodes, the barKoder API can capture the data reliably, accurately and surprisingly fast, even under very challenging conditions and environments."
+
+// Create a SpannableString from the full text
+        val spannableSecondDescription = SpannableString(fullTextSecondDescription)
+
+// Set color for "One-Dimensional"
+        val oneDimensionalStart = fullTextSecondDescription.indexOf("One-Dimensional")
+        spannableSecondDescription.setSpan(
+            ForegroundColorSpan(Color.RED),  // Set the color to red
+            oneDimensionalStart,
+            oneDimensionalStart + "One-Dimensional".length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+// Set color for "Two-Dimensional"
+        val twoDimensionalStart = fullTextSecondDescription.indexOf("Two-Dimensional")
+        spannableSecondDescription.setSpan(
+            ForegroundColorSpan(Color.RED),  // Set the color to red
+            twoDimensionalStart,
+            twoDimensionalStart + "Two-Dimensional".length,
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+      binding.txtSecondDescription.text = spannableSecondDescription
+// Create a SpannableString from the full text
+        val spannableFirstDescription = SpannableString(fullTextFirstDescription)
+
+// Set color for the first 5 words ("Barcode Scanner Demo by barKoder")
+        spannableFirstDescription.setSpan(
+            ForegroundColorSpan(Color.RED),  // Set the color to red
+            0,  // Start index (beginning of the string)
+            fullTextFirstDescription.indexOf("showcases"),  // End index (before the 6th word)
+            Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+
+       binding.txtFirstDescription.text = spannableFirstDescription
+        binding.txtAppVersion.text = BuildConfig.VERSION_NAME
+
+        binding.txtSdkVersion.text = Barkoder.GetVersion()
+        binding.txtLibVersion.text = Barkoder.GetLibVersion()
+
+        binding.txtDeviceId.text = "${Barkoder.GetDeviceId()}"
+        binding.btnGetTrialDemo.setOnClickListener {
             CommonUtil.openURLInBrowser(getString(R.string.testBarcodeLink), this@AboutActivity)
         }
-        binding.txtLearnMore.run {
+        binding.btnLearnMore.run {
             setOnClickListener {
                 CommonUtil.openURLInBrowser(getString(R.string.learnMoreLink), this@AboutActivity)
             }
             setOnLongClickListener {
-                binding.txtLibVersion.isVisible = !binding.txtLibVersion.isVisible
+//                binding.txtLibVersion.isVisible = !binding.txtLibVersion.isVisible
                 true
             }
         }
@@ -94,11 +142,35 @@ class AboutActivity : AppCompatActivity() {
             }
         })
 
+        binding.cardMaui.setOnClickListener {
+            CommonUtil.openURLInBrowser("https://barkoder.com/docs/v1/maui/net-maui-installation", this@AboutActivity)
+        }
+
+        binding.cardCordova.setOnClickListener {
+            CommonUtil.openURLInBrowser("https://barkoder.com/docs/v1/cordova/cordova-installation", this@AboutActivity)
+        }
+
+        binding.cardFlutter.setOnClickListener {
+            CommonUtil.openURLInBrowser("https://barkoder.com/docs/v1/flutter/flutter-installation", this@AboutActivity)
+        }
+
+        binding.cardCapacitor.setOnClickListener {
+            CommonUtil.openURLInBrowser("https://barkoder.com/docs/v1/capacitor/capacitor-installation", this@AboutActivity)
+        }
+
+        binding.cardReactNative.setOnClickListener {
+            CommonUtil.openURLInBrowser("https://barkoder.com/docs/v1/react-native/react-native-installation", this@AboutActivity)
+        }
+
+        binding.cardNativescript.setOnClickListener {
+            CommonUtil.openURLInBrowser("https://barkoder.com/docs/v1/nativescript/nativescript-installation", this@AboutActivity)
+        }
+
 
         
-        binding.btnQuestionMark.setOnClickListener {
-            CommonUtil.openURLInBrowser("https://docs.barkoder.com/en/how-to/demo-app-barKoder", this@AboutActivity)
-        }
+//        binding.btnQuestionMark.setOnClickListener {
+//            CommonUtil.openURLInBrowser("https://docs.barkoder.com/en/how-to/demo-app-barKoder", this@AboutActivity)
+//        }
 
         addChangeLogs()
     }
@@ -253,7 +325,7 @@ class AboutActivity : AppCompatActivity() {
                 )
             }
 
-            binding.llChangeLogContent.addView(changeLogView)
+//            binding.llChangeLogContent.addView(changeLogView)
         }
     }
 }

@@ -22,6 +22,8 @@
     <string name="key_misshaped_code_capture">pref_key_misshaped_code_capture</string>
     <string name="key_blured_scan_eanupc">pref_key_blurred_scan_eanupc</string>
     <string name="key_bigger_viewfinder">pref_key_bigger_viewfinder</string>
+    <string name="key_dpm_mode">pref_key_dpm_mode</string>
+    <string name="key_mrz_mode">pref_key_mrz_mode</string>
     <string name="key_narrow_viewfinder">pref_key_narrow_viewfinder</string>
     <string name="key_automatic_show_bottomsheet">pref_key_automatic_show_bottomsheet</string>
     <string name="key_automatic_show_bottomsheet2">pref_key_automatic_show_bottomsheet2</string>
@@ -58,6 +60,8 @@
     <string name="key_result_parser">pref_key_result_parser</string>
     <string name="key_result_charset">pref_key_result_charset</string>
     <string name="key_result_searchEngine">key_result_searchEngine</string>
+    <string name="key_result_copyTerminator">key_result_copyTerminator</string>
+    <string name="key_result_copyTerminator_value">key_result_copyTerminator_value</string>
     <string name="key_result_searchEngine_value">key_result_searchEngine_value</string>
 
     <string name="key_reset_config">pref_key_reset_config</string>
@@ -76,6 +80,8 @@
     <string name="key_Deblur_settings">pref_key_Deblur_settings</string>
     <string name="key_Misshaped_settings">pref_key_Misshaped_settings</string>
     <string name="key_anyscan_settings">pref_key_Anyscan_settings</string>
+    <string name="key_mrz_settings">pref_key_MRZ_settings</string>
+    <string name="key_gallery_scan_settings">pref_key_gallery_scan_settings</string>
 
     <string name="key_length">_length</string>
     <string name="key_min_length">_min_length</string>

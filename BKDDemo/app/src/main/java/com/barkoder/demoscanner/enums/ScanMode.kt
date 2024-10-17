@@ -81,7 +81,8 @@ enum class ScanMode(
         arrayOf(
             R.string.key_symbology_c128,
             R.string.key_symbology_datamatrix,
-            R.string.key_symbology_qr
+            R.string.key_symbology_qr,
+            R.string.key_symbology_c39,
         ),),
     DOTCODE("Dot Code", "_dotcode_mode_settings", BarkoderConfigTemplate.DOTCODE,
        ),
@@ -136,7 +137,11 @@ enum class ScanMode(
             R.string.key_symbology_ean8
         )
         ),
-    GLOBAL("Scan Mode", "");
+    GLOBAL("Scan Mode", ""),
+    MRZ("MRZ Mode", "_mrz_mode_settings", BarkoderConfigTemplate.MRZ
+    ),
+    GALLERY_SCAN("Gallery Scan", "_gallery_scan_mode_settings", BarkoderConfigTemplate.GALLERY_SCAN
+    );
 
     fun supportedSymbologyKeys(resources: Resources): List<String>? {
         return supportedSymbologyKeyResources?.let { keyResources ->

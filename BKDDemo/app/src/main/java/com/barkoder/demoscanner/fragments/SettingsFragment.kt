@@ -15,6 +15,7 @@ import androidx.preference.PreferenceManager
 import androidx.preference.SwitchPreference
 import androidx.preference.SwitchPreferenceCompat
 import com.barkoder.Barkoder
+import com.barkoder.demoscanner.MainActivity
 import com.barkoder.demoscanner.R
 import com.barkoder.demoscanner.ScannerActivity
 import com.barkoder.demoscanner.SettingsActivity
@@ -69,14 +70,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
             preferenceManager.sharedPreferencesName =
                 requireActivity().packageName + scanMode.prefKey
 
+        val config = MainActivity.barkoderConfig
+
         BKDConfigUtil.configureBKD(requireContext(), scanMode)
-
-
-
         setPreferencesFromResource(R.xml.preferences_settings, rootKey)
 
 
         searchEnginePreferenceChangeListener()
+        copyTerminatorPreferenceChangeListener()
         setSymbologyPrefs()
         onClickTemplateSettings()
         settingsChangedTemplateMessage()
@@ -99,6 +100,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
         } else {
             defaultSearchEngine()
+            defaultCopyTerminator()
             setDecodingSpeedEntries()
             setBarkoderResolutionEntries()
             setResultParserEntries()
@@ -116,19 +118,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 showALLResetConfirmationDialog()
                 false
             }
-
-//            findPreference<Preference>("proverka")!!.setOnPreferenceClickListener {
-//                parentFragmentManager
-//                    .beginTransaction()
-//                    .replace(
-//                        R.id.settings_container,
-//                        SettingsRadioOptionsFragment()
-//                    )
-//                    .commit()
-//                false
-//            }
-
-
 
 
             if (scanMode == ScanMode.CONTINUOUS)
@@ -158,6 +147,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         enabledWebhookPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
             sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+
             val urlWebHook = sharedPreferences.getString(getString(R.string.key_url_webhook), "")
             val valueBoolean = newValue as Boolean
             if(urlWebHook.isNullOrBlank()) {
@@ -398,6 +388,18 @@ class SettingsFragment : PreferenceFragmentCompat() {
             startActivity(settingsIntent)
             false
         }
+        findPreference<Preference>(getString(R.string.key_mrz_settings))!!.setOnPreferenceClickListener {
+            val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
+            settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 14)
+            startActivity(settingsIntent)
+            false
+        }
+        findPreference<Preference>(getString(R.string.key_gallery_scan_settings))!!.setOnPreferenceClickListener {
+            val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
+            settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 15)
+            startActivity(settingsIntent)
+            false
+        }
     }
 
     override fun onStart() {
@@ -412,6 +414,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun makeSomeInvisiblePreferencesForTemplates(){
         when(scanMode) {
             ScanMode.INDUSTRIAL_1D -> {
+                makePreferenceInvisible(getString(R.string.key_mrz_mode))
                 makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
                 makePreferenceInvisible(getString(R.string.key_enable_roi))
                 makePreferenceInvisible(getString(R.string.key_blured_scan_eanupc))
@@ -421,10 +424,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_dpm_mode))
+                makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
             }
             ScanMode.RETAIL_1D -> {
+                makePreferenceInvisible(getString(R.string.key_mrz_mode))
                 makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
                 makePreferenceInvisible(getString(R.string.key_enable_roi))
                 makePreferenceInvisible(getString(R.string.key_bigger_viewfinder))
@@ -433,11 +439,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_dpm_mode))
+                makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
             }
 
             ScanMode.PDF -> {
+                makePreferenceInvisible(getString(R.string.key_mrz_mode))
                 makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
                 makePreferenceInvisible(getString(R.string.key_enable_roi))
                 makePreferenceInvisible(getString(R.string.key_blured_scan_eanupc))
@@ -448,10 +457,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_dpm_mode))
+                makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
             }
             ScanMode.QR -> {
+                makePreferenceInvisible(getString(R.string.key_mrz_mode))
                 makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
                 makePreferenceInvisible(getString(R.string.key_enable_roi))
                 makePreferenceInvisible(getString(R.string.key_blured_scan_eanupc))
@@ -462,10 +474,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_dpm_mode))
+                makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
             }
             ScanMode.ALL_2D -> {
+                makePreferenceInvisible(getString(R.string.key_mrz_mode))
                 makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
                 makePreferenceInvisible(getString(R.string.key_enable_roi))
                 makePreferenceInvisible(getString(R.string.key_blured_scan_eanupc))
@@ -476,11 +491,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_dpm_mode))
+                makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
             }
             ScanMode.DPM -> {
-                makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
+                makePreferenceInvisible(getString(R.string.key_mrz_mode))
                 makePreferenceInvisible(getString(R.string.key_enable_roi))
                 makePreferenceInvisible(getString(R.string.key_blured_scan_eanupc))
                 makePreferenceInvisible(getString(R.string.key_misshaped_code_capture))
@@ -490,12 +507,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_dpm_mode))
+                makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(BARCODE_TYPES_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
             }
             ScanMode.VIN -> {
-                makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
+                makePreferenceInvisible(getString(R.string.key_mrz_mode))
                 makePreferenceInvisible(getString(R.string.key_enable_roi))
                 makePreferenceInvisible(getString(R.string.key_blured_scan_eanupc))
                 makePreferenceInvisible(getString(R.string.key_auto_start_scan))
@@ -504,10 +523,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_dpm_mode))
+                makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
             }
             ScanMode.DOTCODE -> {
+                makePreferenceInvisible(getString(R.string.key_mrz_mode))
                 makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
                 makePreferenceInvisible(getString(R.string.key_enable_roi))
                 makePreferenceInvisible(getString(R.string.key_bigger_viewfinder))
@@ -519,12 +541,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_dpm_mode))
+                makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(BARCODE_TYPES_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
             }
 
             ScanMode.UPC_EAN_DEBLUR -> {
+                makePreferenceInvisible(getString(R.string.key_mrz_mode))
                 makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
                 makePreferenceInvisible(getString(R.string.key_enable_roi))
                 makePreferenceInvisible(getString(R.string.key_bigger_viewfinder))
@@ -538,6 +563,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
                 makePreferenceInvisible(getString(R.string.key_scanner_resolution))
                 makePreferenceInvisible(getString(R.string.key_scanner_decoding_speed))
+                makePreferenceInvisible(getString(R.string.key_dpm_mode))
+                makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
 //                preferenceScreen.getPreference(BARCODE_TYPES_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(WEEBHOOK_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
@@ -545,6 +572,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             }
 
             ScanMode.MISSHAPED_1D -> {
+                makePreferenceInvisible(getString(R.string.key_mrz_mode))
                 makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
                 makePreferenceInvisible(getString(R.string.key_enable_roi))
                 makePreferenceInvisible(getString(R.string.key_bigger_viewfinder))
@@ -558,27 +586,33 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
                 makePreferenceInvisible(getString(R.string.key_scanner_resolution))
                 makePreferenceInvisible(getString(R.string.key_scanner_decoding_speed))
+                makePreferenceInvisible(getString(R.string.key_dpm_mode))
+                makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
 //                preferenceScreen.getPreference(BARCODE_TYPES_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(WEEBHOOK_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+
             }
 
             ScanMode.ALL_1D -> {
+                makePreferenceInvisible(getString(R.string.key_mrz_mode))
                 makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
                 makePreferenceInvisible(getString(R.string.key_enable_roi))
-                makePreferenceInvisible(getString(R.string.key_blured_scan_eanupc))
                 makePreferenceInvisible(getString(R.string.key_bigger_viewfinder))
                 makePreferenceInvisible(getString(R.string.key_narrow_viewfinder))
                 makePreferenceInvisible(getString(R.string.key_result_searchEngine))
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                makePreferenceInvisible(getString(R.string.key_dpm_mode))
             }
 
             ScanMode.GLOBAL -> { makePreferenceInvisible(getString(R.string.key_bigger_viewfinder))
+                makePreferenceInvisible(getString(R.string.key_mrz_mode))
                 makePreferenceInvisible(getString(R.string.key_narrow_viewfinder))
                 makePreferenceInvisible(getString(R.string.key_reset_config))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
@@ -587,9 +621,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 preferenceScreen.getPreference(BARCODE_TYPES_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(RESULT_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                makePreferenceInvisible(getString(R.string.key_dpm_mode))
 
             }
             ScanMode.CONTINUOUS -> {
+                makePreferenceInvisible(getString(R.string.key_mrz_mode))
                 makePreferenceInvisible(getString(R.string.key_continuous_scaning))
                 makePreferenceInvisible(getString(R.string.key_bigger_viewfinder))
                 makePreferenceInvisible(getString(R.string.key_narrow_viewfinder))
@@ -597,6 +633,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_result_searchEngine))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_dpm_mode))
+                makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(WEEBHOOK_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(GENERAL_SETTINGS_CATEGORY_INDEX).isVisible = true
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
@@ -605,6 +643,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 continuisTresHoldPreferences2.isVisible = true
             }
             ScanMode.ANYSCAN -> {
+                makePreferenceInvisible(getString(R.string.key_mrz_mode))
                 makePreferenceInvisible(getString(R.string.key_bigger_viewfinder))
                 makePreferenceInvisible(getString(R.string.key_narrow_viewfinder))
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
@@ -615,7 +654,57 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
+                makePreferenceInvisible(getString(R.string.key_dpm_mode))
+                makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
 
+            }
+            ScanMode.MRZ ->  {
+                makePreferenceInvisible(getString(R.string.key_mrz_mode))
+                makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
+                makePreferenceInvisible(getString(R.string.key_enable_roi))
+                makePreferenceInvisible(getString(R.string.key_blured_scan_eanupc))
+                makePreferenceInvisible(getString(R.string.key_misshaped_code_capture))
+                makePreferenceInvisible(getString(R.string.key_auto_start_scan))
+                makePreferenceInvisible(getString(R.string.key_narrow_viewfinder))
+                makePreferenceInvisible(getString(R.string.key_result_searchEngine))
+                makePreferenceInvisible(getString(R.string.key_enable_searchweb))
+                makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
+                makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_bigger_viewfinder))
+                makePreferenceInvisible(getString(R.string.key_continuous_scaning))
+                makePreferenceInvisible(getString(R.string.key_barkoder_result_settings))
+                makePreferenceInvisible(getString(R.string.key_dpm_mode))
+                makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
+                makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
+                preferenceScreen.getPreference(BARCODE_TYPES_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(RESULT_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+            }
+
+            ScanMode.GALLERY_SCAN -> {
+                makePreferenceInvisible(getString(R.string.key_bigger_viewfinder))
+                makePreferenceInvisible(getString(R.string.key_scanner_decoding_speed))
+                makePreferenceInvisible(getString(R.string.key_narrow_viewfinder))
+                makePreferenceInvisible(getString(R.string.key_enable_searchweb))
+                makePreferenceInvisible(getString(R.string.key_result_searchEngine))
+                makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
+                makePreferenceInvisible(getString(R.string.key_scanner_resolution))
+                makePreferenceInvisible(getString(R.string.key_continuous_scaning))
+                makePreferenceInvisible(getString(R.string.key_continuous_treshold))
+                makePreferenceInvisible(getString(R.string.key_allow_pinch_to_zoom))
+                makePreferenceInvisible(getString(R.string.key_beep))
+                makePreferenceInvisible(getString(R.string.key_vibrate))
+                makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
+                makePreferenceInvisible(getString(R.string.key_enable_roi))
+                makePreferenceInvisible(getString(R.string.key_vibrate))
+                makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
+                makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet))
+                preferenceScreen.getPreference(WEEBHOOK_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(GENERAL_SETTINGS_CATEGORY_INDEX).isVisible = true
+                preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
             }
         }
     }
@@ -630,6 +719,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         for (item in Barkoder.DecodingSpeed.values()) {
             entries.add(item.name)
             entryValues.add(item.ordinal.toString())
+            if(item.ordinal == 2) break
         }
 
         decodingSpeedPref.entries = entries.toTypedArray()
@@ -666,6 +756,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun defaultSearchEngine() {
         val searchEnginePref = findPreference<ListPreference>(getString(R.string.key_result_searchEngine))!!
         searchEnginePref.value = preferenceManager.sharedPreferences.getString(searchEnginePref.key)
+    }
+
+    private fun defaultCopyTerminator() {
+        val copyTermintaorPref = findPreference<ListPreference>(getString(R.string.key_result_copyTerminator))!!
+                copyTermintaorPref.value = preferenceManager.sharedPreferences.getString(copyTermintaorPref.key)
     }
 
     private fun setSymbologyPrefs() {
@@ -841,6 +936,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val sharedPrefNameAll1D = requireActivity().packageName + ScanMode.ALL_1D.prefKey
         val sharedPrefAll1D = requireActivity().getSharedPreferences(sharedPrefNameAll1D, Context.MODE_PRIVATE)
 
+        val sharedPrefNameGalleryScan = requireActivity().packageName + ScanMode.GALLERY_SCAN.prefKey
+        val sharedPrefGalleryScan = requireActivity().getSharedPreferences(sharedPrefNameGalleryScan, Context.MODE_PRIVATE)
+
+        val sharedPrefNameMRZ = requireActivity().packageName + ScanMode.MRZ.prefKey
+        val sharedPrefMRZ = requireActivity().getSharedPreferences(sharedPrefNameMRZ, Context.MODE_PRIVATE)
+
 
 
         MaterialAlertDialogBuilder(requireContext())
@@ -951,6 +1052,20 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     ScanMode.ALL_1D,
                     null
                 )
+                BKDConfigUtil.setDefaultValuesInPrefs(
+                    sharedPrefGalleryScan,
+                    requireContext(),
+                    false,
+                    ScanMode.GALLERY_SCAN,
+                    null
+                )
+                BKDConfigUtil.setDefaultValuesInPrefs(
+                    sharedPrefMRZ,
+                    requireContext(),
+                    false,
+                    ScanMode.MRZ,
+                    null
+                )
 
             }
             .setNegativeButton(R.string.cancel_button, null)
@@ -1015,6 +1130,23 @@ class SettingsFragment : PreferenceFragmentCompat() {
         editor.apply()
     }
 
+    private fun copyTerminatorPreferenceChangeListener() {
+        val copyTerminatorPreference = findPreference<ListPreference>(getString(R.string.key_result_copyTerminator))
+
+        copyTerminatorPreference?.setOnPreferenceChangeListener { _, newValue ->
+            var selectedCopyTerminator = newValue.toString()
+            copyTerminatorEnginePreference(requireContext(), selectedCopyTerminator)
+            true
+        }
+    }
+
+    private fun copyTerminatorEnginePreference(context: Context, Terminator: String) {
+        val sp = context.getSharedPreferences(getString(R.string.key_result_copyTerminator), Context.MODE_PRIVATE)
+        val editor = sp.edit()
+        editor.putString(getString(R.string.key_result_copyTerminator_value), Terminator)
+        editor.apply()
+    }
+
     private fun openWebHookConfigurationDialog() {
         val webHookPreference = findPreference<Preference>(getString(R.string.key_webhook_configuration))
 
@@ -1045,6 +1177,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val preference = findPreference<Preference>(preferenceKey)
         preference?.isVisible = false
     }
+
 
     override fun onStop() {
         val sharedPreferences: SharedPreferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)

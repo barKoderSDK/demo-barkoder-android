@@ -123,6 +123,22 @@
             app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
+        <SwitchPreference
+            android:key="@string/key_dpm_mode"
+            android:title="@string/setting_dpm_title"
+            app:allowDividerAbove="true"
+            app:allowDividerBelow="false"
+            android:defaultValue="true"
+            app:iconSpaceReserved="false" />
+
+        <SwitchPreference
+            android:key="@string/key_mrz_mode"
+            android:title="@string/setting_mrz_title"
+            app:allowDividerAbove="true"
+            app:allowDividerBelow="false"
+            android:defaultValue="true"
+            app:iconSpaceReserved="false" />
+
 
 
     </PreferenceCategory>
@@ -458,6 +474,17 @@
             app:iconSpaceReserved="false"
             app:useSimpleSummaryProvider="true" />
 
+        <ListPreference
+            android:key="@string/key_result_copyTerminator"
+            android:title="@string/copyTerminator_title"
+            android:entries="@array/copy_terminator_entries"
+            android:entryValues="@array/copy_terminator_values"
+            android:defaultValue="Comma (,)"
+            app:allowDividerAbove="true"
+            app:allowDividerBelow="false"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
         <SwitchPreference
             android:key="@string/key_automatic_show_bottomsheet"
             android:title="@string/automatically_show_bottomsheet_title"
@@ -608,6 +635,22 @@
             android:key="@string/key_anyscan_settings"
             android:persistent="false"
             android:title="@string/anyscan_settings_title"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="true"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            android:key="@string/key_mrz_settings"
+            android:persistent="false"
+            android:title="@string/mrz_settings_title"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="true"
+            app:iconSpaceReserved="false" />
+
+        <Preference
+            android:key="@string/key_gallery_scan_settings"
+            android:persistent="false"
+            android:title="@string/gallery_scan_settings_title"
             app:allowDividerAbove="false"
             app:allowDividerBelow="true"
             app:iconSpaceReserved="false" />
