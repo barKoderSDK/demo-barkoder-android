@@ -1,16 +1,20 @@
 package com.barkoder.demoscanner
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.Picture
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.TextUtils
@@ -25,15 +29,14 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
+import com.barkoder.BKDPermissionHelper
 import com.barkoder.Barkoder
-import com.barkoder.BarkoderConfig
-import com.barkoder.BarkoderView
 import com.barkoder.demoscanner.databinding.ActivityScannerBinding
 import com.barkoder.demoscanner.enums.ScanMode
 import com.barkoder.demoscanner.fragments.ResultBottomDialogFragment
@@ -49,7 +52,6 @@ import com.barkoder.demoscanner.viewmodels.RecentScanViewModel
 import com.barkoder.interfaces.BarkoderResultCallback
 import com.barkoder.interfaces.CameraCallback
 import com.barkoder.interfaces.MaxZoomAvailableCallback
-import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
@@ -62,13 +64,8 @@ import java.io.IOException
 import java.net.URLEncoder
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.Period
-import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 import java.util.Date
 import java.util.Locale
-import kotlin.math.sign
 
 
 //TODO zoom from pinched can't be reset on resume
@@ -84,6 +81,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
     private var mainBitmap: Bitmap? = null
     private var croppedBarcodePath: String? = null
     private var croppedBarcodeImageOnScannedBarcode: Bitmap? = null
+    private var showedPermissionDialog = false
 
     private var picturePath: String? = null
     private var documentPath: String? = null
@@ -105,17 +103,22 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
     private var automaticShowBottomSheet: Boolean = false
     private var continiousModeOn = false
     private var context: Context? = null
-
+    private val CAMERA_PERMISSION_REQUEST_CODE = 100
     private var existingFragment: ResultBottomDialogFragment? = null
     private var croppedBarcodeImage: Bitmap? = null
     var receivedBooleanValue: Boolean = false
     var settingsChangedBoolean: Boolean = false
+    var checkSumMrz : String = ""
     val barcodeListResult = mutableListOf<String>()
     val barcodeListType = mutableListOf<String>()
     val barcodeListDate = mutableListOf<String>()
     private val PREFS_NAME = "MyPrefsFile"
     private val activityJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + activityJob)
+    private var autoFocusBoolean : Boolean? = null
+    private var videoStabilization : Boolean? = null
+    private var dynamicExposureIntesity : String = "Disabled"
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -128,20 +131,9 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
         binding.btnClose.setOnClickListener {
             finish()
         }
-
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-        var autoFocusBoolean = prefs.getBoolean("pref_key_autofocus", false)
-        var dynamicExposureBoolean = prefs.getBoolean("pref_key_dynamic_exposure", false)
-        if (autoFocusBoolean) {
-            binding.bkdView.setAutoFocusCenteredState(false)
-        } else {
-            binding.bkdView.setAutoFocusCenteredState(false)
-        }
-        if (dynamicExposureBoolean) {
-            binding.bkdView.setDynamicExposureState(false)
-        } else {
-            binding.bkdView.setDynamicExposureState(false)
-        }
+        autoFocusBoolean = prefs.getBoolean("pref_key_autofocus", false)
+        videoStabilization = prefs.getBoolean("pref_key_videostabilization", false)
 
 
         binding.btnSettings.setOnClickListener {
@@ -185,6 +177,9 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
 
         }
 
+
+
+
     }
 
     override fun onStart() {
@@ -207,11 +202,37 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onResume() {
         super.onResume()
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        dynamicExposureIntesity = prefs.getString("pref_key_dynamic_exposureee", "0").toString()
         val sharedPreferences: SharedPreferences =
             getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         settingsChangedBoolean = sharedPreferences.getBoolean("settingsChangedBoolean", false)
+        if (autoFocusBoolean!!) {
+            binding.bkdView.setCentricFocusAndExposure(true)
+        } else {
+            binding.bkdView.setCentricFocusAndExposure(false)
+        }
+
+
+            if(dynamicExposureIntesity == "Disabled") {
+                binding.bkdView.setDynamicExposure(0)
+            } else {
+                binding.bkdView.setDynamicExposure(dynamicExposureIntesity!!.toInt())
+            }
+        if (videoStabilization!!) {
+            binding.bkdView.setVideoStabilization(true)
+        } else {
+            binding.bkdView.setVideoStabilization(false)
+        }
+
+
+
+
+
+
         if (settingsChangedBoolean) {
             Toast.makeText(
                 this,
@@ -228,10 +249,10 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
         binding.bkdView.config.isLocationInImageResultEnabled = true
         binding.bkdView.config.isImageResultEnabled = true
         binding.bkdView.setCameraCallback(this)
-        if (isScanning) {
-            binding.bkdView.startScanning(this)
-        } else
-            binding.bkdView.startCamera()
+//        if (isScanning) {
+//            binding.bkdView.startScanning(this)
+//        } else
+//            binding.bkdView.startCamera()
         if (receivedBooleanValue) {
             binding.bkdView.setPerformanceCallback { fps, dps ->
                 val fpsFloat = (fps * 10).toInt() / 10.0f
@@ -246,6 +267,22 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
         binding.bkdView.config.roiLineColor = ContextCompat.getColor(this, R.color.brand_color)
         binding.bkdView.config.locationLineColor = ContextCompat.getColor(this, R.color.brand_color)
 
+        checkCameraPermission { granted ->
+            if (granted) {
+                try {
+                    binding.bkdView.startScanning(this)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            } else {
+                if(!showedPermissionDialog) {
+                    showPermissionAlert()
+                }
+
+
+            }
+        }
+
     }
 
     override fun onPause() {
@@ -255,6 +292,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
         editor.putBoolean("settingsChangedBoolean", false)
         editor.apply()
+        showedPermissionDialog = true
         super.onPause()
     }
 
@@ -267,6 +305,8 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
 
         setFlash()
     }
+
+
 
     override fun onCameraFailedToOpen(errorMessage: String) {
         MaterialAlertDialogBuilder(this)
@@ -292,6 +332,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
     ) {
 
         Log.d("resutlts size : ", results!!.size!!.toString())
+
         val sharedPreferences = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         sharedPreferences.edit().putInt("lastResultsOnFrame", results!!.size).apply()
 
@@ -325,11 +366,13 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
 
                 }
                 resultsTemp = results
-                for (i in results!!) {
-                    barcodeListResult.add(i.textualData)
-                    barcodeListType.add(i.barcodeTypeName)
-                    barcodeListDate.add(getCurrentTimeWithTimestamp())
-                }
+        for (i in results!!) {
+            barcodeListResult.add(i.textualData)
+
+            barcodeListType.add(formatBarcodeName(i.barcodeTypeName, i.extra?.toList()))
+
+            barcodeListDate.add(getCurrentTimeWithTimestamp())
+        }
 
                 binding.btnShowDialog.visibility = View.VISIBLE
 
@@ -439,18 +482,19 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
                                             "croppedBarcodeImage"
                                         )
 
-                                        sessionScansAdapterData.add(SessionScan(scannedDate,i.textualData, i.barcodeTypeName,picturePath, documentPath, signaturePath,mainPath,croppedBarcodePath))
+                                        sessionScansAdapterData.add(SessionScan(scannedDate,i.textualData, if(i.extra != null) formatBarcodeName(i.barcodeTypeName, i.extra.toList()) else i.barcodeTypeName,picturePath, documentPath, signaturePath,mainPath,croppedBarcodePath,if(i.extra != null) formattedText(i.extra.toList()) else ""))
 
                                         recentViewModel.addRecentScan(
                                             RecentScan2(
                                                 scannedDate,
                                                 i.textualData,
-                                                i.barcodeTypeName,
+                                                if(i.extra != null) formatBarcodeName(i.barcodeTypeName, i.extra.toList()) else i.barcodeTypeName,
                                                 picturePath,
                                                 documentPath,
                                                 signaturePath,
                                                 mainPath,
-                                                croppedBarcodePath
+                                                croppedBarcodePath,
+                                                if(i.extra != null) formattedText(i.extra.toList()) else ""
                                             )
                                         )
                                         uiScope.launch {
@@ -533,18 +577,19 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
                                             croppedBarcodePath = null
                                         }
 
-                                        sessionScansAdapterData.add(SessionScan(scannedDate,result.textualData, result.barcodeTypeName,picturePath, documentPath, signaturePath,mainPath,croppedBarcodePath))
+                                        sessionScansAdapterData.add(SessionScan(scannedDate,result.textualData, if(result.extra != null) formatBarcodeName(result.barcodeTypeName, result.extra.toList()) else result.barcodeTypeName,picturePath, documentPath, signaturePath,mainPath,croppedBarcodePath,if(result.extra != null) formattedText(result.extra.toList()) else ""))
 
                                         recentViewModel.addRecentScan(
                                             RecentScan2(
                                                 scannedDate,
                                                 result.textualData,
-                                                result.barcodeTypeName,
+                                               if(result.extra != null) formatBarcodeName(result.barcodeTypeName, result.extra.toList()) else result.barcodeTypeName,
                                                 picturePath,
                                                 documentPath,
                                                 signaturePath,
                                                 mainPath,
-                                                croppedBarcodePath
+                                                croppedBarcodePath,
+                                                if(result.extra != null) formattedText(result.extra.toList()) else ""
                                             )
                                         )
 
@@ -628,17 +673,18 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
                             "yyyy/MM/dd/HH:mm:ss",
                             Locale.getDefault()
                         ).format(Date())
-                    sessionScansAdapterData.add(SessionScan(scannedDate,i.textualData, i.barcodeTypeName,null, null, null,mainPath,croppedBarcodePath))
+                    sessionScansAdapterData.add(SessionScan(scannedDate,i.textualData, if(i.extra != null) formatBarcodeName(i.barcodeTypeName, i.extra.toList()) else i.barcodeTypeName,null, null, null,mainPath,croppedBarcodePath,if(i.extra != null) formattedText(i.extra.toList()) else ""))
                     recentViewModel.addRecentScan(
                         RecentScan2(
                             scannedDate,
                             i.textualData,
-                            i.barcodeTypeName,
+                            if(i.extra != null) formatBarcodeName(i.barcodeTypeName, i.extra.toList()) else i.barcodeTypeName,
                             null,
                             null,
                             null,
                             null,
-                            croppedBarcodePath
+                            croppedBarcodePath,
+                            if(i.extra != null) formattedText(i.extra.toList()) else ""
                         )
                     )
 
@@ -648,6 +694,49 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
 
     }
 
+    fun formatBarcodeName(barcodeTypeName: String, extra: List<Barkoder.BKKeyValue>?): String {
+        if (extra.isNullOrEmpty()) {
+            // If extra is null or empty, return the original barcodeTypeName
+            return barcodeTypeName
+        }
+
+        // Flags to track conditions
+        var isGS1 = false
+        var isComposite = false
+
+        // Iterate over the list and check for keys and values
+        for (item in extra) {
+            when (item.key) {
+                "gs1" -> isGS1 = item.value?.toIntOrNull() == 1
+                "composite" -> isComposite = item.value?.toIntOrNull() == 1
+            }
+        }
+
+        // Return the formatted name based on conditions
+        return when {
+            isGS1 && isComposite -> "GS1 $barcodeTypeName Composite"
+            isGS1 -> "GS1 $barcodeTypeName"
+            isComposite -> "$barcodeTypeName Composite"
+            else -> barcodeTypeName
+        }
+    }
+    fun formattedText(extra: List<Barkoder.BKKeyValue>?): String {
+        // Check if the extra list is null or empty
+        if (extra.isNullOrEmpty()) {
+            return ""
+        }
+
+        // Iterate over the list to find the key "formattedText"
+        for (item in extra) {
+            if (item.key == "formattedText") {
+                // Return the value associated with the key "formattedText"
+                return item.value ?: ""
+            }
+        }
+
+        // If the key "formattedText" is not found, return a default message
+        return ""
+    }
 
     fun onBarcodeScanned(
         barcodeDataList: MutableList<String>,
@@ -1170,4 +1259,63 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
             }
         }
     }
+
+    private fun checkCameraPermission(finished: (Boolean) -> Unit) {
+        when {
+            // Permission already granted
+            ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED -> {
+                finished(true)
+            }
+
+            // Permission denied but can show rationale (not permanently denied)
+            ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA) -> {
+                finished(false) // Permission denied but can request again
+            }
+
+            // Permission denied permanently or first time (directly request permission)
+            else -> {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
+            }
+        }
+    }
+
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                try {
+                    binding.bkdView.startScanning(this);
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            } else {
+                showPermissionAlert()
+            }
+        }
+    }
+
+    private fun showPermissionAlert() {
+        AlertDialog.Builder(this)
+            .setTitle("Camera Acess Restricted")
+            .setMessage("Adjust Settings for Permissions")
+            .setNegativeButton("Close") { dialog, _ ->
+                dialog.dismiss() // Dismiss the dialog
+            }
+            .setPositiveButton("Settings") { dialog, _ ->
+                openAppSettings()
+                dialog.dismiss()
+
+            }
+            .setCancelable(false)
+            .show()
+    }
+
+    private fun openAppSettings() {
+        // Open the app settings page
+        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+        intent.setData(Uri.parse("package:$packageName"))
+        startActivity(intent)
+    }
+
 }

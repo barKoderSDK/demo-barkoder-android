@@ -5,6 +5,7 @@
     <string name="cancel_button">Cancel</string>
     <string name="continue_button">Continue</string>
     <string name="close_button">Close</string>
+    <string name="settings_button">Settings</string>
     <string name="delete_button">Delete</string>
     <string name="copy_button">Copy</string>
     <string name="save_button">Save</string>
@@ -101,8 +102,12 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
     <string name="symbology_c32">Code 32</string>
     <string name="symbology_telepen">Telepen</string>
     <string name="symbology_dotcode">DotCode</string>
+    <string name="symbology_databar14">Databar 14</string>
+    <string name="symbology_databarExpanded">Databar Expanded</string>
+    <string name="symbology_databarLimited">Databar Limited</string>
 
     <string name="result_settings_title">Result</string>
+    <string name="checksum_settings_titlee">Require master checksum</string>
     <string name="result_parser_title">Formatting Type</string>
     <string name="result_charset_title">Charset</string>
     <string name="result_searchEngine_title">Default search engine</string>
@@ -131,6 +136,7 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
     <string name="anyscan_settings_title">Anycode</string>
     <string name="mrz_settings_title">MRZ Mode</string>
     <string name="gallery_scan_settings_title">Gallery Scan</string>
+    <string name="composite_mode_title">Composite</string>
 
     <string name="scan_from_image_title">Gallery scan</string>
 

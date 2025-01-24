@@ -508,13 +508,13 @@
                                 app:layout_constraintWidth_percent="0.33">
 
                                 <androidx.cardview.widget.CardView
-                                    android:id="@+id/emptyCard"
+                                    android:id="@+id/compositeCard"
                                     style="@style/BarcodesTemplateCardView">
 
                                     <TextView
                                         style="@style/BarcodesTemplateTitle"
-                                        android:text=""
-                                        app:drawableTopCompat="@drawable/ic_settings_white" />
+                                        android:text="Composite"
+                                        app:drawableTopCompat="@drawable/ico_composite" />
 
                                 </androidx.cardview.widget.CardView>
 

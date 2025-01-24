@@ -2,30 +2,22 @@ package com.barkoder.demoscanner
 
 import android.Manifest
 import android.app.Activity
-import android.app.AlertDialog
-import android.app.Dialog
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -44,11 +36,8 @@ import com.barkoder.demoscanner.models.SessionScan
 import com.barkoder.demoscanner.utils.BKDConfigUtil
 import com.barkoder.demoscanner.utils.CommonUtil
 import com.barkoder.demoscanner.utils.ImageUtil
-import com.barkoder.demoscanner.utils.getString
 import com.barkoder.demoscanner.viewmodels.RecentScanViewModel
 import com.barkoder.interfaces.BarkoderResultCallback
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
-import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.analytics.ktx.analytics
@@ -60,8 +49,6 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
-import java.net.URLEncoder
-import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -115,8 +102,11 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
                     else -> {
                         MaterialAlertDialogBuilder(this)
                             .setMessage(R.string.storage_final_warning_message)
-                            .setPositiveButton(R.string.close_button) { dialog, _ ->
+                            .setNegativeButton(R.string.close_button) { dialog, _ ->
                                 dialog.dismiss()
+                            }
+                            .setPositiveButton(R.string.settings_button) { dialog, _ ->
+                                openAppSettings()
                             }
                             .show()
                     }
@@ -255,6 +245,9 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
         binding.cardScanIdDocument.setOnClickListener {
             startActivity(getScannerIntent(ScanMode.MRZ))
         }
+        binding.compositeCard.setOnClickListener {
+            startActivity(getScannerIntent(ScanMode.COMPOSITE))
+        }
 
     }
 
@@ -350,9 +343,6 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
 
         }
     }
-
-
-
 
 
     override fun scanningFinished(
@@ -454,17 +444,18 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
                         }
                     }
 
-                    sessionScansAdapterData.add(SessionScan(scannedDate,result.textualData, result.barcodeTypeName,picturePath, documentPath, signaturePath,mainPath,croppedBarcodePath))
+                    sessionScansAdapterData.add(SessionScan(scannedDate,result.textualData, if(result.extra != null) formatBarcodeName(result.barcodeTypeName, result.extra.toList()) else result.barcodeTypeName,picturePath, documentPath, signaturePath,mainPath,croppedBarcodePath,if(result.extra != null) formattedText(result.extra.toList()) else ""))
                     recentViewModel.addRecentScan(
                         RecentScan2(
                             scannedDate,
                             result.textualData,
-                            result.barcodeTypeName,
+                            if(result.extra != null) formatBarcodeName(result.barcodeTypeName, result.extra.toList()) else result.barcodeTypeName,
                             picturePath,
                             documentPath,
                             signaturePath,
                             mainPath,
-                            croppedBarcodePath
+                            croppedBarcodePath,
+                            if(result.extra != null) formattedText(result.extra.toList()) else ""
                         )
                     )
                 } else {
@@ -477,18 +468,19 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
                         )
                     }
 
-                    sessionScansAdapterData.add(SessionScan(scannedDate,result.textualData, result.barcodeTypeName,picturePath, documentPath, signaturePath,mainPath,croppedBarcodePath))
+                    sessionScansAdapterData.add(SessionScan(scannedDate,result.textualData, if(result.extra != null) formatBarcodeName(result.barcodeTypeName, result.extra.toList()) else result.barcodeTypeName,picturePath, documentPath, signaturePath,mainPath,croppedBarcodePath,if(result.extra != null) formattedText(result.extra.toList()) else ""))
                     // Handle barcodes without images (most barcodes will likely not have images)
                     recentViewModel.addRecentScan(
                         RecentScan2(
                             scannedDate,
                             result.textualData,
-                            result.barcodeTypeName,
+                            if(result.extra != null) formatBarcodeName(result.barcodeTypeName, result.extra.toList()) else result.barcodeTypeName,
                             null,  // No picture
                             null,  // No document
                             null,  // No signature
                             null,  // No main
-                            croppedBarcodePath  // May still have cropped barcode image
+                            croppedBarcodePath,  // May still have cropped barcode image
+                            if(result.extra != null) formattedText(result.extra.toList()) else ""
                         )
                     )
                 }
@@ -580,6 +572,62 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
         binding.imageBackgroundLayout.visibility = View.GONE
     }
 
+    fun formattedText(extra: List<Barkoder.BKKeyValue>?): String {
+        // Check if the extra list is null or empty
+        if (extra.isNullOrEmpty()) {
+            return ""
+        }
+
+        // Iterate over the list to find the key "formattedText"
+        for (item in extra) {
+            if (item.key == "formattedText") {
+                // Return the value associated with the key "formattedText"
+                return item.value ?: ""
+            }
+        }
+
+        // If the key "formattedText" is not found, return a default message
+        return ""
+    }
+
+    fun formatBarcodeName(barcodeTypeName: String, extra: List<Barkoder.BKKeyValue>?): String {
+        if (extra.isNullOrEmpty()) {
+            // If extra is null or empty, return the original barcodeTypeName
+            return barcodeTypeName
+        }
+
+        // Flags to track conditions
+        var isGS1 = false
+        var isComposite = false
+
+        // Iterate over the list and check for keys and values
+        for (item in extra) {
+            when (item.key) {
+                "gs1" -> isGS1 = item.value?.toIntOrNull() == 1
+                "composite" -> isComposite = item.value?.toIntOrNull() == 1
+            }
+        }
+
+        // Return the formatted name based on conditions
+        return when {
+            isGS1 && isComposite -> "GS1 $barcodeTypeName Composite"
+            isGS1 -> "GS1 $barcodeTypeName"
+            isComposite -> "$barcodeTypeName Composite"
+            else -> barcodeTypeName
+        }
+    }
+
+    fun openAppSettings() {
+        try {
+            val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                data = Uri.parse("package:${applicationContext.packageName}")
+            }
+            startActivity(intent)
+        } catch (e: ActivityNotFoundException) {
+            e.printStackTrace()
+            Toast.makeText(this, "Unable to open app settings.", Toast.LENGTH_SHORT).show()
+        }
+    }
 
 }
 

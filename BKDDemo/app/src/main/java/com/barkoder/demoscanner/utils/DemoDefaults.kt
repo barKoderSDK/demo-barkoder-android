@@ -9,8 +9,9 @@ object DemoDefaults {
     const val AUTO_START_SCAN_DEFAULT = false
     val DECODING_SPEED_DEFAULT = Barkoder.DecodingSpeed.Normal
     val DECODING_SPEED_DEFAULT_TEMPLATE = Barkoder.DecodingSpeed.Slow
-    val BARKODER_RESOLUTION_DEFAULT = BarkoderResolution.NORMAL
-    val BARKODER_RESOLUTION_DEFAULT_TEMPLATES_VIN_DPM = BarkoderResolution.HIGH
+    val DECODING_SPEED_DEFAULT_GALLERY_RIGORIUS = Barkoder.DecodingSpeed.Rigorous
+    val BARKODER_RESOLUTION_DEFAULT = BarkoderResolution.HD
+    val BARKODER_RESOLUTION_DEFAULT_TEMPLATES_VIN_DPM = BarkoderResolution.FHD
     const val CLOSE_SESSION_ON_RESULT_DEFAULT = true
     const val ENABLE_LOCATION_IN_PREVIEW_DEFAULT = true
     const val ALLOW_PINCH_TO_ZOOM_DEFAULT = false

@@ -56,7 +56,7 @@
     <LinearLayout
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="75dp"
         android:layout_marginTop="5dp"
         android:background="#FFFFFF"
         android:orientation="horizontal"
@@ -112,7 +112,7 @@
     <LinearLayout
         android:id="@+id/aewsf"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="75dp"
         android:layout_marginTop="5dp"
         android:background="#FFFFFF"
         android:orientation="horizontal"
@@ -137,6 +137,44 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:ellipsize="end"
+            android:gravity="end"
+            android:maxLines="5"
+            android:text="23 34 23"
+            android:textColor="#000000"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/formattedTextLayout"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_marginTop="5dp"
+        android:background="#FFFFFF"
+        android:orientation="horizontal"
+        android:padding="15dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/aewsf">
+
+        <!-- Label on the left -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="Formatted"
+            android:textColor="#666666"
+            android:textSize="14sp" />
+
+        <!-- Result Text on the right -->
+        <TextView
+            android:id="@+id/FormattedValueText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="20dp"
+            android:layout_weight="1"
             android:ellipsize="end"
             android:gravity="end"
             android:maxLines="5"
@@ -148,13 +186,13 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="5dp"
         android:background="@color/white"
+        android:layout_marginTop="5dp"
         android:backgroundTint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/aewsf">
+        app:layout_constraintTop_toBottomOf="@+id/formattedTextLayout">
 
 
         <LinearLayout
@@ -191,10 +229,10 @@
 
             <TextView
                 android:id="@+id/txtCopy"
-                android:layout_marginEnd="2dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginEnd="2dp"
                 android:layout_marginBottom="15dp"
                 android:text="Copy"
                 android:textSize="12sp"
@@ -254,9 +292,9 @@
             <TextView
                 android:id="@+id/txtSearch"
                 android:layout_width="wrap_content"
-                android:layout_marginEnd="1dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:layout_marginEnd="1dp"
                 android:layout_marginBottom="15dp"
                 android:text="Search"
                 android:textSize="12sp"

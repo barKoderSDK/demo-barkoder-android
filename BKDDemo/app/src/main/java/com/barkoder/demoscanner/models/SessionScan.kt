@@ -11,7 +11,9 @@ data class SessionScan (
     var signatureBitmap : String? = null,
     var mainBitmap : String? = null,
     var thumbnailBitmap : String? = null,
+    var formattedText : String,
     val asHeaderOnly: Boolean = false,
     var checkboxActive : Boolean = false,
     var checkedRecentItem : Boolean = false,
+
 ) : Serializable

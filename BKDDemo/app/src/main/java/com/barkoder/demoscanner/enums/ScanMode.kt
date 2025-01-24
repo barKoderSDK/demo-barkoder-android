@@ -29,7 +29,10 @@ enum class ScanMode(
             R.string.key_symbology_matrix25,
             R.string.key_symbology_dataLogic25,
             R.string.key_symbology_coop25,
-            R.string.key_symbology_telepen
+            R.string.key_symbology_telepen,
+            R.string.key_symbology_databar14,
+            R.string.key_symbology_databarExpanded,
+            R.string.key_symbology_databarLimited,
         )
     ),
     RETAIL_1D(
@@ -43,7 +46,10 @@ enum class ScanMode(
             R.string.key_symbology_upce,
             R.string.key_symbology_upce1,
             R.string.key_symbology_ean13,
-            R.string.key_symbology_ean8
+            R.string.key_symbology_ean8,
+            R.string.key_symbology_databar14,
+            R.string.key_symbology_databarExpanded,
+            R.string.key_symbology_databarLimited
         )
     ),
     PDF(
@@ -75,7 +81,13 @@ enum class ScanMode(
     ),
     CONTINUOUS("Batch MultiScan", "_continuous_mode_settings"),
     ANYSCAN("Anycode", "_anyscan_mode_settings"),
-    DPM("DPM Mode", "_dpm_mode_settings", BarkoderConfigTemplate.DPM
+    DPM("DPM Mode", "_dpm_mode_settings", BarkoderConfigTemplate.DPM,
+        arrayOf(
+            R.string.key_symbology_qr,
+            R.string.key_symbology_qr_micro,
+            R.string.key_symbology_datamatrix,
+
+        )
     ),
     VIN("VIN Mode","_vin_mode_settings", BarkoderConfigTemplate.VIN,
         arrayOf(
@@ -134,14 +146,32 @@ enum class ScanMode(
             R.string.key_symbology_upce,
             R.string.key_symbology_upce1,
             R.string.key_symbology_ean13,
-            R.string.key_symbology_ean8
+            R.string.key_symbology_ean8,
+            R.string.key_symbology_databar14,
+            R.string.key_symbology_databarExpanded,
+            R.string.key_symbology_databarLimited
         )
         ),
     GLOBAL("Scan Mode", ""),
     MRZ("MRZ Mode", "_mrz_mode_settings", BarkoderConfigTemplate.MRZ
     ),
     GALLERY_SCAN("Gallery Scan", "_gallery_scan_mode_settings", BarkoderConfigTemplate.GALLERY_SCAN
-    );
+    ),
+    COMPOSITE("Composite", "composite_mode_settings", BarkoderConfigTemplate.COMPOSITE,
+        arrayOf(
+            R.string.key_symbology_ean8,
+            R.string.key_symbology_ean13,
+            R.string.key_symbology_c128,
+            R.string.key_symbology_upca,
+            R.string.key_symbology_upce,
+            R.string.key_symbology_upce1,
+            R.string.key_symbology_pdf417,
+            R.string.key_symbology_pdf417_micro,
+            R.string.key_symbology_databar14,
+            R.string.key_symbology_databarExpanded,
+            R.string.key_symbology_databarLimited,
+        ));
+
 
     fun supportedSymbologyKeys(resources: Resources): List<String>? {
         return supportedSymbologyKeyResources?.let { keyResources ->

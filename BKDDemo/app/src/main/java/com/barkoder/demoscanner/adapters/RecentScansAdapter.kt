@@ -72,7 +72,7 @@ class RecentScansAdapter(
                         if (scanDate.substring(0, 10) != lastDate) {
 
                             recentScansAdapterData.add(recentScansAdapterData.indexOf(i),
-                                RecentScan2(scanDate.substring(0, 10), i.scanText, i.scanTypeName, i.pictureBitmap, i.documentBitmap, i.signatureBitmap, i.mainBitmap,i.thumbnailBitmap, asHeaderOnly = true))
+                                RecentScan2(scanDate.substring(0, 10), i.scanText, i.scanTypeName, i.pictureBitmap, i.documentBitmap, i.signatureBitmap, i.mainBitmap,i.thumbnailBitmap,i.formattedText, asHeaderOnly = true))
                             // Notify data set changed
                             notifyDataSetChanged()
                         }
@@ -244,7 +244,7 @@ class RecentScansAdapter(
                         if (scanDate.substring(0, 10) != lastDate) {
                             // Update the list with new item
                             recentScansAdapterData.add(recentScansAdapterData.indexOf(i),
-                                RecentScan2(scanDate.substring(0, 10), i.scanText, i.scanTypeName,i.pictureBitmap, i.documentBitmap, i.signatureBitmap,  i.mainBitmap, i.thumbnailBitmap, asHeaderOnly = true))
+                                RecentScan2(scanDate.substring(0, 10), i.scanText, i.scanTypeName,i.pictureBitmap, i.documentBitmap, i.signatureBitmap,  i.mainBitmap, i.thumbnailBitmap,i.formattedText, asHeaderOnly = true))
                             // Notify data set changed
                             notifyDataSetChanged()
                         }
@@ -294,7 +294,7 @@ class RecentScansAdapter(
                         if (scanDate.substring(0, 10) != lastDate) {
                             // Update the list with new item
                             recentScansAdapterData.add(recentScansAdapterData.indexOf(i),
-                                RecentScan2(scanDate.substring(0, 10), i.scanText, i.scanTypeName, i.pictureBitmap, i.documentBitmap, i.signatureBitmap, i.mainBitmap,i.thumbnailBitmap, asHeaderOnly = true))
+                                RecentScan2(scanDate.substring(0, 10), i.scanText, i.scanTypeName, i.pictureBitmap, i.documentBitmap, i.signatureBitmap, i.mainBitmap,i.thumbnailBitmap,i.formattedText, asHeaderOnly = true))
                             // Notify data set changed
                             notifyDataSetChanged()
                         }
@@ -365,7 +365,7 @@ class RecentScansAdapter(
                                 if (scanDate.substring(0, 10) != lastDate) {
                                     // Update the list with new item
                                     recentScansAdapterData.add(recentScansAdapterData.indexOf(i),
-                                        RecentScan2(scanDate.substring(0, 10), i.scanText, i.scanTypeName, i.pictureBitmap, i.documentBitmap, i.signatureBitmap, i.mainBitmap,i.thumbnailBitmap, asHeaderOnly = true))
+                                        RecentScan2(scanDate.substring(0, 10), i.scanText, i.scanTypeName, i.pictureBitmap, i.documentBitmap, i.signatureBitmap, i.mainBitmap,i.thumbnailBitmap,i.formattedText, asHeaderOnly = true))
                                     // Notify data set changed
                                     notifyDataSetChanged()
                                 }

@@ -27,6 +27,9 @@
     <string name="key_narrow_viewfinder">pref_key_narrow_viewfinder</string>
     <string name="key_automatic_show_bottomsheet">pref_key_automatic_show_bottomsheet</string>
     <string name="key_automatic_show_bottomsheet2">pref_key_automatic_show_bottomsheet2</string>
+    <string name="key_dynamic_exposure_entries">pref_key_dynamic_exposureee</string>
+    <string name="key_autoFocus_centered">pref_key_autofocus</string>
+    <string name="key_video_stabilization">pref_key_videostabilization</string>
 
     <string name="key_symbology_aztec">pref_key_symbology_aztec</string>
     <string name="key_symbology_aztec_compact">pref_key_symbology_aztec_compact</string>
@@ -56,8 +59,14 @@
     <string name="key_symbology_c32">pref_key_symbology_c32</string>
     <string name="key_symbology_telepen">pref_key_symbology_telepen</string>
     <string name="key_symbology_dotcode">pref_key_symbology_dotcode</string>
+    <string name="key_symbology_databar14">pref_key_symbology_databar14</string>
+    <string name="key_symbology_databarLimited">pref_key_symbology_databarLimited</string>
+    <string name="key_symbology_databarExpanded">pref_key_symbology_databarExpanded</string>
 
     <string name="key_result_parser">pref_key_result_parser</string>
+    <string name="key_checksum_mrz">pref_key_checksum_mrz</string>
+    <string name="key_checksum_mrz_preference">pref_key_checksum_mrz_preferenece</string>
+    <string name="key_checksum_mrz_value">pref_key_checksum_mrz_value</string>
     <string name="key_result_charset">pref_key_result_charset</string>
     <string name="key_result_searchEngine">key_result_searchEngine</string>
     <string name="key_result_copyTerminator">key_result_copyTerminator</string>
@@ -82,6 +91,7 @@
     <string name="key_anyscan_settings">pref_key_Anyscan_settings</string>
     <string name="key_mrz_settings">pref_key_MRZ_settings</string>
     <string name="key_gallery_scan_settings">pref_key_gallery_scan_settings</string>
+    <string name="key_composite_settings">pref_key_composite_settings</string>
 
     <string name="key_length">_length</string>
     <string name="key_min_length">_min_length</string>

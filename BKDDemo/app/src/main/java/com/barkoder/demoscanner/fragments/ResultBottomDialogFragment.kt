@@ -86,6 +86,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: SessionScanAdapter
     private var expandedBottomSheet = false
+    var sessionScanCheck : MutableList<SessionScan> = mutableListOf()
 
     private lateinit var sharedPreferences : SharedPreferences
 
@@ -130,6 +131,8 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 
     }
 
+
+
     fun updateBarcodeInfo(
         numResults: List<String>,
         typeResults: List<String>,
@@ -143,7 +146,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         scannedBarcodesResultList.clear()
         scannedBarcodesTypesList.clear()
         scannedBarcodesDateList.clear()
-
+        sessionScanCheck = sessionScan
         binding.resultsSize.text = lastResultsOnFrame.toString() + " results found (${resultsSize} total)"
         scannedBarcodesResultList.addAll(numResults)
         scannedBarcodesTypesList.addAll(typeResults)
@@ -167,7 +170,8 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             ).toInt()
             params.height = newHeightInPixels
             binding.constraintLayout4.layoutParams = params
-        } else {
+        }
+        else {
             val params = binding.constraintLayout4.layoutParams
             val newHeightInPixels = TypedValue.applyDimension(
                 TypedValue.COMPLEX_UNIT_DIP,
@@ -276,7 +280,6 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         }
     }
 
-
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -291,6 +294,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         val image = arguments?.getParcelable<Bitmap>("bitmapImage")
         var sessionScan = arguments?.getSerializable("sessionScan") as? MutableList<SessionScan>
         val sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+
 
         if(sessionScan!!.size == 1) {
             val params = binding.constraintLayout4.layoutParams
@@ -321,7 +325,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             binding.constraintLayout4.layoutParams = params
         }
 
-        if(resultsList!!.size < 2) {
+        if(resultsList!!.size < 3) {
             binding.layoutSearchBtn.visibility = View.GONE
             binding.layoutDetailsBtn.visibility = View.GONE
             binding.constraintLayout4.visibility = View.VISIBLE
@@ -405,6 +409,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             bottomSheet?.let {
                 bottomSheetBehavior = BottomSheetBehavior.from(it)
             }
+
             bottomSheet!!.setBackgroundColor(Color.TRANSPARENT)
             bottomSheetBehavior.isDraggable = false
             if(bottomSheetBehavior.peekHeight == 0) {
@@ -412,6 +417,26 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 
                 parentView.isClickable = true
             }
+            if(sessionScan!!.size == 1) {
+                val params = binding.constraintLayout4.layoutParams
+                val newHeightInPixels = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    75f,
+                    resources.displayMetrics
+                ).toInt()
+                params.height = newHeightInPixels
+                binding.constraintLayout4.layoutParams = params
+            }  else if (sessionScan!!.size == 2) {
+                val params = binding.constraintLayout4.layoutParams
+                val newHeightInPixels = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP,
+                    150f,
+                    resources.displayMetrics
+                ).toInt()
+                params.height = newHeightInPixels
+                binding.constraintLayout4.layoutParams = params
+            }
+
         }
 
         binding.layoutBottomSheet.setBackgroundResource(R.drawable.bottomsheet_rounded_bg)
@@ -998,11 +1023,12 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
     }
 
     override fun onSessionScanItemClick(item: SessionScan) {
-
             if(item.scanTypeName == "MRZ") {
               showFullScreenDialog(requireContext(), item.pictureBitmap, item.documentBitmap, item.signatureBitmap,item.mainBitmap,item.scanText)
+
             } else {
-                showBarcodeDetailsDialog(requireContext(), item.thumbnailBitmap!!, item.scanText, item.scanTypeName)
+                showBarcodeDetailsDialog(requireContext(), item.thumbnailBitmap!!, item.scanText, item.scanTypeName, item.formattedText)
+
             }
 
 
@@ -1305,7 +1331,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 
         }
 
-    public fun showBarcodeDetailsDialog(context: Context, mainImage: String , result: String, typname: String) {
+    public fun showBarcodeDetailsDialog(context: Context, mainImage: String , result: String, typname: String, formattedTextValue : String) {
         val dialog = Dialog(requireContext(), R.style.FullScreenDialogStyle)
 
         // Inflate the custom layout
@@ -1317,6 +1343,14 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         val barcodeValueText = dialogView.findViewById<TextView>(R.id.barcodeValueText)
         val barcodeTypeText = dialogView.findViewById<TextView>(R.id.barcodeTypeText)
         val barcodeBitmap = dialogView.findViewById<ImageView>(R.id.barcodeImage)
+        val formattedText = dialogView.findViewById<TextView>(R.id.FormattedValueText)
+        val formattedLayout = dialogView.findViewById<LinearLayout>(R.id.formattedTextLayout)
+        if(formattedTextValue.length > 0) {
+            formattedLayout.visibility = View.VISIBLE
+        } else {
+            formattedLayout.visibility = View.GONE
+        }
+
 
         // Ensure `mainImage` conversion works properly
         val bitmap = getBitmapFromInternalStorage(mainImage)
@@ -1330,6 +1364,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 
         barcodeValueText.text = result
         barcodeTypeText.text = typname
+        formattedText.text = formattedTextValue
 
         val closeButton = dialogView.findViewById<ImageButton>(R.id.buttonClose)
         val btnCopy = dialogView.findViewById<MaterialButton>(R.id.btnCopy)

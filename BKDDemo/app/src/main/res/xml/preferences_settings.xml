@@ -360,6 +360,24 @@
                 app:allowDividerAbove="true"
                 app:allowDividerBelow="true"
                 app:prefPaddingStart="40" />
+            <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
+                android:key="@string/key_symbology_databar14"
+                android:title="@string/symbology_databar14"
+                app:allowDividerAbove="true"
+                app:allowDividerBelow="true"
+                app:prefPaddingStart="40" />
+            <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
+                android:key="@string/key_symbology_databarExpanded"
+                android:title="@string/symbology_databarExpanded"
+                app:allowDividerAbove="true"
+                app:allowDividerBelow="true"
+                app:prefPaddingStart="40" />
+            <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
+                android:key="@string/key_symbology_databarLimited"
+                android:title="@string/symbology_databarLimited"
+                app:allowDividerAbove="true"
+                app:allowDividerBelow="true"
+                app:prefPaddingStart="40" />
 
         </com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding>
 
@@ -391,6 +409,9 @@
 
 
     </PreferenceCategory>
+
+
+
 
 
     <PreferenceCategory
@@ -517,21 +538,36 @@
         app:allowDividerBelow="false"
         app:iconSpaceReserved="false">
 
-        <SwitchPreference
-            android:key="pref_key_autofocus"
-            android:title="Enable AutoFocus Centered"
-            app:defaultValue="false"
+
+        <ListPreference
+            android:key="pref_key_dynamic_exposureee"
+            android:title="Dynamic Exposure"
+            android:entries="@array/exposure_intensity_entries"
+            android:entryValues="@array/exposure_intensity_values"
+            android:defaultValue="0"
             app:allowDividerAbove="true"
             app:allowDividerBelow="false"
-            app:iconSpaceReserved="false" />
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
 
         <SwitchPreference
-            android:key="pref_key_dynamic_exposure"
-            android:title="Enable Dynamic Exposure"
+            android:key="pref_key_autofocus"
+            android:title="Centered Focus and Exposure"
             app:defaultValue="false"
             app:allowDividerAbove="true"
-            app:allowDividerBelow="false"
+            app:allowDividerBelow="true"
             app:iconSpaceReserved="false" />
+
+
+        <SwitchPreference
+            android:key="pref_key_videostabilization"
+            android:title="Video Stabilization"
+            app:defaultValue="false"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="true"
+            app:iconSpaceReserved="false" />
+
+
 
     </PreferenceCategory>
 
@@ -655,8 +691,38 @@
             app:allowDividerBelow="true"
             app:iconSpaceReserved="false" />
 
+        <Preference
+            android:key="@string/key_composite_settings"
+            android:persistent="false"
+            android:title="@string/composite_mode_title"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="true"
+            app:iconSpaceReserved="false" />
 
 
+
+
+    </PreferenceCategory>
+
+
+    <PreferenceCategory
+        android:key="@string/key_checksum_mrz_preference"
+        android:title="@string/checksum_settings_titlee"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
+        app:isPreferenceVisible="false"
+        app:iconSpaceReserved="false">
+
+
+        <ListPreference
+            android:key="@string/key_checksum_mrz"
+            android:title="Type"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="true"
+            app:defaultValue="Disabled"
+            android:defaultValue="Disabled"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
 
     </PreferenceCategory>
 

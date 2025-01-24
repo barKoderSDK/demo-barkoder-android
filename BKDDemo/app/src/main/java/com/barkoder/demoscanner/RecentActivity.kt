@@ -216,7 +216,7 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
                                 if (scanDate.substring(0, 10) != lastDate) {
                                     // Update the list with new item
                                     recentScansAdapterData.add(recentScansAdapterData.indexOf(i),
-                                        RecentScan2(scanDate.substring(0, 10), i.scanText, i.scanTypeName,i.pictureBitmap, i.documentBitmap, i.signatureBitmap,  i.mainBitmap, i.thumbnailBitmap, asHeaderOnly = true))
+                                        RecentScan2(scanDate.substring(0, 10), i.scanText, i.scanTypeName,i.pictureBitmap, i.documentBitmap, i.signatureBitmap,  i.mainBitmap, i.thumbnailBitmap,i.formattedText, asHeaderOnly = true))
                                     // Notify data set changed
                                     notifyDataSetChanged()
                                 }
@@ -484,7 +484,7 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
             if(item.scanTypeName == "MRZ") {
                 showFullScreenDialog(item.pictureBitmap,item.documentBitmap,item.signatureBitmap, item.mainBitmap, item.scanText)
             } else {
-                showBarcodeDetailsDialog(item.thumbnailBitmap, item.scanText, item.scanTypeName)
+                showBarcodeDetailsDialog(item.thumbnailBitmap, item.scanText, item.scanTypeName, item.formattedText)
             }
         }
     }
@@ -709,7 +709,7 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
         }
     }
 
-    fun showBarcodeDetailsDialog(barcodePicture: String?, barcodeValue: String, barcodeType: String) {
+    fun showBarcodeDetailsDialog(barcodePicture: String?, barcodeValue: String, barcodeType: String, formattedTextValue: String) {
         runOnUiThread {
             // Create a regular Dialog for more control
             val dialog = Dialog(this, R.style.FullScreenDialogStyle)
@@ -725,6 +725,13 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
             val barcodeTypeText = dialogView.findViewById<TextView>(R.id.barcodeTypeText)
             val barcodeBitmap = dialogView.findViewById<ImageView>(R.id.barcodeImage)
             val txtSearch = dialogView.findViewById<TextView>(R.id.txtSearch)
+            val formattedText = dialogView.findViewById<TextView>(R.id.FormattedValueText)
+            val formattedLayout = dialogView.findViewById<LinearLayout>(R.id.formattedTextLayout)
+            if(formattedTextValue.length > 0) {
+                formattedLayout.visibility = View.VISIBLE
+            } else {
+                formattedLayout.visibility = View.GONE
+            }
 
             // Load the image using Glide
             Glide.with(this)
@@ -733,6 +740,7 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
 
             barcodeValueText.text = barcodeValue
             barcodeTypeText.text = barcodeType
+            formattedText.text = formattedTextValue
 
 
             val btnCopy = dialogView.findViewById<MaterialButton>(R.id.btnCopy)

@@ -132,6 +132,15 @@ object BKDConfigUtil {
             ).toInt()
         ]
 
+        if(sharedPref.getString(resources.getString(R.string.key_checksum_mrz))  == "Enabled") {
+                config.decoderConfig.IDDocument.masterChecksumType = Barkoder.StandardChecksumType.Enabled
+            } else if (sharedPref.getString(resources.getString(R.string.key_checksum_mrz))  == "Disabled") {
+            config.decoderConfig.IDDocument.masterChecksumType = Barkoder.StandardChecksumType.Disabled
+        } else {
+            config.decoderConfig.IDDocument.masterChecksumType = Barkoder.StandardChecksumType.Disabled
+        }
+
+
         config.barkoderResolution = BarkoderResolution.values()[
             sharedPref.getString(
                 resources.getString(R.string.key_scanner_resolution)
@@ -233,6 +242,9 @@ object BKDConfigUtil {
                 configureDatalogic25Symbology(config, resources, sharedPref)
                 configureCOOP25Symbology(config, resources, sharedPref)
                 configureTelepenSymbology(config, resources, sharedPref)
+                configureDatabar14Symbology(config,resources,sharedPref)
+                configureDatabarExpandedSymbology(config,resources,sharedPref)
+                configureDatabarLimitedSymbology(config,resources,sharedPref)
             }
 
             BarkoderConfigTemplate.RETAIL_1D -> {
@@ -244,6 +256,9 @@ object BKDConfigUtil {
                 configureUpcE1Symbology(config, resources, sharedPref)
                 configureEan13Symbology(config, resources, sharedPref)
                 configureEan8Symbology(config, resources, sharedPref)
+                configureDatabar14Symbology(config,resources,sharedPref)
+                configureDatabarExpandedSymbology(config,resources,sharedPref)
+                configureDatabarLimitedSymbology(config,resources,sharedPref)
             }
 
             BarkoderConfigTemplate.PDF_OPTIMIZED -> {
@@ -271,14 +286,20 @@ object BKDConfigUtil {
                 configurePDF417MicroSymbology(config, resources, sharedPref)
                 configureDatamatrixSymbology(config, resources, sharedPref)
                 configureDotCodeSymbology(config, resources, sharedPref)
+
             }
             BarkoderConfigTemplate.DPM -> {
                 setBarkoderSettings(config,resources,sharedPref)
                 setResultSettings(config, resources, sharedPref)
+                configureDatamatrixSymbology(config, resources, sharedPref)
+                configureQRSymbology(config, resources, sharedPref)
+                configureQRMicroSymbology(config, resources, sharedPref)
+
                 var biggerViewfinderBoolean = sharedPref.getBoolean("pref_key_bigger_viewfinder", false)
                 if(biggerViewfinderBoolean)
                     config.setRegionOfInterest(35f, 40f, 30f, 15f)
                 config.isRegionOfInterestVisible = true
+
 
             }
             BarkoderConfigTemplate.VIN -> {
@@ -331,6 +352,9 @@ object BKDConfigUtil {
                 configureUpcE1Symbology(config, resources, sharedPref)
                 configureEan13Symbology(config, resources, sharedPref)
                 configureEan8Symbology(config, resources, sharedPref)
+                configureDatabar14Symbology(config,resources,sharedPref)
+                configureDatabarExpandedSymbology(config,resources,sharedPref)
+                configureDatabarLimitedSymbology(config,resources,sharedPref)
 
             }
             BarkoderConfigTemplate.GALLERY_SCAN -> {
@@ -365,7 +389,24 @@ object BKDConfigUtil {
                 configurePDF417MicroSymbology(config, resources, sharedPref)
                 configureDatamatrixSymbology(config, resources, sharedPref)
                 configureDotCodeSymbology(config, resources, sharedPref)
-                configureDatamatrixDPMMode(config, resources, sharedPref)
+                configureGalleryScanDPMMode(config, resources, sharedPref)
+            }
+
+            BarkoderConfigTemplate.COMPOSITE -> {
+                setBarkoderSettings(config,resources,sharedPref)
+                setResultSettings(config, resources, sharedPref)
+                configureCode128Symbology(config,resources,sharedPref)
+                configureUpcASymbology(config, resources, sharedPref)
+                configureUpcESymbology(config, resources, sharedPref)
+                configureUpcE1Symbology(config, resources, sharedPref)
+                configureEan13Symbology(config, resources, sharedPref)
+                configureEan8Symbology(config, resources, sharedPref)
+                configurePDF417Symbology(config, resources, sharedPref)
+                configurePDF417MicroSymbology(config, resources, sharedPref)
+                configureDatabar14Symbology(config,resources,sharedPref)
+                configureDatabarExpandedSymbology(config,resources,sharedPref)
+                configureDatabarLimitedSymbology(config,resources,sharedPref)
+
             }
 
             else -> {
@@ -399,6 +440,9 @@ object BKDConfigUtil {
                 configureCode32Symbology(config, resources, sharedPref)
                 configureTelepenSymbology(config, resources, sharedPref)
                 configureDotCodeSymbology(config, resources, sharedPref)
+                configureDatabar14Symbology(config,resources,sharedPref)
+                configureDatabarExpandedSymbology(config,resources,sharedPref)
+                configureDatabarLimitedSymbology(config,resources,sharedPref)
             }
         }
     }
@@ -673,12 +717,22 @@ object BKDConfigUtil {
             )
     }
 
-    private fun configureDatamatrixDPMMode(
+    private fun configureGalleryScanDPMMode(
         config: BarkoderConfig,
         resources: Resources,
         sharedPref: SharedPreferences
     ) {
         config.decoderConfig.Datamatrix.dpmMode =
+            sharedPref.getBoolean(
+                resources.getString(R.string.key_dpm_mode)
+            )
+
+        config.decoderConfig.QR.dpmMode =
+            sharedPref.getBoolean(
+                resources.getString(R.string.key_dpm_mode)
+            )
+
+        config.decoderConfig.QRMicro.dpmMode =
             sharedPref.getBoolean(
                 resources.getString(R.string.key_dpm_mode)
             )
@@ -906,6 +960,41 @@ object BKDConfigUtil {
         )
     }
 
+    private fun configureDatabar14Symbology(
+        config: BarkoderConfig,
+        resources: Resources,
+        sharedPref: SharedPreferences
+    ) {
+        config.decoderConfig.Databar14.enabled =
+            sharedPref.getBoolean(
+                resources.getString(R.string.key_symbology_databar14)
+            )
+    }
+
+    private fun configureDatabarExpandedSymbology(
+        config: BarkoderConfig,
+        resources: Resources,
+        sharedPref: SharedPreferences
+    ) {
+        config.decoderConfig.DatabarExpanded.enabled =
+            sharedPref.getBoolean(
+                resources.getString(R.string.key_symbology_databarExpanded)
+            )
+    }
+
+    private fun configureDatabarLimitedSymbology(
+        config: BarkoderConfig,
+        resources: Resources,
+        sharedPref: SharedPreferences
+    ) {
+        config.decoderConfig.DatabarLimited.enabled =
+            sharedPref.getBoolean(
+                resources.getString(R.string.key_symbology_databarLimited)
+            )
+    }
+
+
+
     private fun configureDotCodeSymbology(
         config: BarkoderConfig,
         resources: Resources,
@@ -1007,6 +1096,7 @@ object BKDConfigUtil {
             onlyIfNotContains
         )
 
+
         //region Barkoder Settings
         if(scanMode.template != null) {
             if(scanMode == ScanMode.MRZ) {
@@ -1017,7 +1107,16 @@ object BKDConfigUtil {
                         ?: 1.toString(),
                     onlyIfNotContains
                 )
-            } else{
+            }  else if(scanMode == ScanMode.GALLERY_SCAN) {
+                prefsEditor.putStringWithOptions(
+                    sharedPrefs,
+                    context.getString(R.string.key_scanner_decoding_speed),
+                    DemoDefaults.DECODING_SPEED_DEFAULT_GALLERY_RIGORIUS.ordinal.toString(),
+                    onlyIfNotContains
+                )
+            }
+
+            else{
                 prefsEditor.putStringWithOptions(
                     sharedPrefs,
                     context.getString(R.string.key_scanner_decoding_speed),
@@ -1214,6 +1313,12 @@ object BKDConfigUtil {
             DemoDefaults.ENABLED_SEARCHWEB_DEFAULT,
             onlyIfNotContains
         )
+        prefsEditor.putStringWithOptions(
+            sharedPrefs,
+            context.getString(R.string.key_checksum_mrz),
+            "Disabled",
+            onlyIfNotContains
+        )
         prefsEditor.putBooleanWithOptions(
             sharedPrefs,
             "showBottomSHeet",
@@ -1274,6 +1379,14 @@ object BKDConfigUtil {
             sharedPrefs,
             context.getString(R.string.key_symbology_c11) + context.getString(R.string.key_checksum_type),
             config?.decoderConfig?.Code11?.checksumType?.ordinal?.toString()
+                ?: DemoDefaults.SYMBOLOGY_C11_CHK_DEFAULT.ordinal.toString(),
+            onlyIfNotContains
+        )
+
+        prefsEditor.putStringWithOptions(
+            sharedPrefs,
+            context.getString(R.string.key_checksum_mrz_value),
+            config?.decoderConfig?.IDDocument?.masterChecksumType?.ordinal?.toString()
                 ?: DemoDefaults.SYMBOLOGY_C11_CHK_DEFAULT.ordinal.toString(),
             onlyIfNotContains
         )
@@ -1517,6 +1630,24 @@ object BKDConfigUtil {
             sharedPrefs,
             context.getString(R.string.key_symbology_c25),
             config?.decoderConfig?.Code25?.enabled ?: DemoDefaults.SYMBOLOGY_C25_DEFAULT,
+            onlyIfNotContains
+        )
+        prefsEditor.putBooleanWithOptions(
+            sharedPrefs,
+            context.getString(R.string.key_symbology_databar14),
+            config?.decoderConfig?.Databar14?.enabled ?: true,
+            onlyIfNotContains
+        )
+        prefsEditor.putBooleanWithOptions(
+            sharedPrefs,
+            context.getString(R.string.key_symbology_databarLimited),
+            config?.decoderConfig?.DatabarLimited?.enabled ?: true,
+            onlyIfNotContains
+        )
+        prefsEditor.putBooleanWithOptions(
+            sharedPrefs,
+            context.getString(R.string.key_symbology_databarExpanded),
+            config?.decoderConfig?.DatabarExpanded?.enabled ?: true,
             onlyIfNotContains
         )
         prefsEditor.putIntWithOptions(
@@ -1850,7 +1981,7 @@ object BKDConfigUtil {
     }
 
     private fun adaptConfigForDeblurScanning(config: BarkoderConfig) {
-        config.barkoderResolution = BarkoderResolution.HIGH
+        config.barkoderResolution = BarkoderResolution.FHD
         config.decoderConfig.decodingSpeed = Barkoder.DecodingSpeed.Slow
         config.decoderConfig.upcEanDeblur = true
         config.decoderConfig.Aztec.enabled = false
@@ -1881,7 +2012,7 @@ object BKDConfigUtil {
     }
 
     private fun adaptConfigForMisshapedScanning(config: BarkoderConfig) {
-        config.barkoderResolution = BarkoderResolution.HIGH
+        config.barkoderResolution = BarkoderResolution.FHD
         config.decoderConfig.decodingSpeed = Barkoder.DecodingSpeed.Slow
         config.decoderConfig.enableMisshaped1D = true
         config.decoderConfig.Aztec.enabled = false

@@ -89,11 +89,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
         if (scanMode.template != null) {
             setUIForScanModeWithTemplate()
             setDecodingSpeedEntries()
+            setMrzCheckSum()
             setBarkoderResolutionEntries()
             setResultParserEntries()
             setResultCharsetEntries()
             setThreshHoldContiniousEntries()
             onContiniousModeOnListener()
+            setDynamicExposureEntries()
             findPreference<Preference>(getString(R.string.key_reset_config))!!.setOnPreferenceClickListener {
                 showResetConfigConfirmationDialog()
                 false
@@ -102,12 +104,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
             defaultSearchEngine()
             defaultCopyTerminator()
             setDecodingSpeedEntries()
+            setMrzCheckSum()
             setBarkoderResolutionEntries()
             setResultParserEntries()
             setResultCharsetEntries()
             openWebHookConfigurationDialog()
             setThreshHoldContiniousEntries()
             onContiniousModeOnListener()
+            setDynamicExposureEntries()
 
             findPreference<Preference>(getString(R.string.key_reset_config))!!.setOnPreferenceClickListener {
                 showResetConfigConfirmationDialog()
@@ -400,6 +404,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
             startActivity(settingsIntent)
             false
         }
+        findPreference<Preference>(getString(R.string.key_composite_settings))!!.setOnPreferenceClickListener {
+            val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
+            settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 16)
+            startActivity(settingsIntent)
+            false
+        }
     }
 
     override fun onStart() {
@@ -509,7 +519,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
-                preferenceScreen.getPreference(BARCODE_TYPES_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(BARCODE_TYPES_CATEGORY_INDEX).isVisible = true
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
             }
@@ -620,7 +630,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 preferenceScreen.getPreference(BARKODER_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(BARCODE_TYPES_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(RESULT_CATEGORY_INDEX).isVisible = false
-                preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = true
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
 
             }
@@ -676,6 +686,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
+                makePreferenceVisable(getString(R.string.key_checksum_mrz_preference))
                 preferenceScreen.getPreference(BARCODE_TYPES_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(RESULT_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
@@ -706,6 +717,23 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
             }
+
+            ScanMode.COMPOSITE -> {
+                makePreferenceInvisible(getString(R.string.key_mrz_mode))
+                makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
+                makePreferenceInvisible(getString(R.string.key_enable_roi))
+                makePreferenceInvisible(getString(R.string.key_bigger_viewfinder))
+                makePreferenceInvisible(getString(R.string.key_narrow_viewfinder))
+                makePreferenceInvisible(getString(R.string.key_result_searchEngine))
+                makePreferenceInvisible(getString(R.string.key_enable_searchweb))
+                makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
+                makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
+                preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                makePreferenceInvisible(getString(R.string.key_dpm_mode))
+                makePreferenceInvisible(getString(R.string.key_misshaped_code_capture))
+            }
         }
     }
 
@@ -729,6 +757,26 @@ class SettingsFragment : PreferenceFragmentCompat() {
             preferenceManager.sharedPreferences.getString(decodingSpeedPref.key)
     }
 
+
+    private fun setMrzCheckSum() {
+        val mrzCheckSumPref =
+            findPreference<ListPreference>(getString(R.string.key_checksum_mrz))!!
+
+        val entries: MutableList<CharSequence> = arrayListOf()
+        val entryValues: MutableList<CharSequence> = arrayListOf()
+
+        for (item in Barkoder.StandardChecksumType.values()) {
+            entries.add(item.name)
+            entryValues.add(item.name)
+        }
+
+        mrzCheckSumPref.entries = entries.toTypedArray()
+        mrzCheckSumPref.entryValues = entryValues.toTypedArray()
+
+        mrzCheckSumPref.value =
+            preferenceManager.sharedPreferences.getString(mrzCheckSumPref.key)
+    }
+
     private fun setBarkoderResolutionEntries() {
         val barkoderResolutionPref =
             findPreference<ListPreference>(getString(R.string.key_scanner_resolution))!!
@@ -736,9 +784,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val entries: MutableList<CharSequence> = arrayListOf()
         val entryValues: MutableList<CharSequence> = arrayListOf()
 
+
         for (item in BarkoderResolution.values()) {
-            entries.add(item.toString())
-            entryValues.add(item.ordinal.toString())
+            if(item.ordinal < 3) {
+                entries.add(item.toString())
+                entryValues.add(item.ordinal.toString())
+            }
+
         }
 
         barkoderResolutionPref.entries = entries.toTypedArray()
@@ -753,6 +805,19 @@ class SettingsFragment : PreferenceFragmentCompat() {
             findPreference<ListPreference>(getString(R.string.key_continuous_treshold))!!
         thresholdContiniousPref.value = preferenceManager.sharedPreferences.getString(thresholdContiniousPref.key)
     }
+
+    private fun setDynamicExposureEntries() {
+        val dynamicExposureEntries =
+            findPreference<ListPreference>(getString(R.string.key_dynamic_exposure_entries))!!
+        dynamicExposureEntries.value = preferenceManager.sharedPreferences.getString(dynamicExposureEntries.key)
+    }
+
+    private fun setMrzChecksumType() {
+        val setMrzCheckSumType =
+            findPreference<ListPreference>(getString(R.string.key_checksum_mrz))!!
+        setMrzCheckSumType.value = preferenceManager.sharedPreferences.getString(setMrzCheckSumType.key)
+    }
+
     private fun defaultSearchEngine() {
         val searchEnginePref = findPreference<ListPreference>(getString(R.string.key_result_searchEngine))!!
         searchEnginePref.value = preferenceManager.sharedPreferences.getString(searchEnginePref.key)
@@ -942,6 +1007,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val sharedPrefNameMRZ = requireActivity().packageName + ScanMode.MRZ.prefKey
         val sharedPrefMRZ = requireActivity().getSharedPreferences(sharedPrefNameMRZ, Context.MODE_PRIVATE)
 
+        val sharedPrefNameComposite = requireActivity().packageName + ScanMode.COMPOSITE.prefKey
+        val sharedPrefComposite = requireActivity().getSharedPreferences(sharedPrefNameComposite, Context.MODE_PRIVATE)
+
 
 
         MaterialAlertDialogBuilder(requireContext())
@@ -1066,6 +1134,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     ScanMode.MRZ,
                     null
                 )
+                BKDConfigUtil.setDefaultValuesInPrefs(
+                    sharedPrefComposite,
+                    requireContext(),
+                    false,
+                    ScanMode.COMPOSITE,
+                    null
+                )
 
             }
             .setNegativeButton(R.string.cancel_button, null)
@@ -1073,12 +1148,23 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun reloadAllPrefsValues() {
+        val dynamicExposureEntries =
+            findPreference<ListPreference>(getString(R.string.key_dynamic_exposure_entries))!!
+        val setCenteredAutoFocus =
+            findPreference<SwitchPreference>(getString(R.string.key_autoFocus_centered))!!
+        val setVideoStabilization =
+            findPreference<SwitchPreference>(getString(R.string.key_video_stabilization))!!
         if(scanMode == ScanMode.GLOBAL) {
             webhookEncodeDataPreference.isEnabled = true
             webhookFeedbackPreference.isEnabled = true
             webhookConfigurationPreference.isEnabled = true
             webhookAutosendPreference.isEnabled = true
             defaultSearchWebPreference.isEnabled = true
+            setCenteredAutoFocus.isChecked = false
+            setVideoStabilization.isChecked = false
+            dynamicExposureEntries.value = "Disabled"
+            dynamicExposureEntries.setValueIndex(0);
+
         }
         for (i in 0 until preferenceScreen.preferenceCount) {
             preferenceScreen.getPreference(i).run {
@@ -1130,6 +1216,23 @@ class SettingsFragment : PreferenceFragmentCompat() {
         editor.apply()
     }
 
+//    private fun checksumMrzListener() {
+//        val checksumMrzPreference = findPreference<ListPreference>(getString(R.string.key_checksum_mrz))
+//
+//        checksumMrzPreference?.setOnPreferenceChangeListener { _, newValue ->
+//            var selectedCheckSumMrz = newValue.toString()
+//            savneCheckSmMrzListener(requireContext(), selectedCheckSumMrz)
+//            true
+//        }
+//    }
+
+//    private fun savneCheckSmMrzListener(context: Context, MasterChekSum: String) {
+//        val sp = context.getSharedPreferences(getString(R.string.key_checksum_mrz), Context.MODE_PRIVATE)
+//        val editor = sp.edit()
+//        editor.putString(getString(R.string.key_checksum_mrz_value), MasterChekSum)
+//        editor.apply()
+//    }
+
     private fun copyTerminatorPreferenceChangeListener() {
         val copyTerminatorPreference = findPreference<ListPreference>(getString(R.string.key_result_copyTerminator))
 
@@ -1176,6 +1279,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun makePreferenceInvisible(preferenceKey: String) {
         val preference = findPreference<Preference>(preferenceKey)
         preference?.isVisible = false
+    }
+
+    private fun makePreferenceVisable(preferenceKey: String) {
+        val preference = findPreference<Preference>(preferenceKey)
+        preference?.isVisible = true
     }
 
 
