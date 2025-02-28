@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#FFF0EF"
+    android:padding="20dp">
+
+    <!-- First Item -->
+    <LinearLayout
+        android:id="@+id/btn_remove"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:src="@drawable/ico_delete"
+            android:layout_marginEnd="10dp"
+            android:layout_gravity="center_vertical"
+            android:layout_height="wrap_content"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Remove"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Clear scan log"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#808080" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- First Item -->
+
+
+    <!-- Second Item -->
+
+    <!-- Continue for other items (Export, Delete) -->
+</LinearLayout>

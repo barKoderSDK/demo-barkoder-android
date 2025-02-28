@@ -9,7 +9,7 @@
     <string name="termsOfUseLink">https://barkoder.com/terms-of-use</string>
     <string name="testBarcodeLink">https://barkoder.com/register</string>
     <string name="privacyPolicyLink">https://barkoder.com/privacy-policy</string>
-    <string name="barkoderLicenseKey">LICENSE KEY</string>
+    <string name="barkoderLicenseKey">LICENSE_KEY</string>
 
 
 </resources>

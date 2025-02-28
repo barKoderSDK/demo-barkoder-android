@@ -358,6 +358,48 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
     }
 
 
+    @SuppressLint("MissingInflatedId")
+    private fun showCustomPopupMenuItem(anchorView: View, item: RecentScan2, dialog : Dialog) {
+        // Inflate custom layout for the popup
+        val inflater = LayoutInflater.from(this)
+        val popupView = inflater.inflate(R.layout.custom_menu_item, null)
+
+        // Create PopupWindow
+        val popupWindow = PopupWindow(popupView, ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true)
+        val removeButton: LinearLayout = popupView.findViewById(R.id.btn_remove)
+
+
+        removeButton.setOnClickListener {
+            showDeleteConfirmationDialog(item, dialog)
+            popupWindow.dismiss()
+            true
+        }
+
+        popupWindow.showAsDropDown(anchorView, 0, 0)
+    }
+
+
+
+    private fun showDeleteConfirmationDialog(item:RecentScan2, dialog2 : Dialog) {
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage("This action permanently deletes selected scan log")
+        builder.setPositiveButton("Delete") { dialog, _ ->
+            // Handle the action for 'Yes' button
+            viewModel.deleteRecentScan(item)
+            dialog.dismiss() // Close the dialog
+            dialog2.dismiss()
+        }
+        builder.setNegativeButton("Cancel") { dialog, _ ->
+            // Handle the action for 'No' button
+            dialog.dismiss() // Close the dialog
+        }
+
+        // Create and show the dialog
+        val alertDialog = builder.create()
+        alertDialog.show()
+    }
+
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
 
@@ -482,9 +524,9 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
             binding.toolbar.title = "${selectedItems} Selected"
         } else {
             if(item.scanTypeName == "MRZ") {
-                showFullScreenDialog(item.pictureBitmap,item.documentBitmap,item.signatureBitmap, item.mainBitmap, item.scanText)
+                showFullScreenDialog(item.pictureBitmap,item.documentBitmap,item.signatureBitmap, item.mainBitmap, item.scanText, item)
             } else {
-                showBarcodeDetailsDialog(item.thumbnailBitmap, item.scanText, item.scanTypeName, item.formattedText)
+                showBarcodeDetailsDialog(item.thumbnailBitmap, item.scanText, item.scanTypeName, item.formattedText, item)
             }
         }
     }
@@ -709,7 +751,7 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
         }
     }
 
-    fun showBarcodeDetailsDialog(barcodePicture: String?, barcodeValue: String, barcodeType: String, formattedTextValue: String) {
+    fun showBarcodeDetailsDialog(barcodePicture: String?, barcodeValue: String, barcodeType: String, formattedTextValue: String, item: RecentScan2) {
         runOnUiThread {
             // Create a regular Dialog for more control
             val dialog = Dialog(this, R.style.FullScreenDialogStyle)
@@ -746,6 +788,14 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
             val btnCopy = dialogView.findViewById<MaterialButton>(R.id.btnCopy)
             val btnSearch = dialogView.findViewById<MaterialButton>(R.id.btnSearch)
             val btnPDF = dialogView.findViewById<MaterialButton>(R.id.btnPDF)
+            val btnOptions = dialogView.findViewById<ImageButton>(R.id.btn_optionss)
+            btnOptions.visibility = View.VISIBLE
+
+            btnOptions.setOnClickListener {
+                showCustomPopupMenuItem(it, item, dialog)
+            }
+
+
             var bitmapsArray = arrayListOf<Bitmap>()
 
             if (barcodePicture != null) {
@@ -770,7 +820,12 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
 
             // Close button functionality
             val closeButton = dialogView.findViewById<ImageButton>(R.id.buttonClose)
+            val closeBackButton = dialogView.findViewById<ImageButton>(R.id.buttonCloseBack)
+
+            closeButton.visibility = View.GONE
+            closeBackButton.visibility = View.VISIBLE
             closeButton.setOnClickListener { dialog.dismiss() }
+            closeBackButton.setOnClickListener { dialog.dismiss() }
 
             // Ensure full-screen layout when the dialog is shown
             dialog.setOnShowListener {
@@ -851,7 +906,8 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
     }
 
 
-    fun showFullScreenDialog(pictureBitmap: String?, documentBitmap : String?, signatureBitmap : String?, mainBitmap : String?, results : String) {
+    @SuppressLint("MissingInflatedId")
+    fun showFullScreenDialog(pictureBitmap: String?, documentBitmap : String?, signatureBitmap : String?, mainBitmap : String?, results : String, item: RecentScan2) {
         runOnUiThread {
             // or use `this` if in an Activity
             val builder =
@@ -1059,6 +1115,7 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
             val btnCopy = dialogView.findViewById<MaterialButton>(R.id.btnCopy)
             val btnSearch = dialogView.findViewById<MaterialButton>(R.id.btnSearch)
             val btnPDF = dialogView.findViewById<MaterialButton>(R.id.btnPDF)
+            val btnOption = dialogView.findViewById<ImageButton>(R.id.btn_optionss)
 
 
 //            btnPDF.setOnClickListener {
@@ -1074,13 +1131,21 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
 
 
             val closeButton = dialogView.findViewById<ImageButton>(R.id.buttonClose)
+            val closeBackButton = dialogView.findViewById<ImageButton>(R.id.buttonCloseBack)
 
+            closeButton.visibility = View.GONE
+            closeBackButton.visibility = View.VISIBLE
             builder.setView(dialogView)
             builder.setCancelable(true)
 
             val dialog = builder.create()
 
             closeButton.setOnClickListener { dialog.dismiss() }
+            closeBackButton.setOnClickListener { dialog.dismiss() }
+            btnOption.visibility = View.VISIBLE
+            btnOption.setOnClickListener {
+                showCustomPopupMenuItem(it, item, dialog)
+            }
 
             dialog.setOnShowListener {
                 val window = dialog.window

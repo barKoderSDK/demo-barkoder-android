@@ -30,6 +30,7 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.PopupWindow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -1331,7 +1332,8 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 
         }
 
-    public fun showBarcodeDetailsDialog(context: Context, mainImage: String , result: String, typname: String, formattedTextValue : String) {
+    @SuppressLint("MissingInflatedId")
+    public fun showBarcodeDetailsDialog(context: Context, mainImage: String, result: String, typname: String, formattedTextValue : String) {
         val dialog = Dialog(requireContext(), R.style.FullScreenDialogStyle)
 
         // Inflate the custom layout
@@ -1345,6 +1347,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         val barcodeBitmap = dialogView.findViewById<ImageView>(R.id.barcodeImage)
         val formattedText = dialogView.findViewById<TextView>(R.id.FormattedValueText)
         val formattedLayout = dialogView.findViewById<LinearLayout>(R.id.formattedTextLayout)
+
         if(formattedTextValue.length > 0) {
             formattedLayout.visibility = View.VISIBLE
         } else {
@@ -1478,5 +1481,8 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             null // Return null if the conversion fails
         }
     }
+
+
+
 
 }
