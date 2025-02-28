@@ -18,6 +18,7 @@ data class RecentScan2(
     val asHeaderOnly: Boolean = false,
     var checkboxActive : Boolean = false,
     var checkedRecentItem : Boolean = false,
+    var scannedTimesInARow : Int = 1,
 
     @PrimaryKey(autoGenerate = true)
     val id: Int? = null,

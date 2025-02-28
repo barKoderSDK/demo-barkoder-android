@@ -9,7 +9,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.barkoder.demoscanner.utils.BitmapConverter
 
-@Database(entities = [RecentScan2::class], version = 13, exportSchema = false)
+@Database(entities = [RecentScan2::class], version = 14, exportSchema = false)
 @TypeConverters(BitmapConverter::class)
 abstract class RecentDatabase : RoomDatabase() {
 

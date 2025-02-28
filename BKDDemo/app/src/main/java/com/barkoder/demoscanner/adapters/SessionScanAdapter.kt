@@ -11,13 +11,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.barkoder.demoscanner.R
 import com.barkoder.demoscanner.models.RecentScan2
 import com.barkoder.demoscanner.models.SessionScan
+import okhttp3.internal.notifyAll
 import java.lang.ref.WeakReference
 
 class SessionScanAdapter(
     private val resultsList: List<String>,
     private val typesList: List<String>,
     private var highlightCount: Int = 0,
-    private val sessionScansAdapterData: List<SessionScan>,
+    private val sessionScansAdapterData: MutableList<SessionScan>,
     private val recentScanItemClickListenerRef: WeakReference<OnSessionScanItemClickListener>?
 ) : RecyclerView.Adapter<SessionScanAdapter.ScanViewHolder>() {
 
@@ -34,6 +35,7 @@ class SessionScanAdapter(
         val resultTextView: TextView = itemView.findViewById(R.id.txtBarcodeResult)
         private val typeTextView: TextView = itemView.findViewById(R.id.txtBarcodeType)
         private val containerLayout: ConstraintLayout = itemView.findViewById(R.id.containerItem)
+        val counterScanned : TextView = itemView.findViewById(R.id.scannedCounter)
 
 
         fun bind(
@@ -45,15 +47,15 @@ class SessionScanAdapter(
             position: Int
         ) {
 
-
             typeTextView.text = type
 
             val highlightColor = ContextCompat.getDrawable(itemView.context, R.drawable.item_background_rounded_green)
             val defaultColor = ContextCompat.getDrawable(itemView.context, R.drawable.item_backgorund_rounded)
 
             // Apply background color based on whether the item is in the last detected range
-            if (isHighlighted) {
+            if (currentItem.highLight) {
                 containerLayout.setBackgroundDrawable(highlightColor) // Highlight last detected barcodes
+
             } else {
                 containerLayout.setBackgroundDrawable(defaultColor) // Default background
             }
@@ -81,20 +83,27 @@ class SessionScanAdapter(
             val type = typesList[position]
             val currentItem = sessionScansAdapterData[position]
 
+            // Bind the data to the view
+
             extractDocumentRawText(currentItem.scanText)
+            if(currentItem.scannedTimesInARow > 1) {
+                holder.counterScanned.text =  "(${currentItem.scannedTimesInARow.toString()})"
+            } else {
+                holder.counterScanned.text = ""
+            }
 
             // Set the text in resultTextView
             if (currentItem.scanTypeName == "MRZ") {
                 holder.resultTextView.text = "Full name: ${firstName} ${lastName}"
             } else {
-                holder.resultTextView.text = result
+                holder.resultTextView.text = currentItem.scanText
             }
 
             // Highlight the last `highlightCount` items
             val isHighlighted = position >= itemCount - highlightCount
 
             val listener = recentScanItemClickListenerRef?.get()
-            holder.bind(result, type, isHighlighted, listener, currentItem, position)
+            holder.bind(currentItem.scanText, currentItem.scanTypeName, isHighlighted, listener, currentItem, position)
         } else {
             // Log or handle the error if position is out of bounds
             Log.e("SessionScanAdapter", "Position $position is out of bounds for one or more lists")
@@ -106,8 +115,7 @@ class SessionScanAdapter(
     }
 
     // Method to update the number of items to highlight
-    fun updateHighlightCount(count: Int) {
-        highlightCount = count
+    fun updateHighlightCount() {
         notifyDataSetChanged()
     }
 

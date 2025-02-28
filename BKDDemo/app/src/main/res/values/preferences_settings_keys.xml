@@ -30,6 +30,7 @@
     <string name="key_dynamic_exposure_entries">pref_key_dynamic_exposureee</string>
     <string name="key_autoFocus_centered">pref_key_autofocus</string>
     <string name="key_video_stabilization">pref_key_videostabilization</string>
+    <string name="key_frontCamera">pref_key_frontCamera</string>
 
     <string name="key_symbology_aztec">pref_key_symbology_aztec</string>
     <string name="key_symbology_aztec_compact">pref_key_symbology_aztec_compact</string>

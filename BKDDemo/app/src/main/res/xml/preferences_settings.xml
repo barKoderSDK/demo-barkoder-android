@@ -567,6 +567,15 @@
             app:allowDividerBelow="true"
             app:iconSpaceReserved="false" />
 
+        <SwitchPreference
+            android:key="pref_key_frontCamera"
+            android:title="Front Camera"
+            app:isPreferenceVisible="false"
+            app:defaultValue="false"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="true"
+            app:iconSpaceReserved="false" />
+
 
 
     </PreferenceCategory>

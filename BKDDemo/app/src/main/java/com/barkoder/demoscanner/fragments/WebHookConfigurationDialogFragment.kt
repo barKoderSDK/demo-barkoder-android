@@ -77,7 +77,7 @@ class WebHookConfigurationDialogFragment : DialogFragment() {
         }
 
         buttonShowMeHowSettings.setOnClickListener {
-            CommonUtil.openURLInBrowser("https://docs.barkoder.com/en/how-to/webhooks", requireActivity())
+            CommonUtil.openURLInBrowser("https://barkoder.com/docs/v1/how-to/use-webhooks-demo-app", requireActivity())
         }
 
         buttonSave.setOnClickListener {

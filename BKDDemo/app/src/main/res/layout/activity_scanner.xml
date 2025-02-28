@@ -32,14 +32,16 @@
         android:id="@+id/textScannedNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:textSize="18sp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="2dp"
         android:layout_marginBottom="23dp"
-        android:textColor="@color/white"
         android:text="TextView"
+        android:textColor="@color/white"
+        android:textSize="15sp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btnShowDialog" />
+        app:layout_constraintEnd_toStartOf="@+id/btnShowDialog"
+        app:layout_constraintStart_toEndOf="@+id/llBottomButtons" />
 
     <TextView
         android:id="@+id/textFps"
@@ -122,7 +124,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
-        android:paddingEnd="25dp"
+        android:paddingEnd="20dp"
         android:paddingBottom="12dp"
         android:src="@drawable/ic_arrow_up"
         app:layout_constraintEnd_toEndOf="parent"
@@ -130,25 +132,21 @@
         tools:ignore="ContentDescription"
         android:visibility="invisible"/>
 
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/txtScannedResult"
-        android:layout_width="200dp"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="50dp"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="110dp"
         android:paddingBottom="2dp"
         android:scrollbars="vertical"
-        android:textAlignment="center"
+        android:textAlignment="viewStart"
         android:textColor="@color/brand_color"
-        android:textSize="11sp"
-        android:maxLines="9"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHeight_max="250dp"
         app:layout_constraintHeight_percent="0.25"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/btnClose"
-        tools:text="EAN13: Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book." />
+        app:layout_constraintTop_toBottomOf="@id/btnClose" />
 
     <TextView
         android:id="@+id/txtEnabledTypes"
@@ -186,6 +184,14 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="20dp"
             android:background="@drawable/ic_zoom_on"
+            tools:ignore="ContentDescription" />
+
+        <ImageButton
+            android:id="@+id/btnCameraSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:background="@drawable/ic_camera_switch_off"
             tools:ignore="ContentDescription" />
 
     </LinearLayout>

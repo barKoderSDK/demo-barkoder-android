@@ -64,7 +64,7 @@ class RecentScansAdapter(
 
                 val scannedDataList = recentScansAdapterData.toMutableList()
                 for (i in scannedDataList) {
-                    val scanDate2 = dateFormat.parse(i.scanDate)
+//                    val scanDate2 = dateFormat.parse(i.scanDate)
                     val scanDate = i.scanDate
                     // Check if scanDate has at least 10 characters
                     if (scanDate.length >= 10) {
@@ -120,6 +120,7 @@ class RecentScansAdapter(
         val barcodeType: TextView = view.findViewById(R.id.txtRowBarcodeType)
         val checkBoxItem: CheckBox = view.findViewById(R.id.checkBoxRecentItem)
         val imageInfo: ImageView = view.findViewById(R.id.imageInfo)
+        val scannedCountText: TextView = view.findViewById(R.id.countScannedText)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -138,7 +139,6 @@ class RecentScansAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = recentScansAdapterData[position]
-
         if (getItemViewType(position) == HEADER_ITEM_VIEW) {
             (holder as HeaderViewHolder).dateHeader.text = currentItem.scanDate
         } else {
@@ -173,10 +173,13 @@ class RecentScansAdapter(
                 // Toggle visibility based on check mode
                 val visibility = if (checkModeAdapter) View.VISIBLE else View.GONE
                 checkBoxItem.visibility = visibility
-                imageInfo.visibility = if (checkModeAdapter) View.GONE else View.VISIBLE
+                imageInfo.visibility = if (checkModeAdapter) View.INVISIBLE else View.VISIBLE
+
+                if(currentItem.scannedTimesInARow > 1) {
+                    scannedCountText.text = "(${currentItem.scannedTimesInARow.toString()})"
+                }
 
 
-                // Bind other views
                 barcodeType.text = currentItem.scanTypeName
                 checkBoxItem.isChecked = currentItem.checkedRecentItem
             }
@@ -191,10 +194,6 @@ class RecentScansAdapter(
             }
         }
     }
-
-
-    // Sample usage of conversion
-
 
     override fun getItemCount(): Int {
             return recentScansAdapterData.size

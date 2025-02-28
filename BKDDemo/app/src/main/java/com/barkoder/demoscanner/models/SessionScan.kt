@@ -12,8 +12,11 @@ data class SessionScan (
     var mainBitmap : String? = null,
     var thumbnailBitmap : String? = null,
     var formattedText : String,
+    var scannedTimesInARow : Int = 0,
+    var highLight: Boolean = false,
     val asHeaderOnly: Boolean = false,
     var checkboxActive : Boolean = false,
-    var checkedRecentItem : Boolean = false,
+    var checkedRecentItem : Boolean = false
+
 
 ) : Serializable

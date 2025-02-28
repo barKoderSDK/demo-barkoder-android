@@ -109,7 +109,7 @@ object ScannedResultsUtil {
     }
 
     fun getResultsTitle(results: Array<out Barkoder.Result>?): ArrayList<String> {
-        return ArrayList(results?.take(50)?.map { it.barcodeTypeName } ?: listOf("No Read"))
+        return ArrayList(results?.take(50)?.map {  if(it.extra != null) formatBarcodeName(it.barcodeTypeName, it.extra.toList()) else it.barcodeTypeName } ?: listOf("No Read"))
 
     }
 
@@ -187,6 +187,34 @@ object ScannedResultsUtil {
             context.packageName + SCANNED_RESULTS_SHARED_PREFS_SUFFIX,
             Context.MODE_PRIVATE
         )
+    }
+
+
+    fun formatBarcodeName(barcodeTypeName: String, extra: List<Barkoder.BKKeyValue>?): String {
+        if (extra.isNullOrEmpty()) {
+            // If extra is null or empty, return the original barcodeTypeName
+            return barcodeTypeName
+        }
+
+        // Flags to track conditions
+        var isGS1 = false
+        var isComposite = false
+
+        // Iterate over the list and check for keys and values
+        for (item in extra) {
+            when (item.key) {
+                "gs1" -> isGS1 = item.value?.toIntOrNull() == 1
+                "composite" -> isComposite = item.value?.toIntOrNull() == 1
+            }
+        }
+
+        // Return the formatted name based on conditions
+        return when {
+            isGS1 && isComposite -> "GS1 $barcodeTypeName Composite"
+            isGS1 -> "GS1 $barcodeTypeName"
+            isComposite -> "$barcodeTypeName Composite"
+            else -> barcodeTypeName
+        }
     }
 
 }

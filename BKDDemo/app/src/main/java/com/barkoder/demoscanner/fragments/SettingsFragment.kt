@@ -1154,12 +1154,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
             findPreference<SwitchPreference>(getString(R.string.key_autoFocus_centered))!!
         val setVideoStabilization =
             findPreference<SwitchPreference>(getString(R.string.key_video_stabilization))!!
+        val setFrontcamera =
+            findPreference<SwitchPreference>(getString(R.string.key_frontCamera))!!
         if(scanMode == ScanMode.GLOBAL) {
             webhookEncodeDataPreference.isEnabled = true
             webhookFeedbackPreference.isEnabled = true
             webhookConfigurationPreference.isEnabled = true
             webhookAutosendPreference.isEnabled = true
             defaultSearchWebPreference.isEnabled = true
+            setFrontcamera.isChecked = false
             setCenteredAutoFocus.isChecked = false
             setVideoStabilization.isChecked = false
             dynamicExposureEntries.value = "Disabled"

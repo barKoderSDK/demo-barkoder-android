@@ -83,7 +83,7 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
     <string name="symbology_c39">Code 39</string>
     <string name="symbology_c11">Code 11</string>
     <string name="symbology_codabar">Codabar</string>
-    <string name="symbology_msi">MSI</string>
+    <string name="symbology_msi">MSI Plessey</string>
     <string name="symbology_upca">UPC-A</string>
     <string name="symbology_upce">UPC-E</string>
     <string name="symbology_upce1">UPC-E1</string>

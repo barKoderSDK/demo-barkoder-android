@@ -526,7 +526,7 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
             if(item.scanTypeName == "MRZ") {
                 showFullScreenDialog(item.pictureBitmap,item.documentBitmap,item.signatureBitmap, item.mainBitmap, item.scanText, item)
             } else {
-                showBarcodeDetailsDialog(item.thumbnailBitmap, item.scanText, item.scanTypeName, item.formattedText, item)
+                showBarcodeDetailsDialog(item.thumbnailBitmap, item.scanText, item.scanTypeName, item.formattedText, item, item.scannedTimesInARow)
             }
         }
     }
@@ -751,7 +751,7 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
         }
     }
 
-    fun showBarcodeDetailsDialog(barcodePicture: String?, barcodeValue: String, barcodeType: String, formattedTextValue: String, item: RecentScan2) {
+    fun showBarcodeDetailsDialog(barcodePicture: String?, barcodeValue: String, barcodeType: String, formattedTextValue: String, item: RecentScan2, scannedTimes: Int) {
         runOnUiThread {
             // Create a regular Dialog for more control
             val dialog = Dialog(this, R.style.FullScreenDialogStyle)
@@ -769,6 +769,15 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
             val txtSearch = dialogView.findViewById<TextView>(R.id.txtSearch)
             val formattedText = dialogView.findViewById<TextView>(R.id.FormattedValueText)
             val formattedLayout = dialogView.findViewById<LinearLayout>(R.id.formattedTextLayout)
+            val scannedTimesLayout = dialogView.findViewById<LinearLayout>(R.id.timesScannedLayout)
+            val scannedTimesText = dialogView.findViewById<TextView>(R.id.timesScannedText)
+
+            if(scannedTimes > 1) {
+                scannedTimesLayout.visibility = View.VISIBLE
+            } else {
+                scannedTimesLayout.visibility = View.GONE
+            }
+
             if(formattedTextValue.length > 0) {
                 formattedLayout.visibility = View.VISIBLE
             } else {
@@ -783,6 +792,7 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
             barcodeValueText.text = barcodeValue
             barcodeTypeText.text = barcodeType
             formattedText.text = formattedTextValue
+            scannedTimesText.text = scannedTimes.toString()
 
 
             val btnCopy = dialogView.findViewById<MaterialButton>(R.id.btnCopy)

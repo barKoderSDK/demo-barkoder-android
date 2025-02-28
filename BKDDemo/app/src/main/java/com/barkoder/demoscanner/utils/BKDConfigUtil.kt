@@ -97,7 +97,7 @@ object BKDConfigUtil {
                 adaptConfigForContinuesScanning(config)
                 val continusThreshHold = sharedPref.getString("pref_key_continuous_treshold2", "5")
                 if(continusThreshHold == "unlimited") {
-                    config.thresholdBetweenDuplicatesScans = -1
+                    config.thresholdBetweenDuplicatesScans = 100
                 } else {
                     config.thresholdBetweenDuplicatesScans = continusThreshHold!!.toInt()
                 }
@@ -211,7 +211,7 @@ object BKDConfigUtil {
                 sharedPref.getString(resources.getString(R.string.key_continuous_treshold)).toInt()
         } else {
             adaptConfigDisableMultiScan(config)
-            config.thresholdBetweenDuplicatesScans = 0
+            config.thresholdBetweenDuplicatesScans = -1
         }
     }
 
@@ -318,7 +318,7 @@ object BKDConfigUtil {
             BarkoderConfigTemplate.MRZ -> {
                 setBarkoderSettings(config,resources,sharedPref)
                 config.setRegionOfInterest(0f, 0f, 100f, 100f)
-                config.thresholdBetweenDuplicatesScans = 0
+                config.thresholdBetweenDuplicatesScans = -1
 
             }
             BarkoderConfigTemplate.DOTCODE -> {
@@ -1052,6 +1052,7 @@ object BKDConfigUtil {
             val typeConfig = decoderConfig.GetConfigForDecoder(type)
             if (enabledTypes.isEmpty()) {
                 when (typeConfig.typeName) {
+                    "MSI" -> enabledTypes.append("MSI Plessey")
                     "Datamatrix" -> enabledTypes.append("Data Matrix")
                     "Upc-A" -> enabledTypes.append("UPC-A")
                     "Upc-E" -> enabledTypes.append("UPC-E")
@@ -1063,6 +1064,7 @@ object BKDConfigUtil {
             }
             else {
                 when(typeConfig.typeName) {
+                    "MSI" ->  enabledTypes.append(", ").append("MSI Plessey")
                     "Datamatrix" ->  enabledTypes.append(", ").append("Data Matrix")
                     "Upc-A" ->  enabledTypes.append(", ").append("UPC-A")
                     "Upc-E" ->  enabledTypes.append(", ").append("UPC-E")
