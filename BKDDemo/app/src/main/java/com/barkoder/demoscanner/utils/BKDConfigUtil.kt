@@ -161,6 +161,8 @@ object BKDConfigUtil {
                 resources.getString(R.string.key_allow_pinch_to_zoom)
             )
 
+        config.decoderConfig.enableComposite = if (sharedPref.getBoolean(resources.getString(R.string.key_composite_setting), false)) 1 else 0
+
         config.isRegionOfInterestVisible =
             sharedPref.getBoolean(resources.getString(R.string.key_enable_roi))
 
@@ -355,6 +357,13 @@ object BKDConfigUtil {
                 configureDatabar14Symbology(config,resources,sharedPref)
                 configureDatabarExpandedSymbology(config,resources,sharedPref)
                 configureDatabarLimitedSymbology(config,resources,sharedPref)
+                configurePostalImb(config,resources,sharedPref)
+                configurePostnet(config,resources,sharedPref)
+                configurePlanet(config,resources,sharedPref)
+                configureAustralianpost(config,resources,sharedPref)
+                configureRoyalMail(config,resources,sharedPref)
+                configureKIX(config,resources,sharedPref)
+                configureJapanasePost(config,resources,sharedPref)
 
             }
             BarkoderConfigTemplate.GALLERY_SCAN -> {
@@ -409,6 +418,18 @@ object BKDConfigUtil {
 
             }
 
+            BarkoderConfigTemplate.POSTAL_CODES -> {
+                setBarkoderSettings(config,resources,sharedPref)
+                setResultSettings(config, resources, sharedPref)
+                configurePostalImb(config,resources,sharedPref)
+                configurePostnet(config,resources,sharedPref)
+                configurePlanet(config,resources,sharedPref)
+                configureAustralianpost(config,resources,sharedPref)
+                configureRoyalMail(config,resources,sharedPref)
+                configureKIX(config,resources,sharedPref)
+                configureJapanasePost(config,resources,sharedPref)
+            }
+
             else -> {
                 setBarkoderSettings(config,resources,sharedPref)
                 setResultSettings(config, resources, sharedPref)
@@ -443,6 +464,14 @@ object BKDConfigUtil {
                 configureDatabar14Symbology(config,resources,sharedPref)
                 configureDatabarExpandedSymbology(config,resources,sharedPref)
                 configureDatabarLimitedSymbology(config,resources,sharedPref)
+                configurePostalImb(config,resources,sharedPref)
+                configurePostnet(config,resources,sharedPref)
+                configurePlanet(config,resources,sharedPref)
+                configureAustralianpost(config,resources,sharedPref)
+                configureRoyalMail(config,resources,sharedPref)
+                configureKIX(config,resources,sharedPref)
+                configureJapanasePost(config,resources,sharedPref)
+
             }
         }
     }
@@ -489,6 +518,81 @@ object BKDConfigUtil {
         config.decoderConfig.QRMicro.enabled =
             sharedPref.getBoolean(
                 resources.getString(R.string.key_symbology_qr_micro)
+            )
+    }
+    private fun configurePostalImb(
+        config: BarkoderConfig,
+        resources: Resources,
+        sharedPref: SharedPreferences
+    ) {
+        config.decoderConfig.PostalIMB.enabled =
+            sharedPref.getBoolean(
+                resources.getString(R.string.key_symbology_postalImb)
+            )
+    }
+    private fun configurePostnet(
+        config: BarkoderConfig,
+        resources: Resources,
+        sharedPref: SharedPreferences
+    ) {
+        config.decoderConfig.Postnet.enabled =
+            sharedPref.getBoolean(
+                resources.getString(R.string.key_symbology_postnet)
+            )
+    }
+
+    private fun configurePlanet(
+        config: BarkoderConfig,
+        resources: Resources,
+        sharedPref: SharedPreferences
+    ) {
+        config.decoderConfig.Planet.enabled =
+            sharedPref.getBoolean(
+                resources.getString(R.string.key_symbology_planet)
+            )
+    }
+    private fun configureAustralianpost(
+        config: BarkoderConfig,
+        resources: Resources,
+        sharedPref: SharedPreferences
+    ) {
+        config.decoderConfig.AustralianPost.enabled =
+            sharedPref.getBoolean(
+                resources.getString(R.string.key_symbology_australianPost)
+            )
+    }
+
+    private fun configureRoyalMail(
+        config: BarkoderConfig,
+        resources: Resources,
+        sharedPref: SharedPreferences
+    ) {
+
+        config.decoderConfig.RoyalMail.enabled =
+            sharedPref.getBoolean(
+                resources.getString(R.string.key_symbology_royalMail)
+            )
+    }
+
+    private fun configureKIX(
+        config: BarkoderConfig,
+        resources: Resources,
+        sharedPref: SharedPreferences
+    ) {
+        config.decoderConfig.KIX.enabled =
+            sharedPref.getBoolean(
+                resources.getString(R.string.key_symbology_kix)
+            )
+    }
+
+    private fun configureJapanasePost(
+        config: BarkoderConfig,
+        resources: Resources,
+        sharedPref: SharedPreferences
+    ) {
+        config.decoderConfig.JapanesePost.enabled =
+            sharedPref.getBoolean(
+                resources.getString(R.string.key_symbology_japanasePost)
             )
     }
 
@@ -1150,7 +1254,7 @@ object BKDConfigUtil {
                 || scanMode.template == ScanMode.RETAIL_1D.template || scanMode.template == ScanMode.PDF.template
                 || scanMode.template == ScanMode.QR.template || scanMode.template == ScanMode.ALL_2D.template
                 || scanMode.template == ScanMode.INDUSTRIAL_1D.template || scanMode.template == ScanMode.UPC_EAN_DEBLUR.template
-                || scanMode.template == ScanMode.MISSHAPED_1D.template || scanMode.template == ScanMode.DOTCODE.template || scanMode.template == ScanMode.MRZ.template) {
+                || scanMode.template == ScanMode.MISSHAPED_1D.template || scanMode.template == ScanMode.DOTCODE.template || scanMode.template == ScanMode.MRZ.template || scanMode.template == ScanMode.POSTAL_CODES.template) {
             prefsEditor.putStringWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_scanner_resolution),
@@ -1652,6 +1756,86 @@ object BKDConfigUtil {
             config?.decoderConfig?.DatabarExpanded?.enabled ?: true,
             onlyIfNotContains
         )
+        prefsEditor.putBooleanWithOptions(
+            sharedPrefs,
+            context.getString(R.string.key_symbology_postalImb),
+            true,
+            onlyIfNotContains
+        )
+
+
+
+        prefsEditor.putBooleanWithOptions(
+            sharedPrefs,
+            context.getString(R.string.key_symbology_royalMail),
+            true,
+            onlyIfNotContains
+        )
+        if(scanMode == ScanMode.POSTAL_CODES) {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_kix),
+                true,
+                onlyIfNotContains
+            )
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_postnet),
+                true,
+                onlyIfNotContains
+            )
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_australianPost),
+                true,
+                onlyIfNotContains
+            )
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_planet),
+                true,
+                onlyIfNotContains
+            )
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_japanasePost),
+                true,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_kix),
+                false,
+                onlyIfNotContains
+            )
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_postnet),
+                false,
+                onlyIfNotContains
+            )
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_australianPost),
+                false,
+                onlyIfNotContains
+            )
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_planet),
+                false,
+                onlyIfNotContains
+            )
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_japanasePost),
+               false,
+                onlyIfNotContains
+            )
+        }
+
+
         prefsEditor.putIntWithOptions(
             sharedPrefs,
             context.getString(R.string.key_symbology_c25) + context.getString(R.string.key_min_length),
@@ -1857,6 +2041,17 @@ object BKDConfigUtil {
                 sharedPrefs,
                 context.getString(R.string.key_symbology_c32),
                 config?.decoderConfig?.Code32?.enabled ?: DemoDefaults.SYMBOLOGY_C32_DEFAULT,
+                onlyIfNotContains
+            )
+        }
+
+        if (scanMode == ScanMode.ANYSCAN) {
+            val compositeMode = if (config?.decoderConfig?.enableComposite == 1) true else false
+
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_composite_setting),
+                compositeMode,
                 onlyIfNotContains
             )
         }

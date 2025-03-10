@@ -18,6 +18,8 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.method.ScrollingMovementMethod
 import android.util.Base64
 import android.util.Log
@@ -55,6 +57,7 @@ import com.barkoder.demoscanner.models.SessionScan
 import com.barkoder.demoscanner.repositories.BarcodeDataRepository
 import com.barkoder.demoscanner.utils.CommonUtil
 import com.barkoder.demoscanner.utils.NetworkUtils
+import com.barkoder.demoscanner.utils.getBoolean
 import com.barkoder.demoscanner.utils.getString
 import com.barkoder.demoscanner.viewmodels.BarcodeDataViewModel
 import com.barkoder.demoscanner.viewmodels.BarcodeDataViewModelFactory
@@ -75,6 +78,7 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.math.exp
 
 
 class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapter.OnSessionScanItemClickListener {
@@ -150,17 +154,20 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         image: Bitmap? = null,
         sessionScan : MutableList<SessionScan>
     ) {
-        adapter.notifyDataSetChanged()
+
         sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         var lastResultsOnFrame = sharedPreferences.getInt("lastResultsOnFrame", 0)
         scannedBarcodesResultList.clear()
         scannedBarcodesTypesList.clear()
         scannedBarcodesDateList.clear()
         sessionScanCheck = sessionScan
-        binding.resultsSize.text = lastResultsOnFrame.toString() + " results found (${resultsSize} total)"
+
+
         scannedBarcodesResultList.addAll(numResults)
         scannedBarcodesTypesList.addAll(typeResults)
         scannedBarcodesDateList.addAll(dateResults)
+
+        if(lastResultsOnFrame == 1) binding.resultsSize.text = lastResultsOnFrame.toString() + " result found (${resultsSize} total)" else binding.resultsSize.text = lastResultsOnFrame.toString() + " results found (${resultsSize} total)"
 
         if(sessionScan!!.size == 1) {
             val params = binding.constraintLayout4.layoutParams
@@ -232,7 +239,9 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         recyclerView.adapter = adapter
 
 
-
+        Handler(Looper.getMainLooper()).postDelayed({
+            adapter.notifyDataSetChanged()
+        }, 50)
 
     }
 
@@ -253,6 +262,8 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             fragment.arguments = args
             return fragment
         }
+
+
     }
 
     override fun onCreateView(
@@ -296,6 +307,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         super.onViewCreated(view, savedInstanceState)
         sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         var lastResultsOnFrame = sharedPreferences.getInt("lastResultsOnFrame", 0)
+        var galleryScanMode = sharedPreferences.getBoolean("galleryScan", false)
            val numResult = arguments?.getString("numResult")
            val typeResult = arguments?.getString("typeResult")
         val resultsSize = arguments?.getString("resultsSize")
@@ -352,6 +364,11 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             binding.textBarcodeTypeResult.visibility = View.GONE
 
         }
+
+        if(sessionScan.size == 1) {
+            binding.layoutExpandBtn.visibility = View.GONE
+            binding.layoutSearchBtn.visibility = View.VISIBLE
+        }
         updateSearchEngine()
 
         updateCopyTerminator()
@@ -390,7 +407,9 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 
         binding.imageView.setImageBitmap(image)
 
-
+        Handler(Looper.getMainLooper()).postDelayed({
+            adapter.notifyDataSetChanged()
+        }, 50)
         val keyWebHook = sharedPreferences.getString(getString(R.string.key_secret_word_webhook), "")
 
         val urlWebHook = sharedPreferences.getString(getString(R.string.key_url_webhook), "")
@@ -404,10 +423,17 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 
 
         if(resultsSize != null) {
-            binding.resultsSize.text = lastResultsOnFrame.toString() + " results found (${resultsSize} total)"
+            if(galleryScanMode) {
+                if(lastResultsOnFrame == 1) binding.resultsSize.text = lastResultsOnFrame.toString() + " result found" else binding.resultsSize.text = lastResultsOnFrame.toString() + " results found"
+            } else {
+                if(lastResultsOnFrame == 1) binding.resultsSize.text = lastResultsOnFrame.toString() + " result found (${resultsSize} total)" else binding.resultsSize.text = lastResultsOnFrame.toString() + " results found (${resultsSize} total)"
+            }
+
         } else {
             binding.resultsSize.text = ""
         }
+
+
 
         if(image == null) {
             binding.imageView.visibility = View.GONE
@@ -427,25 +453,30 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 
                 parentView.isClickable = true
             }
-            if(sessionScan!!.size == 1) {
-                val params = binding.constraintLayout4.layoutParams
-                val newHeightInPixels = TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP,
-                    80f,
-                    resources.displayMetrics
-                ).toInt()
-                params.height = newHeightInPixels
-                binding.constraintLayout4.layoutParams = params
-            }  else if (sessionScan!!.size == 2) {
-                val params = binding.constraintLayout4.layoutParams
-                val newHeightInPixels = TypedValue.applyDimension(
-                    TypedValue.COMPLEX_UNIT_DIP,
-                    160f,
-                    resources.displayMetrics
-                ).toInt()
-                params.height = newHeightInPixels
-                binding.constraintLayout4.layoutParams = params
+
+            if(!expandedBottomSheet) {
+                if(sessionScan!!.size == 1) {
+                    val params = binding.constraintLayout4.layoutParams
+                    val newHeightInPixels = TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        80f,
+                        resources.displayMetrics
+                    ).toInt()
+                    params.height = newHeightInPixels
+                    binding.constraintLayout4.layoutParams = params
+                }
+                else if (sessionScan!!.size == 2) {
+                    val params = binding.constraintLayout4.layoutParams
+                    val newHeightInPixels = TypedValue.applyDimension(
+                        TypedValue.COMPLEX_UNIT_DIP,
+                        160f,
+                        resources.displayMetrics
+                    ).toInt()
+                    params.height = newHeightInPixels
+                    binding.constraintLayout4.layoutParams = params
+                }
             }
+
 
         }
 
@@ -1214,6 +1245,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
                     .load(File(picutreImage))
                     .into(imagePicture)
 
+
                 Glide.with(context)
                     .load(File(picutreImage))
                     .into(dialogImageView)
@@ -1383,7 +1415,9 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         val bitmap = getBitmapFromInternalStorage(mainImage)
         if (bitmap != null) {
             barcodeBitmap.setImageBitmap(bitmap)
+
         } else {
+            barcodeBitmap.setImageResource(R.drawable.container__2_)
             // Handle error case when bitmap is null
             Log.e("Error", "Bitmap is null for the given image string.")
         }

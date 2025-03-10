@@ -85,7 +85,7 @@
                         style="@style/BarcodesGroupTitle"
                         android:textColor="@color/black"
                         android:layout_marginBottom="10dp"
-                        android:text="@string/title_barcodes_1d" />
+                        android:text="@string/title_barcodes" />
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -173,11 +173,96 @@
                     android:layout_marginBottom="5dp"
                     android:orientation="vertical">
 
-                    <TextView
-                        style="@style/BarcodesGroupTitle"
-                        android:textColor="@color/black"
-                        android:layout_marginBottom="10dp"
-                        android:text="@string/title_barcodes_2d" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <FrameLayout
+                            android:id="@+id/frameLayout32"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            app:layout_constraintWidth_percent="0.33"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/cardBarcodesPostal"
+                                android:background="@drawable/card_shadow"
+                                style="@style/BarcodesTemplateCardView">
+
+                                <TextView
+                                    style="@style/BarcodesTemplateTitle"
+                                    android:text="@string/title_barcodes_postal"
+                                    app:drawableTopCompat="@drawable/ic_postal" />
+
+                            </androidx.cardview.widget.CardView>
+
+
+
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:id="@+id/frameLayout5"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            app:layout_constraintWidth_percent="0.33"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/frameLayout33"
+                            app:layout_constraintStart_toEndOf="@+id/frameLayout32"
+                            app:layout_constraintTop_toTopOf="parent">
+
+                                <androidx.cardview.widget.CardView
+                                    android:id="@+id/compositeCard"
+                                    style="@style/BarcodesTemplateCardView">
+
+                                    <TextView
+                                        style="@style/BarcodesTemplateTitle"
+                                        android:text="Composite"
+                                        app:drawableTopCompat="@drawable/ico_composite" />
+
+                                </androidx.cardview.widget.CardView>
+
+
+
+                        </FrameLayout>
+
+                        <FrameLayout
+                            android:id="@+id/frameLayout33"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintWidth_percent="0.33">
+
+                            <androidx.cardview.widget.CardView
+                                android:id="@+id/cardBarcodesPDF"
+                                style="@style/BarcodesTemplateCardView">
+
+                            <TextView
+                                style="@style/BarcodesTemplateTitle"
+                                android:text="@string/title_barcodes_2d_pdf"
+                                app:drawableTopCompat="@drawable/ico_2d_pdf417" />
+
+                            </androidx.cardview.widget.CardView>
+
+                        </FrameLayout>
+
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:orientation="vertical">
+
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -210,7 +295,7 @@
                         </FrameLayout>
 
                         <FrameLayout
-                            android:id="@+id/frameLayout5"
+                            android:id="@+id/frameLayout30"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             app:layout_constraintWidth_percent="0.33"
@@ -219,14 +304,16 @@
                             app:layout_constraintStart_toEndOf="@+id/frameLayout2"
                             app:layout_constraintTop_toTopOf="parent">
 
+
+
                             <androidx.cardview.widget.CardView
-                                android:id="@+id/cardBarcodesPDF"
+                                android:id="@+id/cardDotCode"
                                 style="@style/BarcodesTemplateCardView">
 
                                 <TextView
                                     style="@style/BarcodesTemplateTitle"
-                                    android:text="@string/title_barcodes_2d_pdf"
-                                    app:drawableTopCompat="@drawable/ico_2d_pdf417" />
+                                    android:text="@string/title_barcodes_dotcode"
+                                    app:drawableTopCompat="@drawable/ico_dotcode" />
 
                             </androidx.cardview.widget.CardView>
 
@@ -243,16 +330,7 @@
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintWidth_percent="0.33">
 
-                            <androidx.cardview.widget.CardView
-                                android:id="@+id/cardDotCode"
-                                style="@style/BarcodesTemplateCardView">
 
-                                <TextView
-                                    style="@style/BarcodesTemplateTitle"
-                                    android:text="@string/title_barcodes_dotcode"
-                                    app:drawableTopCompat="@drawable/ico_dotcode" />
-
-                            </androidx.cardview.widget.CardView>
 
                         </FrameLayout>
 
@@ -507,16 +585,7 @@
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintWidth_percent="0.33">
 
-                                <androidx.cardview.widget.CardView
-                                    android:id="@+id/compositeCard"
-                                    style="@style/BarcodesTemplateCardView">
 
-                                    <TextView
-                                        style="@style/BarcodesTemplateTitle"
-                                        android:text="Composite"
-                                        app:drawableTopCompat="@drawable/ico_composite" />
-
-                                </androidx.cardview.widget.CardView>
 
                             </FrameLayout>
                             <!-- Add other views as needed -->

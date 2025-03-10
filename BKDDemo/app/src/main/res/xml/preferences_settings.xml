@@ -48,6 +48,15 @@
             app:iconSpaceReserved="false"
             app:useSimpleSummaryProvider="true" />
 
+        <SwitchPreference
+            android:key="@string/key_composite_setting"
+            android:title="@string/composite_settings_title"
+            app:allowDividerAbove="true"
+            android:defaultValue="false"
+            app:isPreferenceVisible="false"
+            app:allowDividerBelow="true"
+            app:iconSpaceReserved="false" />
+
         <ListPreference
             android:key="@string/key_continuous_treshold2"
             android:title="@string/continuous_threshold_title"
@@ -215,7 +224,7 @@
         </com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding>
 
         <com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding
-            android:title="@string/title_barcodes_1d"
+            android:title="@string/title_barcodes"
             android:key="@string/key_barkode_types1D_settings"
             app:allowDividerAbove="false"
             app:allowDividerBelow="true"
@@ -378,6 +387,48 @@
                 app:allowDividerAbove="true"
                 app:allowDividerBelow="true"
                 app:prefPaddingStart="40" />
+            <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
+                android:key="@string/key_symbology_postalImb"
+                android:title="@string/symbology_postalImb"
+                app:allowDividerAbove="true"
+                app:allowDividerBelow="true"
+                app:prefPaddingStart="40" />
+            <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
+                android:key="@string/key_symbology_postnet"
+                android:title="@string/symbology_postnet"
+                app:allowDividerAbove="true"
+                app:allowDividerBelow="true"
+                app:prefPaddingStart="40" />
+            <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
+                android:key="@string/key_symbology_planet"
+                android:title="@string/symbology_planet"
+                app:allowDividerAbove="true"
+                app:allowDividerBelow="true"
+                app:prefPaddingStart="40" />
+            <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
+                android:key="@string/key_symbology_australianPost"
+                android:title="@string/symbology_australianPost"
+                app:allowDividerAbove="true"
+                app:allowDividerBelow="true"
+                app:prefPaddingStart="40" />
+            <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
+                android:key="@string/key_symbology_royalMail"
+                android:title="@string/symbology_royalMail"
+                app:allowDividerAbove="true"
+                app:allowDividerBelow="true"
+                app:prefPaddingStart="40" />
+            <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
+                android:key="@string/key_symbology_kix"
+                android:title="@string/symbology_kix"
+                app:allowDividerAbove="true"
+                app:allowDividerBelow="true"
+                app:prefPaddingStart="40" />
+            <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
+                android:key="@string/key_symbology_japanasePost"
+                android:title="@string/symbology_japanasePost"
+                app:allowDividerAbove="true"
+                app:allowDividerBelow="true"
+                app:prefPaddingStart="40" />
 
         </com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding>
 
@@ -517,7 +568,7 @@
         <SwitchPreference
             android:key="@string/key_automatic_show_bottomsheet2"
             android:title="@string/automatically_show_bottomsheet_title"
-            app:defaultValue="false"
+            app:defaultValue="true"
             app:allowDividerAbove="true"
             app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />

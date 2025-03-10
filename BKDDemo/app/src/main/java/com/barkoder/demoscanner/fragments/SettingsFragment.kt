@@ -666,6 +666,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
+                makePreferenceVisable(getString(R.string.key_composite_setting))
 
             }
             ScanMode.MRZ ->  {
@@ -733,6 +734,23 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
                 makePreferenceInvisible(getString(R.string.key_misshaped_code_capture))
+            }
+            ScanMode.POSTAL_CODES -> {
+                makePreferenceInvisible(getString(R.string.key_mrz_mode))
+                makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
+                makePreferenceInvisible(getString(R.string.key_enable_roi))
+                makePreferenceInvisible(getString(R.string.key_bigger_viewfinder))
+                makePreferenceInvisible(getString(R.string.key_narrow_viewfinder))
+                makePreferenceInvisible(getString(R.string.key_result_searchEngine))
+                makePreferenceInvisible(getString(R.string.key_enable_searchweb))
+                makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
+                makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
+                preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                makePreferenceInvisible(getString(R.string.key_dpm_mode))
+                makePreferenceInvisible(getString(R.string.key_misshaped_code_capture))
+                makePreferenceInvisible(getString(R.string.key_blured_scan_eanupc))
             }
         }
     }
@@ -1010,6 +1028,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val sharedPrefNameComposite = requireActivity().packageName + ScanMode.COMPOSITE.prefKey
         val sharedPrefComposite = requireActivity().getSharedPreferences(sharedPrefNameComposite, Context.MODE_PRIVATE)
 
+        val sharedPrefNamePostalCodes = requireActivity().packageName + ScanMode.POSTAL_CODES.prefKey
+        val sharedPrefPostalCodes = requireActivity().getSharedPreferences(sharedPrefNamePostalCodes, Context.MODE_PRIVATE)
+
 
 
         MaterialAlertDialogBuilder(requireContext())
@@ -1139,6 +1160,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     requireContext(),
                     false,
                     ScanMode.COMPOSITE,
+                    null
+                )
+                BKDConfigUtil.setDefaultValuesInPrefs(
+                    sharedPrefPostalCodes,
+                    requireContext(),
+                    false,
+                    ScanMode.POSTAL_CODES,
                     null
                 )
 

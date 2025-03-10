@@ -12,6 +12,7 @@
     <string name="key_scanner_resolution">pref_key_scanner_resolution</string>
     <string name="key_continuous_scaning">pref_key_continuous_scanning</string>
     <string name="key_continuous_treshold">pref_key_continuous_treshold</string>
+    <string name="key_composite_setting">pref_key_composite_mode</string>
     <string name="key_continuous_treshold2">pref_key_continuous_treshold2</string>
     <string name="key_continuous_treshold_result">pref_key_continuous_treshold_value</string>
     <string name="key_enable_location_in_preview">pref_key_enable_location_in_preview"</string>
@@ -63,6 +64,13 @@
     <string name="key_symbology_databar14">pref_key_symbology_databar14</string>
     <string name="key_symbology_databarLimited">pref_key_symbology_databarLimited</string>
     <string name="key_symbology_databarExpanded">pref_key_symbology_databarExpanded</string>
+    <string name="key_symbology_postalImb">pref_key_symbology_postalImb</string>
+    <string name="key_symbology_postnet">pref_key_symbology_postnet</string>
+    <string name="key_symbology_planet">pref_key_symbology_planet</string>
+    <string name="key_symbology_australianPost">pref_key_symbology_australianPost</string>
+    <string name="key_symbology_royalMail">pref_key_symbology_royalMail</string>
+    <string name="key_symbology_kix">pref_key_symbology_kix</string>
+    <string name="key_symbology_japanasePost">pref_key_symbology_japanasePost</string>
 
     <string name="key_result_parser">pref_key_result_parser</string>
     <string name="key_checksum_mrz">pref_key_checksum_mrz</string>

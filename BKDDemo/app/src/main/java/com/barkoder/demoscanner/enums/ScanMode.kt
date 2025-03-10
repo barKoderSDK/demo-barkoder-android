@@ -149,7 +149,14 @@ enum class ScanMode(
             R.string.key_symbology_ean8,
             R.string.key_symbology_databar14,
             R.string.key_symbology_databarExpanded,
-            R.string.key_symbology_databarLimited
+            R.string.key_symbology_databarLimited,
+            R.string.key_symbology_postalImb,
+            R.string.key_symbology_postnet,
+            R.string.key_symbology_planet,
+            R.string.key_symbology_australianPost,
+            R.string.key_symbology_royalMail,
+            R.string.key_symbology_kix,
+            R.string.key_symbology_japanasePost,
         )
         ),
     GLOBAL("Scan Mode", ""),
@@ -170,6 +177,16 @@ enum class ScanMode(
             R.string.key_symbology_databar14,
             R.string.key_symbology_databarExpanded,
             R.string.key_symbology_databarLimited,
+        )),
+    POSTAL_CODES("Postal codes", "postal_code_mode_settings", BarkoderConfigTemplate.POSTAL_CODES,
+        arrayOf(
+            R.string.key_symbology_postalImb,
+            R.string.key_symbology_postnet,
+            R.string.key_symbology_planet,
+            R.string.key_symbology_australianPost,
+            R.string.key_symbology_royalMail,
+            R.string.key_symbology_kix,
+            R.string.key_symbology_japanasePost,
         ));
 
 

@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "recentScan_table")
 data class RecentScan2(
-    val scanDate: String,
+    var scanDate: String,
     var scanText: String,
     var scanTypeName : String,
     var pictureBitmap : String? = null,
@@ -19,6 +19,7 @@ data class RecentScan2(
     var checkboxActive : Boolean = false,
     var checkedRecentItem : Boolean = false,
     var scannedTimesInARow : Int = 1,
+    var highlighted : Boolean = false,
 
     @PrimaryKey(autoGenerate = true)
     val id: Int? = null,

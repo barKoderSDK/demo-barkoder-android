@@ -58,8 +58,15 @@ class RecentScansAdapter(
 
         viewModel.readAllScans.observeForever { recentScans ->
             recentScans?.let {
+
+                val dateFormat = SimpleDateFormat("yyyy/MM/dd/HH:mm:ss.SSS", Locale.getDefault())
+
+                val sortedScans = recentScans.sortedBy { scan ->
+                    dateFormat.parse(scan.scanDate) // Convert scanDate string to Date for sorting
+                }
+
                 recentScansAdapterData.clear()
-                recentScansAdapterData.addAll(recentScans)
+                recentScansAdapterData.addAll(sortedScans)
                 filteredRecentScans.clear()
 
                 val scannedDataList = recentScansAdapterData.toMutableList()
@@ -159,6 +166,7 @@ class RecentScansAdapter(
                 } else {
                     Glide.with(context)
                         .load(currentItem.thumbnailBitmap?.let { File(it) })
+                        .placeholder(R.drawable.container__2_)
                         .into(barcodeImage)
                 }
 
@@ -224,14 +232,17 @@ class RecentScansAdapter(
                         if (scanDate != null) {
                             if (scanDate.after(startDateFilter) && scanDate.before(endDateFilter)) {
                                 recentScansAdapterData.add(i)
-
-// Notify data set changed (this is no longer needed inside the loop if called after the loop)
                                 notifyDataSetChanged()
                             }
                         }
                     }
                 } else {
-                    recentScansAdapterData.addAll(recentScans)
+                    val dateFormat = SimpleDateFormat("yyyy/MM/dd/HH:mm:ss.SSS", Locale.getDefault())
+                    val sortedScans = recentScans.sortedBy { scan ->
+                        dateFormat.parse(scan.scanDate) // Convert scanDate string to Date for sorting
+                    }
+
+                    recentScansAdapterData.addAll(sortedScans)
                 }
                 recentScansAdapterData.reverse()
                 val scannedDataList = recentScansAdapterData.toMutableList()
@@ -280,7 +291,12 @@ class RecentScansAdapter(
                         }
                     }
                 } else {
-                    recentScansAdapterData.addAll(recentScans)
+                    val dateFormat = SimpleDateFormat("yyyy/MM/dd/HH:mm:ss.SSS", Locale.getDefault())
+                    val sortedScans = recentScans.sortedBy { scan ->
+                        dateFormat.parse(scan.scanDate) // Convert scanDate string to Date for sorting
+                    }
+
+                    recentScansAdapterData.addAll(sortedScans)
                 }
 
                 val scannedDataList = recentScansAdapterData.toMutableList()

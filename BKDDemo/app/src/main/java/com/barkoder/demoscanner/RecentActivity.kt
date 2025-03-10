@@ -785,9 +785,12 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
             }
 
             // Load the image using Glide
-            Glide.with(this)
+            Glide.with(this@RecentActivity)
                 .load(barcodePicture?.let { File(it) })
+                .placeholder(R.drawable.container__2_)
                 .into(barcodeBitmap)
+
+
 
             barcodeValueText.text = barcodeValue
             barcodeTypeText.text = barcodeType

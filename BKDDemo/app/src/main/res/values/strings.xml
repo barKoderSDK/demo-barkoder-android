@@ -15,7 +15,7 @@
     <string name="storage_final_warning_message">Scan image cannot work without the requested permissions.</string>
     <string name="configuration_from_template_failed">Scanning configuration failed. %s</string>
     <string name="please_wait_message">Please wait…</string>
-    <string name="title_barcodes_1d">1D Barcodes</string>
+    <string name="title_barcodes">Barcodes</string>
     <string name="title_barcodes_2d">2D Barcodes</string>
     <string name="title_barcodes_1d_retail">1D Retail</string>
     <string name="title_barcodes_dotcode">DotCode</string>
@@ -23,6 +23,7 @@
     <string name="title_barcodes_2d_qr">QR Codes</string>
     <string name="title_barcodes_2d_pdf">PDF417</string>
     <string name="title_barcodes_2d_all">All 2D</string>
+    <string name="title_barcodes_postal">Postal codes</string>
     <string name="title_barcodes_utility">Utility</string>
     <string name="title_barcodes_showcase">Showcase</string>
     <string name="title_batch_multiscan_mode">MultiScan</string>
@@ -60,6 +61,7 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
     <string name="scanner_resolution_title">barKoder Resolution</string>
     <string name="continuous_scaning_title">Continuous Scanning</string>
     <string name="continuous_threshold_title">Continuous threshold</string>
+    <string name="composite_settings_title">Composite Mode</string>
     <string name="enable_location_in_preview_title">Enable location in preview</string>
     <string name="allow_pinch_to_zoom_title">Allow pinch to zoom</string>
     <string name="enable_roi_title">Enable region of interest</string>
@@ -105,6 +107,13 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
     <string name="symbology_databar14">Databar 14</string>
     <string name="symbology_databarExpanded">Databar Expanded</string>
     <string name="symbology_databarLimited">Databar Limited</string>
+    <string name="symbology_postalImb">Intelligent Mail</string>
+    <string name="symbology_postnet">Postnet</string>
+    <string name="symbology_planet">Planet</string>
+    <string name="symbology_australianPost">Australian Post</string>
+    <string name="symbology_royalMail">Royal Mail</string>
+    <string name="symbology_kix">PostNL KIX</string>
+    <string name="symbology_japanasePost">Japanase Post</string>
 
     <string name="result_settings_title">Result</string>
     <string name="checksum_settings_titlee">Require master checksum</string>

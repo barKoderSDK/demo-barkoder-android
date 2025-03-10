@@ -93,6 +93,7 @@ object DemoDefaults {
     const val SYMBOLOGY_COOP25_MAX_DEFAULT = CustomRangePreference.MAX_ALLOWED_VALUE
     val SYMBOLOGY_COOP25_CHK_DEFAULT = Barkoder.StandardChecksumType.Disabled
     const val SYMBOLOGY_C32_DEFAULT = true
+    const val COMPOSITE_MODE_ANYSCAN = false
     const val SYMBOLOGY_C32_MIN_DEFAULT = CustomRangePreference.MIN_ALLOWED_VALUE
     const val SYMBOLOGY_C32_MAX_DEFAULT = CustomRangePreference.MAX_ALLOWED_VALUE
     const val SYMBOLOGY_TELEPEN_DEFAULT = true

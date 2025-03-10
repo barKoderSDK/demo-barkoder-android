@@ -22,6 +22,19 @@ class SessionScanAdapter(
     private val recentScanItemClickListenerRef: WeakReference<OnSessionScanItemClickListener>?
 ) : RecyclerView.Adapter<SessionScanAdapter.ScanViewHolder>() {
 
+    private var recyclerView: RecyclerView? = null
+
+    // Override onAttachedToRecyclerView to store the RecyclerView reference
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
+        super.onAttachedToRecyclerView(recyclerView)
+        this.recyclerView = recyclerView
+    }
+
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
+        super.onDetachedFromRecyclerView(recyclerView)
+        this.recyclerView = null
+    }
+
     private var firstName : String? = null
     private var lastName : String? = null
     private var documentNumber : String? = null
@@ -72,6 +85,7 @@ class SessionScanAdapter(
         }
     }
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ScanViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.session_scan_item, parent, false)
         return ScanViewHolder(view)
@@ -84,6 +98,8 @@ class SessionScanAdapter(
             val currentItem = sessionScansAdapterData[position]
 
             // Bind the data to the view
+
+          moveHighlightedItemsToLast()
 
             extractDocumentRawText(currentItem.scanText)
             if(currentItem.scannedTimesInARow > 1) {
@@ -103,12 +119,28 @@ class SessionScanAdapter(
             val isHighlighted = position >= itemCount - highlightCount
 
             val listener = recentScanItemClickListenerRef?.get()
+
             holder.bind(currentItem.scanText, currentItem.scanTypeName, isHighlighted, listener, currentItem, position)
+
         } else {
             // Log or handle the error if position is out of bounds
             Log.e("SessionScanAdapter", "Position $position is out of bounds for one or more lists")
         }
     }
+
+
+    fun moveHighlightedItemsToLast() {
+        recyclerView?.post {
+
+            // Sort the list: non-highlighted items first, highlighted items last
+            sessionScansAdapterData.sortBy { it.highLight }
+
+        }
+    }
+
+
+
+
 
     override fun getItemCount(): Int {
         return sessionScansAdapterData.size
@@ -141,4 +173,7 @@ class SessionScanAdapter(
         }
 
     }
+
+
+
 }

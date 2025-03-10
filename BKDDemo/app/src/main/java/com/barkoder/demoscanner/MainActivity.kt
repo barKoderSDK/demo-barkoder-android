@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -248,6 +249,12 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
         binding.compositeCard.setOnClickListener {
             startActivity(getScannerIntent(ScanMode.COMPOSITE))
         }
+        binding.compositeCard.setOnClickListener {
+            startActivity(getScannerIntent(ScanMode.COMPOSITE))
+        }
+        binding.cardBarcodesPostal.setOnClickListener {
+            startActivity(getScannerIntent(ScanMode.POSTAL_CODES))
+        }
 
     }
 
@@ -364,10 +371,13 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
         croppedBarcodePath = null
 
 
+
+
         sessionScansAdapterData.clear()
 
         val sharedPreferences = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         sharedPreferences.edit().putInt("lastResultsOnFrame", results!!.size).apply()
+        sharedPreferences.edit().putBoolean("galleryScan", true).apply()
         resultsTemp = results
         binding.progressIndicator.isVisible = false
 
@@ -403,7 +413,7 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
                 croppedBarcodeImageOnScannedBarcode = thumbnail!!.get(index)
 
                 val scannedDate =
-                    SimpleDateFormat("yyyy/MM/dd/HH:mm:ss", Locale.getDefault()).format(Date())
+                    SimpleDateFormat("yyyy/MM/dd/HH:mm:ss.SSS", Locale.getDefault()).format(Date())
 
                 if(result.barcodeTypeName == "MRZ") {
                     if (result.images != null) {
@@ -470,6 +480,9 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
 
                     sessionScansAdapterData.add(SessionScan(scannedDate,result.textualData, if(result.extra != null) formatBarcodeName(result.barcodeTypeName, result.extra.toList()) else result.barcodeTypeName,picturePath, documentPath, signaturePath,mainPath,croppedBarcodePath,if(result.extra != null) formattedText(result.extra.toList()) else ""))
                     // Handle barcodes without images (most barcodes will likely not have images)
+                    for(i in sessionScansAdapterData) {
+                        i.highLight = true
+                    }
                     recentViewModel.addRecentScan(
                         RecentScan2(
                             scannedDate,
@@ -626,6 +639,48 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
         } catch (e: ActivityNotFoundException) {
             e.printStackTrace()
             Toast.makeText(this, "Unable to open app settings.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun convertPngToJpg(context: Context) {
+        val directory = File(context.filesDir, "images")
+        if (!directory.exists() || !directory.isDirectory) return
+
+        // List all PNG files in the directory
+        val pngFiles = directory.listFiles { file -> file.name.endsWith(".png") }
+
+        pngFiles?.forEach { pngFile ->
+            try {
+                // Load the PNG file as a Bitmap
+                val bitmap = BitmapFactory.decodeFile(pngFile.absolutePath)
+
+                // Create a new JPG file with the same name (but .jpg extension)
+                val jpgFileName = pngFile.nameWithoutExtension + ".jpg"
+                val jpgFile = File(directory, jpgFileName)
+
+                // Save the Bitmap as a JPG with 50% quality
+                val outputStream = FileOutputStream(jpgFile)
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 30, outputStream)
+                outputStream.flush()
+                outputStream.close()
+
+                // Delete the old PNG file
+                pngFile.delete()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+        }
+
+
+    }
+
+    fun onAppUpdate(context: Context) {
+        val sharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val isConverted = sharedPreferences.getBoolean("png_to_jpg_converted", false)
+
+        if (!isConverted) {
+            convertPngToJpg(context)
+            sharedPreferences.edit().putBoolean("png_to_jpg_converted", true).apply()
         }
     }
 

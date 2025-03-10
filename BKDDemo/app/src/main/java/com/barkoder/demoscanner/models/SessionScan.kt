@@ -3,7 +3,7 @@ package com.barkoder.demoscanner.models
 import java.io.Serializable
 
 data class SessionScan (
-    val scanDate: String,
+    var scanDate: String,
     var scanText: String,
     var scanTypeName : String,
     var pictureBitmap : String? = null,
