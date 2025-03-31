@@ -219,7 +219,6 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
             }
         }
 
-
         binding.btnShowDialog.setOnClickListener {
             showDialogBtn()
         }

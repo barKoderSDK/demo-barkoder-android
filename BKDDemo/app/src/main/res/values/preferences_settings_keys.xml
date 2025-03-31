@@ -101,6 +101,7 @@
     <string name="key_mrz_settings">pref_key_MRZ_settings</string>
     <string name="key_gallery_scan_settings">pref_key_gallery_scan_settings</string>
     <string name="key_composite_settings">pref_key_composite_settings</string>
+    <string name="key_postal_settings">pref_key_postal_settings</string>
 
     <string name="key_length">_length</string>
     <string name="key_min_length">_min_length</string>

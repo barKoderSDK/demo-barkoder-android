@@ -146,15 +146,22 @@ class RecentScansAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = recentScansAdapterData[position]
+
         if (getItemViewType(position) == HEADER_ITEM_VIEW) {
             (holder as HeaderViewHolder).dateHeader.text = currentItem.scanDate
         } else {
-            // Bind your row item data here
             (holder as RowViewHolder).apply {
+                if (currentItem.scannedTimesInARow > 1) {
+                    scannedCountText.text = "(${currentItem.scannedTimesInARow})"
+                    scannedCountText.visibility = View.VISIBLE
+                } else {
+                    scannedCountText.text = ""
+                    scannedCountText.visibility = View.GONE
+                }
 
-
-                if(currentItem.scanTypeName == "MRZ") {
-                    if(currentItem.pictureBitmap != null) {
+                // Handle image loading based on scan type
+                if (currentItem.scanTypeName == "MRZ") {
+                    if (currentItem.pictureBitmap != null) {
                         Glide.with(context)
                             .load(File(currentItem.pictureBitmap))
                             .into(barcodeImage)
@@ -170,7 +177,6 @@ class RecentScansAdapter(
                         .into(barcodeImage)
                 }
 
-
                 // Set the barcode result text based on scan type
                 barcodeResult.text = if (currentItem.scanTypeName == "MRZ") {
                     extractDocumentRawTextinRecents(currentItem.scanText)
@@ -182,11 +188,6 @@ class RecentScansAdapter(
                 val visibility = if (checkModeAdapter) View.VISIBLE else View.GONE
                 checkBoxItem.visibility = visibility
                 imageInfo.visibility = if (checkModeAdapter) View.INVISIBLE else View.VISIBLE
-
-                if(currentItem.scannedTimesInARow > 1) {
-                    scannedCountText.text = "(${currentItem.scannedTimesInARow.toString()})"
-                }
-
 
                 barcodeType.text = currentItem.scanTypeName
                 checkBoxItem.isChecked = currentItem.checkedRecentItem

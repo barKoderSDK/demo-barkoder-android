@@ -93,7 +93,7 @@ class AboutActivity : AppCompatActivity() {
        binding.txtFirstDescription.text = spannableFirstDescription
         binding.txtAppVersion.text = BuildConfig.VERSION_NAME
 
-        binding.txtSdkVersion.text = Barkoder.GetVersion()
+        binding.txtSdkVersion.text = "1.6.3"
         binding.txtLibVersion.text = Barkoder.GetLibVersion()
 
         binding.txtDeviceId.text = "${Barkoder.GetDeviceId()}"

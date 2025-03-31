@@ -410,6 +410,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
             startActivity(settingsIntent)
             false
         }
+        findPreference<Preference>(getString(R.string.key_postal_settings))!!.setOnPreferenceClickListener {
+            val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
+            settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 17)
+            startActivity(settingsIntent)
+            false
+        }
     }
 
     override fun onStart() {

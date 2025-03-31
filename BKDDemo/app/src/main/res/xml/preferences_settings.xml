@@ -759,6 +759,14 @@
             app:allowDividerBelow="true"
             app:iconSpaceReserved="false" />
 
+        <Preference
+            android:key="@string/key_postal_settings"
+            android:persistent="false"
+            android:title="@string/postal_mode_title"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="true"
+            app:iconSpaceReserved="false" />
+
 
 
 
