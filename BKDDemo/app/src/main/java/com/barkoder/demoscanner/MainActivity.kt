@@ -180,6 +180,16 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
             ScanMode.UPC_EAN_DEBLUR
         )
 
+//        BKDConfigUtil.setDefaultValuesInPrefs(
+//            getSharedPreferences(
+//                packageName + ScanMode.AR_MODE.prefKey,
+//                Context.MODE_PRIVATE
+//            ),
+//            this,
+//            true,
+//            ScanMode.AR_MODE
+//        )
+
         firebaseAnalytics = Firebase.analytics
 
         binding.cardBarcodesIndustrial1D.setOnClickListener {
@@ -254,6 +264,10 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
         }
         binding.cardBarcodesPostal.setOnClickListener {
             startActivity(getScannerIntent(ScanMode.POSTAL_CODES))
+        }
+
+        binding.cardArMode.setOnClickListener {
+            startActivity(getScannerIntent(ScanMode.AR_MODE))
         }
 
     }

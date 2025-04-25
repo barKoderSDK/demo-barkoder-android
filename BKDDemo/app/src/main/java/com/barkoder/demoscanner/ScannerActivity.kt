@@ -58,7 +58,10 @@ import com.barkoder.demoscanner.utils.ScannedResultsUtil
 import com.barkoder.demoscanner.utils.getBoolean
 import com.barkoder.demoscanner.utils.getString
 import com.barkoder.demoscanner.viewmodels.RecentScanViewModel
+import com.barkoder.enums.BarkoderARHeaderShowMode
+import com.barkoder.enums.BarkoderARMode
 import com.barkoder.enums.BarkoderCameraPosition
+import com.barkoder.enums.BarkoderResolution
 import com.barkoder.interfaces.BarkoderResultCallback
 import com.barkoder.interfaces.CameraCallback
 import com.barkoder.interfaces.MaxZoomAvailableCallback
@@ -97,6 +100,9 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
     private val scannedResults = mutableListOf<Barkoder.Result>()
     val itemsToMove = mutableListOf<SessionScan>()
     val scanCounters = mutableMapOf<String, Int>()
+    private lateinit var bottomSheetFragment : ResultBottomDialogFragment;
+    private var onPauseBool: Boolean = false;
+    private var factor: Float = 1f;
 
     private var picturePath: String? = null
     private var documentPath: String? = null
@@ -104,9 +110,6 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
     private var mainPath: String? = null
     private var resultsTemp: Array<out Barkoder.Result>? = null
     var sessionScansAdapterData: ArrayList<SessionScan> = arrayListOf()
-
-    private var checkOver21Dialog = false
-    private var expiredIDDialog = false
 
     private lateinit var recyclerViewBarcodePrint: RecyclerView
     private lateinit var adapterBarcodePrint: BarcodePrintAdapter
@@ -165,6 +168,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
                 recentViewModel.addRecentScan(scan)
             }
             finish()
+
         }
 
         recyclerViewBarcodePrint = findViewById(R.id.txtScannedResult)
@@ -179,8 +183,10 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
         videoStabilization = prefs.getBoolean("pref_key_videostabilization", false)
         frontCamera = prefs.getBoolean("pref_key_frontCamera", false)
 
+        binding.bkdView.getMaxZoomFactor(this)
 
         binding.btnSettings.setOnClickListener {
+            binding.bkdView.stopScanning()
             val settingsIntent = Intent(this@ScannerActivity, SettingsActivity::class.java)
             settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, scanMode.ordinal)
             startActivity(settingsIntent)
@@ -220,7 +226,10 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
         }
 
         binding.btnShowDialog.setOnClickListener {
-            showDialogBtn()
+            if(barcodeListResult.size > 0) {
+                showDialogBtn()
+            }
+
         }
 
         if (receivedBooleanValue) {
@@ -236,10 +245,6 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
             binding.bkdView.startScanning(this)
 
         }
-
-
-
-
     }
 
     override fun onStart() {
@@ -255,8 +260,14 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
 
         if (binding.bkdView.config.thresholdBetweenDuplicatesScans > -1) {
             binding.continiousModeOn.visibility = View.VISIBLE
-            binding.continiousModeOn.text =
-                "Continuous / ${binding.bkdView.config.thresholdBetweenDuplicatesScans.toString()}s delay"
+            if(binding.bkdView.config.arConfig.arMode == BarkoderARMode.OFF){
+                binding.continiousModeOn.text =
+                    "Continuous / ${binding.bkdView.config.thresholdBetweenDuplicatesScans.toString()}s delay"
+            } else {
+                binding.continiousModeOn.text =
+                    "AR on"
+            }
+
         } else {
             binding.continiousModeOn.visibility = View.GONE
         }
@@ -265,6 +276,9 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onResume() {
         super.onResume()
+
+
+
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         dynamicExposureIntesity = prefs.getString("pref_key_dynamic_exposureee", "0").toString()
         val sharedPreferences: SharedPreferences =
@@ -329,9 +343,20 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
         binding.bkdView.config.roiLineColor = ContextCompat.getColor(this, R.color.brand_color)
         binding.bkdView.config.locationLineColor = ContextCompat.getColor(this, R.color.brand_color)
 
+        if(binding.bkdView.config.isCloseSessionOnResultEnabled) {
+            binding.bkdView.config.arConfig.arMode = BarkoderARMode.OFF
+        } else {
+            if(binding.bkdView.config.arConfig.arMode != BarkoderARMode.OFF) {
+                binding.bkdView.config.decoderConfig.maximumResultsCount = 200
+                binding.bkdView.config.thresholdBetweenDuplicatesScans = 0
+                BarkoderConfig.SetMulticodeCachingEnabled(true);
+            }
+        }
+
         checkCameraPermission { granted ->
             if (granted) {
                 try {
+
                     binding.bkdView.startScanning(this)
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -344,10 +369,12 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
 
             }
         }
+
     }
 
     override fun onPause() {
-        binding.bkdView.stopScanning()
+        onPauseBool = true
+//        binding.bkdView.stopScanning()
         val sharedPreferences: SharedPreferences =
             getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
@@ -362,14 +389,10 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
 
 
     override fun onCameraReady() {
-        if (maxZoomFactor == -1f)
+        if(isZoomed) {
             binding.bkdView.getMaxZoomFactor(this)
-
-        else
-            setZoom()
-
-//        setFlash()
-        binding.bkdView.startScanning(this)
+            binding.bkdView.setZoomFactor(factor)
+        }
     }
 
 
@@ -386,6 +409,10 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
             .show()
     }
 
+    override fun onCameraOpened() {
+        TODO("Not yet implemented")
+    }
+
     override fun onMaxZoomAvailable(maxZoom: Float) {
         maxZoomFactor = maxZoom
     }
@@ -397,7 +424,13 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
         imageResult: Bitmap?
     ) {
 
-
+        if(binding.bkdView.config.arConfig.arMode != BarkoderARMode.OFF){
+            sessionScansAdapterData.clear()
+            barcodeListResult.clear()
+            barcodeListType.clear()
+            barcodeListDate.clear()
+            recentScansToAdd.clear()
+        }
 
         if (!results.isNullOrEmpty()) {
             // Add all results to the list
@@ -451,10 +484,10 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
         for (i in results!!) {
 
             barcodeListResult.add(i.textualData)
-
             barcodeListType.add(formatBarcodeName(i.barcodeTypeName, i.extra?.toList()))
-
             barcodeListDate.add(getCurrentTimeWithTimestamp())
+
+
         }
 
                 binding.btnShowDialog.visibility = View.VISIBLE
@@ -462,13 +495,17 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
                     croppedBarcodeImage = thumbnails!!.last()
                 }
 
+              if(results.size > 0) {
+                  bottomSheetFragment = ResultBottomDialogFragment.newInstance(
+                      barcodeListResult,
+                      barcodeListType, barcodeListDate, imageResult, results.size.toString(), sessionScansAdapterData
+                  )
+              }
 
-                val bottomSheetFragment = ResultBottomDialogFragment.newInstance(
-                    barcodeListResult,
-                    barcodeListType, barcodeListDate, imageResult, results.size.toString(), sessionScansAdapterData
-                )
 
-                setZoom()
+
+
+//                setZoom()
                 setFlash()
 
                 if (binding.bkdView.config.thresholdBetweenDuplicatesScans < 0) {
@@ -813,17 +850,23 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
 
                     continiousModeOn = true
 
+                        if(binding.bkdView.config.arConfig.arMode == BarkoderARMode.OFF) {
+                            uiScope.launch {
+                                onBarcodeScanned(
+                                    barcodeListResult,
+                                    barcodeListType,
+                                    barcodeListDate,
+                                    scannedBarcodes.toString(),
+                                    croppedBarcodeImage
+                                )
+                            }
 
-                        uiScope.launch {
-                            onBarcodeScanned(
-                                barcodeListResult,
-                                barcodeListType,
-                                barcodeListDate,
-                                scannedBarcodes.toString(),
-                                croppedBarcodeImage
-                            )
+                            binding.textScannedNumber.text = "(${scannedBarcodes.toString()})"
+                        } else {
+                            binding.textScannedNumber.text = "(${barcodeListResult.size.toString()})"
                         }
-                        binding.textScannedNumber.text = "(${scannedBarcodes.toString()})"
+
+
 
 
                     scannedResults.forEachIndexed { index, i ->
@@ -1056,7 +1099,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
     }
 
     private fun setZoom() {
-        var factor = 1.0f
+        factor = 1.0f
         if (isZoomed)
             factor = maxZoomFactor / 2f
 
@@ -1353,6 +1396,8 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
             }
             dialog.show()
         }
+
+
     }
 
 

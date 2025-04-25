@@ -12,10 +12,14 @@ import com.barkoder.BarkoderConfig
 import com.barkoder.BarkoderHelper
 import com.barkoder.demoscanner.R
 import com.barkoder.demoscanner.enums.ScanMode
+import com.barkoder.enums.BarkoderARHeaderShowMode
+import com.barkoder.enums.BarkoderARLocationType
+import com.barkoder.enums.BarkoderARMode
 import com.barkoder.enums.BarkoderConfigTemplate
 import com.barkoder.enums.BarkoderResolution
 import com.barkoder.exceptions.BarkoderException
 import com.barkoder.interfaces.BarkoderConfigCallback
+import com.barkoder.overlaymanager.BarkoderAROverlayRefresh
 
 object BKDConfigUtil {
     //TODO use Hilt for prefs and gson
@@ -129,6 +133,30 @@ object BKDConfigUtil {
         config.decoderConfig.decodingSpeed = Barkoder.DecodingSpeed.values()[
             sharedPref.getString(
                 resources.getString(R.string.key_scanner_decoding_speed)
+            ).toInt()
+        ]
+
+        config.arConfig.arMode = BarkoderARMode.values()[
+            sharedPref.getString(
+                resources.getString(R.string.key_ar_mode_options)
+            ).toInt()
+        ]
+
+        config.arConfig.locationType = BarkoderARLocationType.values()[
+            sharedPref.getString(
+                resources.getString(R.string.key_ar_location_type)
+            ).toInt()
+        ]
+
+        config.arConfig.headerShowMode = BarkoderARHeaderShowMode.values()[
+            sharedPref.getString(
+                resources.getString(R.string.key_ar_header_show_mode)
+            ).toInt()
+        ]
+
+        config.arConfig.overlayRefresh = BarkoderAROverlayRefresh.values()[
+            sharedPref.getString(
+                resources.getString(R.string.key_ar_overlay_fps)
             ).toInt()
         ]
 
@@ -430,6 +458,53 @@ object BKDConfigUtil {
                 configureJapanasePost(config,resources,sharedPref)
             }
 
+            BarkoderConfigTemplate.AR -> {
+                setBarkoderSettings(config,resources,sharedPref)
+                setResultSettings(config, resources, sharedPref)
+                configureAztecSymbology(config, resources, sharedPref)
+                configureAztecCompactSymbology(config, resources, sharedPref)
+                configureQRSymbology(config, resources, sharedPref)
+                configureQRMicroSymbology(config, resources, sharedPref)
+                configureCode128Symbology(config, resources, sharedPref)
+                configureCode93Symbology(config, resources, sharedPref)
+                configureCode39Symbology(config, resources, sharedPref)
+                configureCodabarSymbology(config, resources, sharedPref)
+                configureCode11Symbology(config, resources, sharedPref)
+                configureMsiSymbology(config, resources, sharedPref)
+                configureUpcASymbology(config, resources, sharedPref)
+                configureUpcESymbology(config, resources, sharedPref)
+                configureUpcE1Symbology(config, resources, sharedPref)
+                configureEan13Symbology(config, resources, sharedPref)
+                configureEan8Symbology(config, resources, sharedPref)
+                configurePDF417Symbology(config, resources, sharedPref)
+                configurePDF417MicroSymbology(config, resources, sharedPref)
+                configureDatamatrixSymbology(config, resources, sharedPref)
+                configureCode25Symbology(config, resources, sharedPref)
+                configureInterleaved25Symbology(config, resources, sharedPref)
+                configureITF14Symbology(config, resources, sharedPref)
+                configureIATA25Symbology(config, resources, sharedPref)
+                configureMatrix25Symbology(config, resources, sharedPref)
+                configureDatalogic25Symbology(config, resources, sharedPref)
+                configureCOOP25Symbology(config, resources, sharedPref)
+                configureCode32Symbology(config, resources, sharedPref)
+                configureTelepenSymbology(config, resources, sharedPref)
+                configureDotCodeSymbology(config, resources, sharedPref)
+                configureDatabar14Symbology(config,resources,sharedPref)
+                configureDatabarExpandedSymbology(config,resources,sharedPref)
+                configureDatabarLimitedSymbology(config,resources,sharedPref)
+                configurePostalImb(config,resources,sharedPref)
+                configurePostnet(config,resources,sharedPref)
+                configurePlanet(config,resources,sharedPref)
+                configureAustralianpost(config,resources,sharedPref)
+                configureRoyalMail(config,resources,sharedPref)
+                configureKIX(config,resources,sharedPref)
+                configureJapanasePost(config,resources,sharedPref)
+                configureARDoubleTapToFreeze(config,resources,sharedPref)
+                config.isCloseSessionOnResultEnabled = false
+                config.decoderConfig.maximumResultsCount = 200
+                config.thresholdBetweenDuplicatesScans = 0
+            }
+
             else -> {
                 setBarkoderSettings(config,resources,sharedPref)
                 setResultSettings(config, resources, sharedPref)
@@ -471,7 +546,7 @@ object BKDConfigUtil {
                 configureRoyalMail(config,resources,sharedPref)
                 configureKIX(config,resources,sharedPref)
                 configureJapanasePost(config,resources,sharedPref)
-
+                configureARDoubleTapToFreeze(config,resources,sharedPref)
             }
         }
     }
@@ -1097,7 +1172,17 @@ object BKDConfigUtil {
             )
     }
 
+    private fun configureARDoubleTapToFreeze(
+        config: BarkoderConfig,
+        resources: Resources,
+        sharedPref: SharedPreferences
+    ) {
+        config.arConfig.doubleTapToFreezeEnabled =
+            sharedPref.getBoolean(
+                resources.getString(R.string.key_double_tap_to_freez)
+            )
 
+    }
 
     private fun configureDotCodeSymbology(
         config: BarkoderConfig,
@@ -1197,11 +1282,51 @@ object BKDConfigUtil {
 
         prefsEditor.putBooleanWithOptions(
             sharedPrefs,
+            context.getString(R.string.key_double_tap_to_freez),
+            true,
+            onlyIfNotContains
+        )
+
+        prefsEditor.putBooleanWithOptions(
+            sharedPrefs,
             context.getString(R.string.key_auto_start_scan),
             DemoDefaults.AUTO_START_SCAN_DEFAULT,
             onlyIfNotContains
         )
+        if(scanMode == ScanMode.AR_MODE){
+            prefsEditor.putStringWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_ar_mode_options),
+                config?.arConfig?.arMode?.ordinal?.toString() ?: 1.toString(),
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putStringWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_ar_mode_options),
+                config?.arConfig?.arMode?.ordinal?.toString() ?: 0.toString(),
+                onlyIfNotContains
+            )
+        }
 
+        prefsEditor.putStringWithOptions(
+            sharedPrefs,
+            context.getString(R.string.key_ar_location_type),
+            config?.arConfig?.locationType?.ordinal?.toString() ?: 1.toString(),
+            onlyIfNotContains
+        )
+        prefsEditor.putStringWithOptions(
+            sharedPrefs,
+            context.getString(R.string.key_ar_header_show_mode),
+            config?.arConfig?.headerShowMode?.ordinal?.toString() ?: 1.toString(),
+            onlyIfNotContains
+        )
+        prefsEditor.putStringWithOptions(
+            sharedPrefs,
+            context.getString(R.string.key_ar_overlay_fps),
+            config?.arConfig?.overlayRefresh?.ordinal?.toString() ?: 1.toString(),
+            onlyIfNotContains
+        )
 
         //region Barkoder Settings
         if(scanMode.template != null) {
@@ -1756,21 +1881,40 @@ object BKDConfigUtil {
             config?.decoderConfig?.DatabarExpanded?.enabled ?: true,
             onlyIfNotContains
         )
-        prefsEditor.putBooleanWithOptions(
-            sharedPrefs,
-            context.getString(R.string.key_symbology_postalImb),
-            true,
-            onlyIfNotContains
-        )
+        if(scanMode == ScanMode.AR_MODE) {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_postalImb),
+                false,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_postalImb),
+                true,
+                onlyIfNotContains
+            )
+        }
 
 
+        if(scanMode == ScanMode.AR_MODE) {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_royalMail),
+                false,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_royalMail),
+                true,
+                onlyIfNotContains
+            )
+        }
 
-        prefsEditor.putBooleanWithOptions(
-            sharedPrefs,
-            context.getString(R.string.key_symbology_royalMail),
-            true,
-            onlyIfNotContains
-        )
+
         if(scanMode == ScanMode.POSTAL_CODES) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
@@ -2224,6 +2368,19 @@ object BKDConfigUtil {
         config.decoderConfig.UpcA.enabled = false
         config.decoderConfig.Ean8.enabled = false
         config.decoderConfig.Ean13.enabled = false
+    }
+
+    private fun adaptConfigForAR(config: BarkoderConfig) {
+        config.arConfig.nonSelectedLocationLineWidth = 10f;
+        config.arConfig.headerShowMode = BarkoderARHeaderShowMode.NEVER
+        config.thresholdBetweenDuplicatesScans = 0
+        config.decoderConfig.maximumResultsCount = 200
+        config.decoderConfig.duplicatesDelayMs = 0
+        BarkoderConfig.SetMulticodeCachingEnabled(true)
+        BarkoderConfig.SetMulticodeCachingDuration(0)
+        config.isCloseSessionOnResultEnabled = false
+
+
     }
 
     private fun adaptConfigDisableMultiScan(config: BarkoderConfig) {

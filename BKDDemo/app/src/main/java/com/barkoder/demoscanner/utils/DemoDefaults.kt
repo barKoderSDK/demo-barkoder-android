@@ -2,6 +2,7 @@ package com.barkoder.demoscanner.utils
 
 import com.barkoder.Barkoder
 import com.barkoder.demoscanner.customcontrols.CustomRangePreference
+import com.barkoder.enums.BarkoderARMode
 import com.barkoder.enums.BarkoderResolution
 
 object DemoDefaults {
@@ -12,6 +13,7 @@ object DemoDefaults {
     val DECODING_SPEED_DEFAULT_GALLERY_RIGORIUS = Barkoder.DecodingSpeed.Rigorous
     val BARKODER_RESOLUTION_DEFAULT = BarkoderResolution.HD
     val BARKODER_RESOLUTION_DEFAULT_TEMPLATES_VIN_DPM = BarkoderResolution.FHD
+    val BARKODER_AR_MODE = BarkoderARMode.OFF
     const val CLOSE_SESSION_ON_RESULT_DEFAULT = true
     const val ENABLE_LOCATION_IN_PREVIEW_DEFAULT = true
     const val ALLOW_PINCH_TO_ZOOM_DEFAULT = false

@@ -27,6 +27,7 @@
     <string name="title_barcodes_utility">Utility</string>
     <string name="title_barcodes_showcase">Showcase</string>
     <string name="title_batch_multiscan_mode">MultiScan</string>
+    <string name="title_ar_mode">AR</string>
     <string name="title_recent">Recent</string>
     <string name="title_about">About</string>
     <string name="title_scan">Scan</string>
@@ -58,6 +59,10 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
     <string name="auto_start_scan_desc">Use the selected settings to automatically start scanning next time I open the app</string>
     <string name="scanner_settings_title">barKoder Settings</string>
     <string name="scanner_decoding_speed_title">Decoding Speed</string>
+    <string name="scanner_ar_mode_title">AR Mode</string>
+    <string name="scanner_ar_location_type_title">Location Type</string>
+    <string name="scanner_ar_header_show_title">Header Show Mode</string>
+    <string name="scanner_ar_overlay_fps_title">Overlay smoothness</string>
     <string name="scanner_resolution_title">barKoder Resolution</string>
     <string name="continuous_scaning_title">Continuous Scanning</string>
     <string name="continuous_threshold_title">Continuous threshold</string>
@@ -74,6 +79,7 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
     <string name="setting_mrz_title">MRZ Mode</string>
     <string name="narrow_viewfinder_dpm_title">Narrow viewfinder</string>
     <string name="automatically_show_bottomsheet_title">Automatically show bottomsheet</string>
+    <string name="double_tap_to_freez_title">Double Tap to Freeze</string>
 
     <string name="symbologies_settings_title">Barcode Types %s</string>
     <string name="symbology_aztec">Aztec</string>
@@ -117,6 +123,7 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
 
     <string name="result_settings_title">Result</string>
     <string name="checksum_settings_titlee">Require master checksum</string>
+    <string name="ar_settings_titlee">AR Settings</string>
     <string name="result_parser_title">Formatting Type</string>
     <string name="result_charset_title">Charset</string>
     <string name="result_searchEngine_title">Default search engine</string>

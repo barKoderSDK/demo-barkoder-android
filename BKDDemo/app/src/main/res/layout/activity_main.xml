@@ -585,7 +585,16 @@
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintWidth_percent="0.33">
 
+                                <androidx.cardview.widget.CardView
+                                    android:id="@+id/cardArMode"
+                                    style="@style/BarcodesTemplateCardView">
 
+                                    <TextView
+                                        style="@style/BarcodesTemplateTitle"
+                                        android:text="@string/title_ar_mode"
+                                        app:drawableTopCompat="@drawable/ico_multi" />
+
+                                </androidx.cardview.widget.CardView>
 
                             </FrameLayout>
                             <!-- Add other views as needed -->

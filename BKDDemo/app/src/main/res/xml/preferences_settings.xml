@@ -28,25 +28,9 @@
             app:iconSpaceReserved="false"
             app:useSimpleSummaryProvider="true" />
 
-        <SwitchPreference
-            android:key="@string/key_continuous_scaning"
-            android:title="@string/continuous_scaning_title"
-            app:allowDividerAbove="true"
-            android:defaultValue="false"
-            app:allowDividerBelow="true"
-            app:iconSpaceReserved="false" />
 
-        <ListPreference
-            android:key="@string/key_continuous_treshold"
-            android:title="@string/continuous_threshold_title"
-            app:isPreferenceVisible="false"
-            android:entries="@array/continuous_treshold_entries"
-            android:entryValues="@array/continuous_treshold_values"
-            android:defaultValue="5"
-            app:allowDividerAbove="true"
-            app:allowDividerBelow="true"
-            app:iconSpaceReserved="false"
-            app:useSimpleSummaryProvider="true" />
+
+
 
         <SwitchPreference
             android:key="@string/key_composite_setting"
@@ -57,17 +41,7 @@
             app:allowDividerBelow="true"
             app:iconSpaceReserved="false" />
 
-        <ListPreference
-            android:key="@string/key_continuous_treshold2"
-            android:title="@string/continuous_threshold_title"
-            app:isPreferenceVisible="false"
-            android:entries="@array/continuous_treshold_entries"
-            android:entryValues="@array/continuous_treshold_values"
-            android:defaultValue="5"
-            app:allowDividerAbove="true"
-            app:allowDividerBelow="true"
-            app:iconSpaceReserved="false"
-            app:useSimpleSummaryProvider="true" />
+
 
         <SwitchPreference
             android:key="@string/key_enable_location_in_preview"
@@ -101,21 +75,21 @@
             android:key="@string/key_vibrate"
             android:title="@string/vibrate_on_success_title"
             app:allowDividerAbove="true"
-            app:allowDividerBelow="false"
+            app:allowDividerBelow="true"
             app:iconSpaceReserved="false" />
 
         <SwitchPreference
             android:key="@string/key_misshaped_code_capture"
             android:title="@string/misshapped_code_capture_title"
             app:allowDividerAbove="true"
-            app:allowDividerBelow="false"
+            app:allowDividerBelow="true"
             app:iconSpaceReserved="false" />
 
         <SwitchPreference
             android:key="@string/key_blured_scan_eanupc"
             android:title="@string/blurred_scan_upcean_title"
             app:allowDividerAbove="true"
-            app:allowDividerBelow="false"
+            app:allowDividerBelow="true"
             app:iconSpaceReserved="false" />
 
         <SwitchPreference
@@ -149,6 +123,89 @@
             app:iconSpaceReserved="false" />
 
 
+        <SwitchPreference
+            android:key="@string/key_continuous_scaning"
+            android:title="@string/continuous_scaning_title"
+            app:allowDividerAbove="true"
+            android:defaultValue="false"
+            app:allowDividerBelow="true"
+            app:iconSpaceReserved="false" />
+
+        <ListPreference
+            android:key="@string/key_continuous_treshold"
+            android:title="@string/continuous_threshold_title"
+            app:isPreferenceVisible="false"
+            android:entries="@array/continuous_treshold_entries"
+            android:entryValues="@array/continuous_treshold_values"
+            android:defaultValue="5"
+            app:allowDividerAbove="true"
+            app:allowDividerBelow="true"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            android:key="@string/key_continuous_treshold2"
+            android:title="@string/continuous_threshold_title"
+            app:isPreferenceVisible="false"
+            android:entries="@array/continuous_treshold_entries"
+            android:entryValues="@array/continuous_treshold_values"
+            android:defaultValue="5"
+            app:allowDividerAbove="true"
+            app:allowDividerBelow="true"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
+
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="@string/key_ar_preference"
+        android:title="@string/ar_settings_titlee"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
+        app:isPreferenceVisible="false"
+        app:iconSpaceReserved="false">
+
+        <ListPreference
+            android:key="@string/key_ar_mode_options"
+            android:title="@string/scanner_ar_mode_title"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="true"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            android:key="@string/key_ar_location_type"
+            android:title="@string/scanner_ar_location_type_title"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="true"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            android:key="@string/key_ar_header_show_mode"
+            android:title="@string/scanner_ar_header_show_title"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="true"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            android:key="@string/key_ar_overlay_fps"
+            android:title="@string/scanner_ar_overlay_fps_title"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="true"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
+            android:key="@string/key_double_tap_to_freez"
+            android:title="@string/double_tap_to_freez_title"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="true"
+            android:defaultValue="true"
+            app:prefPaddingStart="40" />
 
     </PreferenceCategory>
 

@@ -28,8 +28,12 @@ import com.barkoder.demoscanner.utils.BKDConfigUtil
 import com.barkoder.demoscanner.utils.DemoDefaults
 import com.barkoder.demoscanner.utils.getBoolean
 import com.barkoder.demoscanner.utils.getString
+import com.barkoder.enums.BarkoderARHeaderShowMode
+import com.barkoder.enums.BarkoderARLocationType
+import com.barkoder.enums.BarkoderARMode
 import com.barkoder.enums.BarkoderConfigTemplate
 import com.barkoder.enums.BarkoderResolution
+import com.barkoder.overlaymanager.BarkoderAROverlayRefresh
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class SettingsFragment : PreferenceFragmentCompat() {
@@ -43,12 +47,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private val PREFS_NAME = "MyPrefsFile"
 
     private val BARKODER_SETTINGS_CATEGORY_INDEX = 0
-    private val BARCODE_TYPES_CATEGORY_INDEX = 1
-    private val RESULT_CATEGORY_INDEX = 2
-    private val WEEBHOOK_SETTINGS_CATEGORY_INDEX = 3
-    private val GENERAL_SETTINGS_CATEGORY_INDEX = 4
-    private val CAMERA_SETTINGS_CATEGORY_INDEX = 5
-    private val INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX = 6
+    private val BARKODER_AR_SETTINGS = 1
+    private val BARCODE_TYPES_CATEGORY_INDEX = 2
+    private val RESULT_CATEGORY_INDEX = 3
+    private val WEEBHOOK_SETTINGS_CATEGORY_INDEX = 4
+    private val GENERAL_SETTINGS_CATEGORY_INDEX = 5
+    private val CAMERA_SETTINGS_CATEGORY_INDEX = 6
+    private val INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX = 7
 
     lateinit var continuisTresHoldPreferences : ListPreference
 
@@ -89,12 +94,17 @@ class SettingsFragment : PreferenceFragmentCompat() {
         if (scanMode.template != null) {
             setUIForScanModeWithTemplate()
             setDecodingSpeedEntries()
+            setARModeEntries()
+            setARLocationTypeEntries()
+            setARHeaderShowModeEntries()
+            setAROverlayFPSEntries()
             setMrzCheckSum()
             setBarkoderResolutionEntries()
             setResultParserEntries()
             setResultCharsetEntries()
             setThreshHoldContiniousEntries()
             onContiniousModeOnListener()
+            onARModeSwitchListener()
             setDynamicExposureEntries()
             findPreference<Preference>(getString(R.string.key_reset_config))!!.setOnPreferenceClickListener {
                 showResetConfigConfirmationDialog()
@@ -104,6 +114,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
             defaultSearchEngine()
             defaultCopyTerminator()
             setDecodingSpeedEntries()
+            setARModeEntries()
+            setARLocationTypeEntries()
+            setARHeaderShowModeEntries()
+            setAROverlayFPSEntries()
             setMrzCheckSum()
             setBarkoderResolutionEntries()
             setResultParserEntries()
@@ -111,6 +125,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             openWebHookConfigurationDialog()
             setThreshHoldContiniousEntries()
             onContiniousModeOnListener()
+            onARModeSwitchListener()
             setDynamicExposureEntries()
 
             findPreference<Preference>(getString(R.string.key_reset_config))!!.setOnPreferenceClickListener {
@@ -199,22 +214,68 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun onContiniousModeOnListener () {
         var continuiusModePreference = findPreference<SwitchPreference>("pref_key_continuous_scanning")
         continuisTresHoldPreferences = findPreference<ListPreference>("pref_key_continuous_treshold")!!
+       var arModePreference = findPreference<ListPreference>("pref_key_ar_mode_options")!!
 
         continuiusModePreference!!.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
             val isVisible = newValue as Boolean
             if (isVisible) {
                 continuisTresHoldPreferences.isVisible = true
+                if(scanMode != ScanMode.AR_MODE  && scanMode != ScanMode.MISSHAPED_1D && scanMode != ScanMode.DPM && scanMode != ScanMode.DOTCODE) {
+                    makePreferenceVisable(getString(R.string.key_ar_preference))
+                }
             } else {
                 continuisTresHoldPreferences.isVisible = false
+                if(scanMode != ScanMode.AR_MODE  && scanMode != ScanMode.MISSHAPED_1D && scanMode != ScanMode.DPM && scanMode != ScanMode.DOTCODE) {
+                    makePreferenceInvisible(getString(R.string.key_ar_preference))
+                }
             }
             true
         }
 
         if(continuiusModePreference!!.isChecked == true) {
             continuisTresHoldPreferences.isVisible = true
+            if(scanMode != ScanMode.AR_MODE  && scanMode != ScanMode.MISSHAPED_1D && scanMode != ScanMode.DPM && scanMode != ScanMode.DOTCODE) {
+                makePreferenceVisable(getString(R.string.key_ar_preference))
+            }
+
         } else {
             continuisTresHoldPreferences.isVisible = false
+            if(scanMode != ScanMode.AR_MODE  && scanMode != ScanMode.MISSHAPED_1D && scanMode != ScanMode.DPM && scanMode != ScanMode.DOTCODE) {
+                makePreferenceInvisible(getString(R.string.key_ar_preference))
+            }
         }
+    }
+
+    private fun onARModeSwitchListener() {
+        val arModePreference = findPreference<ListPreference>("pref_key_ar_mode_options")!!
+        val arLocationTypePreference = findPreference<ListPreference>("pref_key_ar_location_type")!!
+        val arHeaderShowModePreference = findPreference<ListPreference>("pref_key_ar_header_show_mode")!!
+        val arOverlaySmoothnessPreference = findPreference<ListPreference>("pref_key_ar_overlay_fps")!!
+        val arDoubleTapFreezePreference = findPreference<SwitchWithPaddingPreference>("pref_key_double_tap_to_freez")!!
+
+        if(scanMode != ScanMode.AR_MODE) {
+            arModePreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+                val newValueIndex = arModePreference.findIndexOfValue(newValue.toString())
+                val isFirstOption = newValueIndex == 0
+
+                arLocationTypePreference.isVisible = !isFirstOption
+                arHeaderShowModePreference.isVisible = !isFirstOption
+                arOverlaySmoothnessPreference.isVisible = !isFirstOption
+                arDoubleTapFreezePreference.isVisible = !isFirstOption
+
+                true
+            }
+
+            // Also update initial visibility based on current value
+            val currentIndex = arModePreference.findIndexOfValue(arModePreference.value)
+            val isFirstOption = currentIndex == 0
+
+            arLocationTypePreference.isVisible = !isFirstOption
+            arHeaderShowModePreference.isVisible = !isFirstOption
+            arOverlaySmoothnessPreference.isVisible = !isFirstOption
+            arDoubleTapFreezePreference.isVisible = !isFirstOption
+        }
+
     }
 
     private fun settingsChangedTemplateMessage() {
@@ -511,6 +572,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+
             }
             ScanMode.DPM -> {
                 makePreferenceInvisible(getString(R.string.key_mrz_mode))
@@ -758,6 +820,27 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_misshaped_code_capture))
                 makePreferenceInvisible(getString(R.string.key_blured_scan_eanupc))
             }
+            ScanMode.AR_MODE -> {
+                makePreferenceInvisible(getString(R.string.key_mrz_mode))
+                makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
+                makePreferenceInvisible(getString(R.string.key_enable_roi))
+                makePreferenceInvisible(getString(R.string.key_bigger_viewfinder))
+                makePreferenceInvisible(getString(R.string.key_narrow_viewfinder))
+                makePreferenceInvisible(getString(R.string.key_result_searchEngine))
+                makePreferenceInvisible(getString(R.string.key_enable_searchweb))
+                makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
+                makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
+                preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(WEEBHOOK_SETTINGS_CATEGORY_INDEX).isVisible = false
+                makePreferenceInvisible(getString(R.string.key_dpm_mode))
+                makePreferenceInvisible(getString(R.string.key_misshaped_code_capture))
+                makePreferenceInvisible(getString(R.string.key_blured_scan_eanupc))
+                makePreferenceInvisible(getString(R.string.key_continuous_scaning))
+                makePreferenceInvisible(getString(R.string.key_vibrate))
+                makePreferenceVisable(getString(R.string.key_ar_preference))
+            }
         }
     }
 
@@ -779,6 +862,126 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         decodingSpeedPref.value =
             preferenceManager.sharedPreferences.getString(decodingSpeedPref.key)
+    }
+
+    private fun setARModeEntries() {
+        val arPreferences =
+            findPreference<ListPreference>(getString(R.string.key_ar_mode_options))!!
+
+        val entries: MutableList<CharSequence> = arrayListOf()
+        val entryValues: MutableList<CharSequence> = arrayListOf()
+
+        for (item in BarkoderARMode.values()) {
+            if(scanMode != ScanMode.AR_MODE) {
+                if (item.ordinal == 0) {
+                    entries.add("Off")
+                    entryValues.add(item.ordinal.toString())
+                }
+            }
+            if(item.ordinal == 1) {
+                entries.add("Not selected By default")
+                entryValues.add(item.ordinal.toString())
+            }
+            if(item.ordinal == 2) {
+                entries.add("Selected By default")
+                entryValues.add(item.ordinal.toString())
+            }
+            if(item.ordinal == 3) {
+                entries.add("Always selected")
+                entryValues.add(item.ordinal.toString())
+            }
+
+        }
+
+        arPreferences.entries = entries.toTypedArray()
+        arPreferences.entryValues = entryValues.toTypedArray()
+
+        arPreferences.value =
+            preferenceManager.sharedPreferences.getString(arPreferences.key)
+    }
+
+    private fun setARLocationTypeEntries() {
+        val arLocationTypePreferences =
+            findPreference<ListPreference>(getString(R.string.key_ar_location_type))!!
+
+        val entries: MutableList<CharSequence> = arrayListOf()
+        val entryValues: MutableList<CharSequence> = arrayListOf()
+
+        for (item in BarkoderARLocationType.values()) {
+            if(item.ordinal == 0) {
+                entries.add("None")
+                entryValues.add(item.ordinal.toString())
+            }
+            if(item.ordinal == 1) {
+                entries.add("Tight")
+                entryValues.add(item.ordinal.toString())
+            }
+            if(item.ordinal == 2) {
+                entries.add("Bounding Box")
+                entryValues.add(item.ordinal.toString())
+            }
+        }
+
+        arLocationTypePreferences.entries = entries.toTypedArray()
+        arLocationTypePreferences.entryValues = entryValues.toTypedArray()
+
+        arLocationTypePreferences.value =
+            preferenceManager.sharedPreferences.getString(arLocationTypePreferences.key)
+    }
+
+    private fun setARHeaderShowModeEntries() {
+        val arHeaderShowModePreferences =
+            findPreference<ListPreference>(getString(R.string.key_ar_header_show_mode))!!
+
+        val entries: MutableList<CharSequence> = arrayListOf()
+        val entryValues: MutableList<CharSequence> = arrayListOf()
+
+        for (item in BarkoderARHeaderShowMode.values()) {
+            if(item.ordinal == 0) {
+                entries.add("Never")
+                entryValues.add(item.ordinal.toString())
+            }
+            if(item.ordinal == 1) {
+                entries.add("Always")
+                entryValues.add(item.ordinal.toString())
+            }
+            if(item.ordinal == 2) {
+                entries.add("On Selected")
+                entryValues.add(item.ordinal.toString())
+            }
+        }
+
+        arHeaderShowModePreferences.entries = entries.toTypedArray()
+        arHeaderShowModePreferences.entryValues = entryValues.toTypedArray()
+
+        arHeaderShowModePreferences.value =
+            preferenceManager.sharedPreferences.getString(arHeaderShowModePreferences.key)
+    }
+
+    private fun setAROverlayFPSEntries() {
+        val arAROverlayFPSPreferences =
+            findPreference<ListPreference>(getString(R.string.key_ar_overlay_fps))!!
+
+        val entries: MutableList<CharSequence> = arrayListOf()
+        val entryValues: MutableList<CharSequence> = arrayListOf()
+
+        for (item in BarkoderAROverlayRefresh.values()) {
+            if(item.ordinal == 0) {
+                entries.add("Standard")
+                entryValues.add(item.ordinal.toString())
+            }
+            if(item.ordinal == 1) {
+                entries.add("Smooth")
+                entryValues.add(item.ordinal.toString())
+            }
+
+        }
+
+        arAROverlayFPSPreferences.entries = entries.toTypedArray()
+        arAROverlayFPSPreferences.entryValues = entryValues.toTypedArray()
+
+        arAROverlayFPSPreferences.value =
+            preferenceManager.sharedPreferences.getString(arAROverlayFPSPreferences.key)
     }
 
 
@@ -976,6 +1179,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 )
                 reloadAllPrefsValues()
                 continuisTresHoldPreferences.isVisible = false
+                if(scanMode != ScanMode.AR_MODE) {
+                    makePreferenceInvisible("pref_key_ar_preferenece")
+                }
             }
             .setNegativeButton(R.string.cancel_button, null)
             .show()
@@ -1036,6 +1242,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         val sharedPrefNamePostalCodes = requireActivity().packageName + ScanMode.POSTAL_CODES.prefKey
         val sharedPrefPostalCodes = requireActivity().getSharedPreferences(sharedPrefNamePostalCodes, Context.MODE_PRIVATE)
+
+        val sharedPrefNameARMode = requireActivity().packageName + ScanMode.AR_MODE.prefKey
+        val sharedPrefARMode = requireActivity().getSharedPreferences(sharedPrefNameARMode, Context.MODE_PRIVATE)
 
 
 
@@ -1173,6 +1382,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     requireContext(),
                     false,
                     ScanMode.POSTAL_CODES,
+                    null
+                )
+
+                BKDConfigUtil.setDefaultValuesInPrefs(
+                    sharedPrefARMode,
+                    requireContext(),
+                    false,
+                    ScanMode.AR_MODE,
                     null
                 )
 
