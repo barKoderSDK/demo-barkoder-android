@@ -1421,12 +1421,23 @@ object BKDConfigUtil {
                 ?: DemoDefaults.ENABLE_LOCATION_IN_PREVIEW_DEFAULT,
             onlyIfNotContains
         )
-        prefsEditor.putBooleanWithOptions(
-            sharedPrefs,
-            context.getString(R.string.key_allow_pinch_to_zoom),
-            config?.isPinchToZoomEnabled ?: DemoDefaults.ALLOW_PINCH_TO_ZOOM_DEFAULT,
-            onlyIfNotContains
-        )
+
+        if(scanMode == ScanMode.AR_MODE) {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_allow_pinch_to_zoom),
+                config?.isPinchToZoomEnabled ?: true,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_allow_pinch_to_zoom),
+                config?.isPinchToZoomEnabled ?: DemoDefaults.ALLOW_PINCH_TO_ZOOM_DEFAULT,
+                onlyIfNotContains
+            )
+        }
+
 
         if(scanMode.title == "Batch MultiScan") {
             prefsEditor.putBooleanWithOptions(
@@ -1560,38 +1571,75 @@ object BKDConfigUtil {
         //endregion Barkoder Settings
 
         //region Barcode Types
+        if(scanMode == ScanMode.AR_MODE){
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_aztec),
+                config?.decoderConfig?.Aztec?.enabled ?: false,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_aztec),
+                config?.decoderConfig?.Aztec?.enabled ?: DemoDefaults.SYMBOLOGY_AZTEC_DEFAULT,
+                onlyIfNotContains
+            )
+        }
 
-        prefsEditor.putBooleanWithOptions(
-            sharedPrefs,
-            context.getString(R.string.key_symbology_aztec),
-            config?.decoderConfig?.Aztec?.enabled ?: DemoDefaults.SYMBOLOGY_AZTEC_DEFAULT,
-            onlyIfNotContains
-        )
-        prefsEditor.putBooleanWithOptions(
-            sharedPrefs,
-            context.getString(R.string.key_symbology_aztec_compact),
-            config?.decoderConfig?.AztecCompact?.enabled
-                ?: DemoDefaults.SYMBOLOGY_AZTEC_COMPACT_DEFAULT,
-            onlyIfNotContains
-        )
+        if(scanMode == ScanMode.AR_MODE){
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_aztec_compact),
+                config?.decoderConfig?.AztecCompact?.enabled ?: false,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_aztec_compact),
+                config?.decoderConfig?.AztecCompact?.enabled
+                    ?: DemoDefaults.SYMBOLOGY_AZTEC_COMPACT_DEFAULT,
+                onlyIfNotContains
+            )
+        }
         prefsEditor.putBooleanWithOptions(
             sharedPrefs,
             context.getString(R.string.key_symbology_qr),
             config?.decoderConfig?.QR?.enabled ?: DemoDefaults.SYMBOLOGY_QR_DEFAULT,
             onlyIfNotContains
         )
-        prefsEditor.putBooleanWithOptions(
-            sharedPrefs,
-            context.getString(R.string.key_symbology_qr_micro),
-            config?.decoderConfig?.QRMicro?.enabled ?: DemoDefaults.SYMBOLOGY_QR_MICRO_DEFAULT,
-            onlyIfNotContains
-        )
-        prefsEditor.putBooleanWithOptions(
-            sharedPrefs,
-            context.getString(R.string.key_symbology_c11),
-            config?.decoderConfig?.Code11?.enabled ?: DemoDefaults.SYMBOLOGY_C11_DEFAULT,
-            onlyIfNotContains
-        )
+        if(scanMode == ScanMode.AR_MODE){
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_qr_micro),
+                config?.decoderConfig?.QRMicro?.enabled ?: false,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_qr_micro),
+                config?.decoderConfig?.QRMicro?.enabled ?: DemoDefaults.SYMBOLOGY_QR_MICRO_DEFAULT,
+                onlyIfNotContains
+            )
+        }
+
+        if(scanMode == ScanMode.AR_MODE){
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_c11),
+                config?.decoderConfig?.Code11?.enabled ?: false,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_c11),
+                config?.decoderConfig?.Code11?.enabled ?: DemoDefaults.SYMBOLOGY_C11_DEFAULT,
+                onlyIfNotContains
+            )
+        }
         prefsEditor.putIntWithOptions(
             sharedPrefs,
             context.getString(R.string.key_symbology_c11) + context.getString(R.string.key_min_length),
@@ -1648,12 +1696,21 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_C39_CHK_DEFAULT.ordinal.toString(),
             onlyIfNotContains
         )
-        prefsEditor.putBooleanWithOptions(
-            sharedPrefs,
-            context.getString(R.string.key_symbology_c93),
-            config?.decoderConfig?.Code93?.enabled ?: DemoDefaults.SYMBOLOGY_C93_DEFAULT,
-            onlyIfNotContains
-        )
+        if(scanMode == ScanMode.AR_MODE){
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_c93),
+                config?.decoderConfig?.Code93?.enabled ?: false,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_c93),
+                config?.decoderConfig?.Code93?.enabled ?: DemoDefaults.SYMBOLOGY_C93_DEFAULT,
+                onlyIfNotContains
+            )
+        }
         prefsEditor.putIntWithOptions(
             sharedPrefs,
             context.getString(R.string.key_symbology_c93) + context.getString(R.string.key_min_length),
@@ -1698,12 +1755,21 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_C128_MAX_DEFAULT,
             onlyIfNotContains
         )
-        prefsEditor.putBooleanWithOptions(
-            sharedPrefs,
-            context.getString(R.string.key_symbology_codabar),
-            config?.decoderConfig?.Codabar?.enabled ?: DemoDefaults.SYMBOLOGY_CODABAR_DEFAULT,
-            onlyIfNotContains
-        )
+        if(scanMode == ScanMode.AR_MODE){
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_codabar),
+                config?.decoderConfig?.Codabar?.enabled ?: false,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_codabar),
+                config?.decoderConfig?.Codabar?.enabled ?: DemoDefaults.SYMBOLOGY_CODABAR_DEFAULT,
+                onlyIfNotContains
+            )
+        }
         prefsEditor.putIntWithOptions(
             sharedPrefs,
             context.getString(R.string.key_symbology_codabar) + context.getString(R.string.key_min_length),
@@ -1718,7 +1784,7 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_CODABAR_MAX_DEFAULT,
             onlyIfNotContains
         )
-        if(scanMode == ScanMode.INDUSTRIAL_1D || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.ALL_1D) {
+        if(scanMode == ScanMode.INDUSTRIAL_1D || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.ALL_1D || scanMode == ScanMode.AR_MODE) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_msi),
@@ -1753,12 +1819,21 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_MSI_CHK_DEFAULT.ordinal.toString(),
             onlyIfNotContains
         )
-        prefsEditor.putBooleanWithOptions(
-            sharedPrefs,
-            context.getString(R.string.key_symbology_upca),
-            config?.decoderConfig?.UpcA?.enabled ?: DemoDefaults.SYMBOLOGY_UPCA_DEFAULT,
-            onlyIfNotContains
-        )
+        if(scanMode == ScanMode.AR_MODE) {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_upca),
+                config?.decoderConfig?.UpcA?.enabled ?: false,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_upca),
+                config?.decoderConfig?.UpcA?.enabled ?: DemoDefaults.SYMBOLOGY_UPCA_DEFAULT,
+                onlyIfNotContains
+            )
+        }
         prefsEditor.putBooleanWithOptions(
             sharedPrefs,
             context.getString(R.string.key_symbology_upce),
@@ -1774,12 +1849,23 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_UPCE_EXPAND_DEFAULT,
             onlyIfNotContains
         )
-        prefsEditor.putBooleanWithOptions(
-            sharedPrefs,
-            context.getString(R.string.key_symbology_upce1),
-            config?.decoderConfig?.UpcE1?.enabled ?: DemoDefaults.SYMBOLOGY_UPCE1_DEFAULT,
-            onlyIfNotContains
-        )
+        if(scanMode == ScanMode.AR_MODE) {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_upce1),
+                config?.decoderConfig?.UpcE1?.enabled ?: false,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_upce1),
+                config?.decoderConfig?.UpcE1?.enabled ?: DemoDefaults.SYMBOLOGY_UPCE1_DEFAULT,
+                onlyIfNotContains
+            )
+        }
+
+
         prefsEditor.putBooleanWithOptions(
             sharedPrefs,
             context.getString(R.string.key_symbology_upce1) + context.getString(
@@ -1801,7 +1887,7 @@ object BKDConfigUtil {
             config?.decoderConfig?.Ean8?.enabled ?: DemoDefaults.SYMBOLOGY_EAN8_DEFAULT,
             onlyIfNotContains
         )
-        if(scanMode == ScanMode.ALL_2D) {
+        if(scanMode == ScanMode.ALL_2D || scanMode == ScanMode.AR_MODE) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_pdf417),
@@ -1817,7 +1903,7 @@ object BKDConfigUtil {
             )
         }
 
-        if(scanMode == ScanMode.ALL_2D) {
+        if(scanMode == ScanMode.ALL_2D || scanMode == ScanMode.AR_MODE) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_pdf417_micro),
@@ -1835,13 +1921,22 @@ object BKDConfigUtil {
             )
         }
 
-        prefsEditor.putBooleanWithOptions(
-            sharedPrefs,
-            context.getString(R.string.key_symbology_datamatrix),
-            config?.decoderConfig?.Datamatrix?.enabled ?: DemoDefaults.SYMBOLOGY_DM_DEFAULT,
-            onlyIfNotContains
-        )
-        if(scanMode == ScanMode.CONTINUOUS || scanMode == ScanMode.ANYSCAN) {
+        if(scanMode == ScanMode.AR_MODE){
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_datamatrix),
+                config?.decoderConfig?.Datamatrix?.enabled ?: false,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_datamatrix),
+                config?.decoderConfig?.Datamatrix?.enabled ?: DemoDefaults.SYMBOLOGY_DM_DEFAULT,
+                onlyIfNotContains
+            )
+        }
+        if(scanMode == ScanMode.CONTINUOUS || scanMode == ScanMode.ANYSCAN || scanMode == ScanMode.AR_MODE) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_dotcode),
@@ -1856,31 +1951,66 @@ object BKDConfigUtil {
                 onlyIfNotContains
             )
         }
-
-        prefsEditor.putBooleanWithOptions(
-            sharedPrefs,
-            context.getString(R.string.key_symbology_c25),
-            config?.decoderConfig?.Code25?.enabled ?: DemoDefaults.SYMBOLOGY_C25_DEFAULT,
-            onlyIfNotContains
-        )
-        prefsEditor.putBooleanWithOptions(
-            sharedPrefs,
-            context.getString(R.string.key_symbology_databar14),
-            config?.decoderConfig?.Databar14?.enabled ?: true,
-            onlyIfNotContains
-        )
-        prefsEditor.putBooleanWithOptions(
-            sharedPrefs,
-            context.getString(R.string.key_symbology_databarLimited),
-            config?.decoderConfig?.DatabarLimited?.enabled ?: true,
-            onlyIfNotContains
-        )
-        prefsEditor.putBooleanWithOptions(
-            sharedPrefs,
-            context.getString(R.string.key_symbology_databarExpanded),
-            config?.decoderConfig?.DatabarExpanded?.enabled ?: true,
-            onlyIfNotContains
-        )
+        if(scanMode == ScanMode.AR_MODE){
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_c25),
+                config?.decoderConfig?.Code25?.enabled ?: false,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_c25),
+                config?.decoderConfig?.Code25?.enabled ?: DemoDefaults.SYMBOLOGY_C25_DEFAULT,
+                onlyIfNotContains
+            )
+        }
+        if(scanMode == ScanMode.AR_MODE){
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_databar14),
+                config?.decoderConfig?.Databar14?.enabled ?: false,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_databar14),
+                config?.decoderConfig?.Databar14?.enabled ?: true,
+                onlyIfNotContains
+            )
+        }
+        if(scanMode == ScanMode.AR_MODE){
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_databarLimited),
+                config?.decoderConfig?.DatabarLimited?.enabled ?: false,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_databarLimited),
+                config?.decoderConfig?.DatabarLimited?.enabled ?: true,
+                onlyIfNotContains
+            )
+        }
+        if(scanMode == ScanMode.AR_MODE){
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_databarExpanded),
+                config?.decoderConfig?.DatabarExpanded?.enabled ?: false,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_databarExpanded),
+                config?.decoderConfig?.DatabarExpanded?.enabled ?: true,
+                onlyIfNotContains
+            )
+        }
         if(scanMode == ScanMode.AR_MODE) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
@@ -2001,12 +2131,22 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_C25_CHK_DEFAULT.ordinal.toString(),
             onlyIfNotContains
         )
-        prefsEditor.putBooleanWithOptions(
-            sharedPrefs,
-            context.getString(R.string.key_symbology_i2o5),
-            config?.decoderConfig?.Interleaved25?.enabled ?: DemoDefaults.SYMBOLOGY_I2O5_DEFAULT,
-            onlyIfNotContains
-        )
+        if(scanMode == ScanMode.AR_MODE){
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_i2o5),
+                config?.decoderConfig?.Interleaved25?.enabled ?: false,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_i2o5),
+                config?.decoderConfig?.Interleaved25?.enabled
+                    ?: DemoDefaults.SYMBOLOGY_I2O5_DEFAULT,
+                onlyIfNotContains
+            )
+        }
         prefsEditor.putIntWithOptions(
             sharedPrefs,
             context.getString(R.string.key_symbology_i2o5) + context.getString(R.string.key_min_length),
@@ -2028,13 +2168,22 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_I2O5_CHK_DEFAULT.ordinal.toString(),
             onlyIfNotContains
         )
-        prefsEditor.putBooleanWithOptions(
-            sharedPrefs,
-            context.getString(R.string.key_symbology_itf14),
-            config?.decoderConfig?.ITF14?.enabled ?: DemoDefaults.SYMBOLOGY_ITF14_DEFAULT,
-            onlyIfNotContains
-        )
-        if(scanMode == ScanMode.INDUSTRIAL_1D || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.ALL_1D) {
+        if(scanMode == ScanMode.AR_MODE){
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_itf14),
+                config?.decoderConfig?.ITF14?.enabled ?: false,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_itf14),
+                config?.decoderConfig?.ITF14?.enabled ?: DemoDefaults.SYMBOLOGY_ITF14_DEFAULT,
+                onlyIfNotContains
+            )
+        }
+        if(scanMode == ScanMode.INDUSTRIAL_1D || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.ALL_1D || scanMode == ScanMode.AR_MODE) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_iata25),
@@ -2071,7 +2220,7 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_IATA25_CHK_DEFAULT.ordinal.toString(),
             onlyIfNotContains
         )
-        if(scanMode == ScanMode.INDUSTRIAL_1D || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.ALL_1D) {
+        if(scanMode == ScanMode.INDUSTRIAL_1D || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.ALL_1D || scanMode == ScanMode.AR_MODE) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_matrix25),
@@ -2136,7 +2285,7 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_DATALOGIC25_CHK_DEFAULT.ordinal.toString(),
             onlyIfNotContains
         )
-        if(scanMode == ScanMode.INDUSTRIAL_1D || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.ALL_1D) {
+        if(scanMode == ScanMode.INDUSTRIAL_1D || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.ALL_1D || scanMode == ScanMode.AR_MODE) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_coop25),
@@ -2173,7 +2322,7 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_COOP25_CHK_DEFAULT.ordinal.toString(),
             onlyIfNotContains
         )
-        if(scanMode == ScanMode.INDUSTRIAL_1D || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.ALL_1D) {
+        if(scanMode == ScanMode.INDUSTRIAL_1D || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.ALL_1D || scanMode == ScanMode.AR_MODE) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_c32),
@@ -2214,12 +2363,21 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_C32_MAX_DEFAULT,
             onlyIfNotContains
         )
-        prefsEditor.putBooleanWithOptions(
-            sharedPrefs,
-            context.getString(R.string.key_symbology_telepen),
-            config?.decoderConfig?.Telepen?.enabled ?: DemoDefaults.SYMBOLOGY_TELEPEN_DEFAULT,
-            onlyIfNotContains
-        )
+        if(scanMode == ScanMode.AR_MODE){
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_telepen),
+                config?.decoderConfig?.Telepen?.enabled ?: false,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_telepen),
+                config?.decoderConfig?.Telepen?.enabled ?: DemoDefaults.SYMBOLOGY_TELEPEN_DEFAULT,
+                onlyIfNotContains
+            )
+        }
         prefsEditor.putIntWithOptions(
             sharedPrefs,
             context.getString(R.string.key_symbology_telepen) + context.getString(R.string.key_min_length),

@@ -393,6 +393,10 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
             binding.bkdView.getMaxZoomFactor(this)
             binding.bkdView.setZoomFactor(factor)
         }
+
+        if(isFlashOn) {
+            setFlash()
+        }
     }
 
 

@@ -103,8 +103,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
             setResultParserEntries()
             setResultCharsetEntries()
             setThreshHoldContiniousEntries()
-            onContiniousModeOnListener()
             onARModeSwitchListener()
+            onContiniousModeOnListener()
             setDynamicExposureEntries()
             findPreference<Preference>(getString(R.string.key_reset_config))!!.setOnPreferenceClickListener {
                 showResetConfigConfirmationDialog()
@@ -124,8 +124,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
             setResultCharsetEntries()
             openWebHookConfigurationDialog()
             setThreshHoldContiniousEntries()
-            onContiniousModeOnListener()
             onARModeSwitchListener()
+            onContiniousModeOnListener()
             setDynamicExposureEntries()
 
             findPreference<Preference>(getString(R.string.key_reset_config))!!.setOnPreferenceClickListener {
@@ -252,6 +252,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val arHeaderShowModePreference = findPreference<ListPreference>("pref_key_ar_header_show_mode")!!
         val arOverlaySmoothnessPreference = findPreference<ListPreference>("pref_key_ar_overlay_fps")!!
         val arDoubleTapFreezePreference = findPreference<SwitchWithPaddingPreference>("pref_key_double_tap_to_freez")!!
+        val thresholdPreference = findPreference<ListPreference>("pref_key_continuous_treshold")!!
 
         if(scanMode != ScanMode.AR_MODE) {
             arModePreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
@@ -262,6 +263,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 arHeaderShowModePreference.isVisible = !isFirstOption
                 arOverlaySmoothnessPreference.isVisible = !isFirstOption
                 arDoubleTapFreezePreference.isVisible = !isFirstOption
+                thresholdPreference.isVisible = isFirstOption
 
                 true
             }
@@ -274,6 +276,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             arHeaderShowModePreference.isVisible = !isFirstOption
             arOverlaySmoothnessPreference.isVisible = !isFirstOption
             arDoubleTapFreezePreference.isVisible = !isFirstOption
+            thresholdPreference.isVisible = isFirstOption
         }
 
     }
