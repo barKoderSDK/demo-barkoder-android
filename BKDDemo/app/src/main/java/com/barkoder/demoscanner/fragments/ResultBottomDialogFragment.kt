@@ -308,6 +308,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         var lastResultsOnFrame = sharedPreferences.getInt("lastResultsOnFrame", 0)
         var galleryScanMode = sharedPreferences.getBoolean("galleryScan", false)
+        var arMode = sharedPreferences.getBoolean("arMode", false)
            val numResult = arguments?.getString("numResult")
            val typeResult = arguments?.getString("typeResult")
         val resultsSize = arguments?.getString("resultsSize")
@@ -423,7 +424,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 
 
         if(resultsSize != null) {
-            if(galleryScanMode) {
+            if(galleryScanMode || arMode) {
                 if(lastResultsOnFrame == 1) binding.resultsSize.text = lastResultsOnFrame.toString() + " result found" else binding.resultsSize.text = lastResultsOnFrame.toString() + " results found"
             } else {
                 if(lastResultsOnFrame == 1) binding.resultsSize.text = lastResultsOnFrame.toString() + " result found (${resultsSize} total)" else binding.resultsSize.text = lastResultsOnFrame.toString() + " results found (${resultsSize} total)"

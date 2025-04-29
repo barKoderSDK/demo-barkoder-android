@@ -1,5 +1,6 @@
 package com.barkoder.demoscanner
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.MenuItem
@@ -10,6 +11,8 @@ import com.barkoder.demoscanner.enums.ScanMode
 import com.barkoder.demoscanner.fragments.SettingsFragment
 
 class SettingsActivity : AppCompatActivity() {
+    private lateinit var scanMode: ScanMode
+    private var openedFromSettings: Boolean = false
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
@@ -22,7 +25,8 @@ class SettingsActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.statusBarColor = ContextCompat.getColor(this, R.color.toolBarColor)
         }
-
+        scanMode = ScanMode.values()[this.intent.extras!!.getInt(SettingsFragment.ARGS_MODE_KEY)]
+        openedFromSettings = intent.getBooleanExtra("opened_from_settings", false)
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.settings_container, SettingsFragment())
@@ -33,9 +37,20 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (item.itemId == android.R.id.home) {
-            onBackPressed()
+            if (openedFromSettings) {
+                // Just go back normally
+                finish()
+            } else {
+                // Original behavior
+                val intent = Intent(this@SettingsActivity, ScannerActivity::class.java)
+                intent.putExtra(ScannerActivity.ARGS_MODE_KEY, scanMode.ordinal)
+                startActivity(intent)
+                finish()
+            }
             true
-        } else
+        } else {
             super.onOptionsItemSelected(item)
+        }
     }
+
 }

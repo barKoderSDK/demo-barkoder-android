@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.preference.ListPreference
@@ -214,12 +215,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private fun onContiniousModeOnListener () {
         var continuiusModePreference = findPreference<SwitchPreference>("pref_key_continuous_scanning")
         continuisTresHoldPreferences = findPreference<ListPreference>("pref_key_continuous_treshold")!!
-       var arModePreference = findPreference<ListPreference>("pref_key_ar_mode_options")!!
+        val arModePreference = findPreference<ListPreference>("pref_key_ar_mode_options")!!
 
         continuiusModePreference!!.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
             val isVisible = newValue as Boolean
             if (isVisible) {
-                continuisTresHoldPreferences.isVisible = true
+                Log.d("asdada", arModePreference.value.toString())
+                if(arModePreference.value.toInt() == 0) {
+                    continuisTresHoldPreferences.isVisible = true
+                }
+
                 if(scanMode != ScanMode.AR_MODE  && scanMode != ScanMode.MISSHAPED_1D && scanMode != ScanMode.DPM && scanMode != ScanMode.DOTCODE) {
                     makePreferenceVisable(getString(R.string.key_ar_preference))
                 }
@@ -233,7 +238,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
         }
 
         if(continuiusModePreference!!.isChecked == true) {
-            continuisTresHoldPreferences.isVisible = true
+            if(arModePreference.value.toInt() == 0) {
+                continuisTresHoldPreferences.isVisible = true
+            }
             if(scanMode != ScanMode.AR_MODE  && scanMode != ScanMode.MISSHAPED_1D && scanMode != ScanMode.DPM && scanMode != ScanMode.DOTCODE) {
                 makePreferenceVisable(getString(R.string.key_ar_preference))
             }
@@ -254,32 +261,34 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val arDoubleTapFreezePreference = findPreference<SwitchWithPaddingPreference>("pref_key_double_tap_to_freez")!!
         val thresholdPreference = findPreference<ListPreference>("pref_key_continuous_treshold")!!
 
-        if(scanMode != ScanMode.AR_MODE) {
+
             arModePreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                val newValueIndex = arModePreference.findIndexOfValue(newValue.toString())
-                val isFirstOption = newValueIndex == 0
+                val selectedOrdinal = newValue.toString().toIntOrNull() ?: -1
+                val isFirstOption = selectedOrdinal == BarkoderARMode.OFF.ordinal
+                val isLastOption = selectedOrdinal == BarkoderARMode.NonInteractive.ordinal
 
                 arLocationTypePreference.isVisible = !isFirstOption
                 arHeaderShowModePreference.isVisible = !isFirstOption
                 arOverlaySmoothnessPreference.isVisible = !isFirstOption
-                arDoubleTapFreezePreference.isVisible = !isFirstOption
+                arDoubleTapFreezePreference.isVisible = !isFirstOption && !isLastOption
                 thresholdPreference.isVisible = isFirstOption
 
                 true
             }
 
-            // Also update initial visibility based on current value
-            val currentIndex = arModePreference.findIndexOfValue(arModePreference.value)
-            val isFirstOption = currentIndex == 0
+            // Initial value logic
+            val selectedOrdinal = arModePreference.value?.toIntOrNull() ?: -1
+            val isFirstOption = selectedOrdinal == BarkoderARMode.OFF.ordinal
+            val isLastOption = selectedOrdinal == BarkoderARMode.NonInteractive.ordinal
 
             arLocationTypePreference.isVisible = !isFirstOption
             arHeaderShowModePreference.isVisible = !isFirstOption
             arOverlaySmoothnessPreference.isVisible = !isFirstOption
-            arDoubleTapFreezePreference.isVisible = !isFirstOption
+            arDoubleTapFreezePreference.isVisible = !isFirstOption && !isLastOption
             thresholdPreference.isVisible = isFirstOption
-        }
 
     }
+
 
     private fun settingsChangedTemplateMessage() {
         val barkoderSettingsCategory: PreferenceCategory? = findPreference("pref_key_barkoder_settings")
@@ -375,111 +384,82 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
 
     private fun onClickTemplateSettings() {
-        findPreference<Preference>(getString(R.string.key_1d_industrial_settings))!!.setOnPreferenceClickListener {
-            val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
-            settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 0)
-            startActivity(settingsIntent)
+        findPreference<Preference>(getString(R.string.key_All1D_settings))?.setOnPreferenceClickListener {
+            openSettingsActivity(13)
             false
         }
-        findPreference<Preference>(getString(R.string.key_1d_retail_settings))!!.setOnPreferenceClickListener {
-            val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
-            settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 1)
-            startActivity(settingsIntent)
+        findPreference<Preference>(getString(R.string.key_1d_industrial_settings))?.setOnPreferenceClickListener {
+            openSettingsActivity(0)
             false
         }
-        findPreference<Preference>(getString(R.string.key_PDF_settings))!!.setOnPreferenceClickListener {
-            val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
-            settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 2)
-            startActivity(settingsIntent)
+        findPreference<Preference>(getString(R.string.key_1d_retail_settings))?.setOnPreferenceClickListener {
+            openSettingsActivity(1)
             false
         }
-        findPreference<Preference>(getString(R.string.key_All2D_settings))!!.setOnPreferenceClickListener {
-            val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
-            settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 4)
-            startActivity(settingsIntent)
+        findPreference<Preference>(getString(R.string.key_PDF_settings))?.setOnPreferenceClickListener {
+            openSettingsActivity(2)
             false
         }
-        findPreference<Preference>(getString(R.string.key_BatchMultiscan_settings))!!.setOnPreferenceClickListener {
-            val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
-            settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 5)
-            startActivity(settingsIntent)
+        findPreference<Preference>(getString(R.string.key_All2D_settings))?.setOnPreferenceClickListener {
+            openSettingsActivity(4)
             false
         }
-        findPreference<Preference>(getString(R.string.key_DPM_settings))!!.setOnPreferenceClickListener {
-            val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
-            settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 7)
-            startActivity(settingsIntent)
+        findPreference<Preference>(getString(R.string.key_BatchMultiscan_settings))?.setOnPreferenceClickListener {
+            openSettingsActivity(5)
             false
         }
-        findPreference<Preference>(getString(R.string.key_VIN_settings))!!.setOnPreferenceClickListener {
-            val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
-            settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 8)
-            startActivity(settingsIntent)
+        findPreference<Preference>(getString(R.string.key_anyscan_settings))?.setOnPreferenceClickListener {
+            openSettingsActivity(6)
             false
         }
-        findPreference<Preference>(getString(R.string.key_anyscan_settings))!!.setOnPreferenceClickListener {
-            val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
-            settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 6)
-            startActivity(settingsIntent)
+        findPreference<Preference>(getString(R.string.key_DPM_settings))?.setOnPreferenceClickListener {
+            openSettingsActivity(8)
             false
         }
-        findPreference<Preference>(getString(R.string.key_anyscan_settings))!!.setOnPreferenceClickListener {
-            val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
-            settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 6)
-            startActivity(settingsIntent)
+        findPreference<Preference>(getString(R.string.key_VIN_settings))?.setOnPreferenceClickListener {
+            openSettingsActivity(9)
             false
         }
-        findPreference<Preference>(getString(R.string.key_Dotcode_settings))!!.setOnPreferenceClickListener {
-            val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
-            settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 9)
-            startActivity(settingsIntent)
+        findPreference<Preference>(getString(R.string.key_Dotcode_settings))?.setOnPreferenceClickListener {
+            openSettingsActivity(10)
             false
         }
+        findPreference<Preference>(getString(R.string.key_Deblur_settings))?.setOnPreferenceClickListener {
+            openSettingsActivity(11)
+            false
+        }
+        findPreference<Preference>(getString(R.string.key_Misshaped_settings))?.setOnPreferenceClickListener {
+            openSettingsActivity(12)
+            false
+        }
+        findPreference<Preference>(getString(R.string.key_mrz_settings))?.setOnPreferenceClickListener {
+            openSettingsActivity(15)
+            false
+        }
+        findPreference<Preference>(getString(R.string.key_gallery_scan_settings))?.setOnPreferenceClickListener {
+            openSettingsActivity(16)
+            false
+        }
+        findPreference<Preference>(getString(R.string.key_composite_settings))?.setOnPreferenceClickListener {
+            openSettingsActivity(17)
+            false
+        }
+        findPreference<Preference>(getString(R.string.key_postal_settings))?.setOnPreferenceClickListener {
+            openSettingsActivity(18)
+            false
+        }
+        findPreference<Preference>(getString(R.string.key_arMode_settings))?.setOnPreferenceClickListener {
+            openSettingsActivity(7)
+            false
+        }
+    }
 
-        findPreference<Preference>(getString(R.string.key_Deblur_settings))!!.setOnPreferenceClickListener {
-            val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
-            settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 10)
-            startActivity(settingsIntent)
-            false
-        }
 
-        findPreference<Preference>(getString(R.string.key_Misshaped_settings))!!.setOnPreferenceClickListener {
-            val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
-            settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 11)
-            startActivity(settingsIntent)
-            false
-        }
-
-        findPreference<Preference>(getString(R.string.key_All1D_settings))!!.setOnPreferenceClickListener {
-            val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
-            settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 12)
-            startActivity(settingsIntent)
-            false
-        }
-        findPreference<Preference>(getString(R.string.key_mrz_settings))!!.setOnPreferenceClickListener {
-            val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
-            settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 14)
-            startActivity(settingsIntent)
-            false
-        }
-        findPreference<Preference>(getString(R.string.key_gallery_scan_settings))!!.setOnPreferenceClickListener {
-            val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
-            settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 15)
-            startActivity(settingsIntent)
-            false
-        }
-        findPreference<Preference>(getString(R.string.key_composite_settings))!!.setOnPreferenceClickListener {
-            val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
-            settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 16)
-            startActivity(settingsIntent)
-            false
-        }
-        findPreference<Preference>(getString(R.string.key_postal_settings))!!.setOnPreferenceClickListener {
-            val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
-            settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 17)
-            startActivity(settingsIntent)
-            false
-        }
+    private fun openSettingsActivity(mode: Int) {
+        val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
+        settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, mode)
+        settingsIntent.putExtra("opened_from_settings", true)
+        startActivity(settingsIntent)
     }
 
     override fun onStart() {

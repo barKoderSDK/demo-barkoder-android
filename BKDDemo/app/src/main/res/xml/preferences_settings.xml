@@ -824,6 +824,14 @@
             app:allowDividerBelow="true"
             app:iconSpaceReserved="false" />
 
+        <Preference
+            android:key="@string/key_arMode_settings"
+            android:persistent="false"
+            android:title="@string/ar_mode_title"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="true"
+            app:iconSpaceReserved="false" />
+
 
 
 

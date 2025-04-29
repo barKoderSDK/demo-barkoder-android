@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="brand_color">#FF3347</color>
-    <color name="accent_color">#FF3347</color>
+    <color name="brand_color">#CC3040</color>
+    <color name="accent_color">#CC3040</color>
 
     <string name="howToUseLink">https://docs.barkoder.com/en/how-to/demo-app-barKoder</string>
     <string name="learnMoreLink">https://barkoder.com</string>

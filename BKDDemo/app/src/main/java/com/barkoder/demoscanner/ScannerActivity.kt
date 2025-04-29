@@ -103,7 +103,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
     private lateinit var bottomSheetFragment : ResultBottomDialogFragment;
     private var onPauseBool: Boolean = false;
     private var factor: Float = 1f;
-
+    private var zoomClickedOnce = false;
     private var picturePath: String? = null
     private var documentPath: String? = null
     private var signaturePath: String? = null
@@ -190,6 +190,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
             val settingsIntent = Intent(this@ScannerActivity, SettingsActivity::class.java)
             settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, scanMode.ordinal)
             startActivity(settingsIntent)
+            finish()
         }
         val sharedPreferences: SharedPreferences =
             getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -199,6 +200,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
             it.setBackgroundResource(if (isZoomed) R.drawable.ic_zoom_on else R.drawable.ic_zoom_off)
             isZoomed = !isZoomed
             setZoom()
+            zoomClickedOnce = true;
         }
 
         binding.btnFlash.setOnClickListener {
@@ -245,10 +247,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
             binding.bkdView.startScanning(this)
 
         }
-    }
 
-    override fun onStart() {
-        super.onStart()
         binding.bkdView.config = BKDConfigUtil.configureBKD(this, scanMode)
         binding.textFps.text = "fps"
         binding.textDps.text = "dps"
@@ -271,19 +270,12 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
         } else {
             binding.continiousModeOn.visibility = View.GONE
         }
-    }
 
-    @RequiresApi(Build.VERSION_CODES.M)
-    override fun onResume() {
-        super.onResume()
-
-
-
-        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-        dynamicExposureIntesity = prefs.getString("pref_key_dynamic_exposureee", "0").toString()
-        val sharedPreferences: SharedPreferences =
+        val prefs2 = PreferenceManager.getDefaultSharedPreferences(this)
+        dynamicExposureIntesity = prefs2.getString("pref_key_dynamic_exposureee", "0").toString()
+        val sharedPreferences2: SharedPreferences =
             getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        settingsChangedBoolean = sharedPreferences.getBoolean("settingsChangedBoolean", false)
+        settingsChangedBoolean = sharedPreferences2.getBoolean("settingsChangedBoolean", false)
         if (autoFocusBoolean!!) {
             binding.bkdView.setCentricFocusAndExposure(true)
         } else {
@@ -291,11 +283,11 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
         }
 
 
-            if(dynamicExposureIntesity == "Disabled") {
-                binding.bkdView.setDynamicExposure(0)
-            } else {
-                binding.bkdView.setDynamicExposure(dynamicExposureIntesity!!.toInt())
-            }
+        if(dynamicExposureIntesity == "Disabled") {
+            binding.bkdView.setDynamicExposure(0)
+        } else {
+            binding.bkdView.setDynamicExposure(dynamicExposureIntesity!!.toInt())
+        }
         if (videoStabilization!!) {
             binding.bkdView.setVideoStabilization(true)
         } else {
@@ -353,6 +345,8 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
             }
         }
 
+
+
         checkCameraPermission { granted ->
             if (granted) {
                 try {
@@ -365,10 +359,22 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
                 if(!showedPermissionDialog) {
                     showPermissionAlert()
                 }
-
-
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    override fun onResume() {
+        super.onResume()
+
+            binding.bkdView.setZoomFactorInitial(factor)
+            binding.bkdView.setFlashInitial(isFlashOn)
+
 
     }
 
@@ -384,19 +390,17 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
 
 
 
+
+
+
         super.onPause()
     }
 
 
     override fun onCameraReady() {
-        if(isZoomed) {
-            binding.bkdView.getMaxZoomFactor(this)
-            binding.bkdView.setZoomFactor(factor)
-        }
 
-        if(isFlashOn) {
-            setFlash()
-        }
+
+
     }
 
 
@@ -427,6 +431,8 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
         thumbnails: Array<out Bitmap>?,
         imageResult: Bitmap?
     ) {
+        val sharedPreferences = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+
 
         if(binding.bkdView.config.arConfig.arMode != BarkoderARMode.OFF){
             sessionScansAdapterData.clear()
@@ -434,6 +440,9 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
             barcodeListType.clear()
             barcodeListDate.clear()
             recentScansToAdd.clear()
+            sharedPreferences.edit().putBoolean("arMode", true).apply()
+        } else {
+            sharedPreferences.edit().putBoolean("arMode", false).apply()
         }
 
         if (!results.isNullOrEmpty()) {
@@ -450,7 +459,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
             i.highlighted = false
         }
 
-        val sharedPreferences = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+
         sharedPreferences.edit().putInt("lastResultsOnFrame", results!!.size).apply()
         sharedPreferences.edit().putBoolean("galleryScan", false).apply()
 
@@ -510,7 +519,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
 
 
 //                setZoom()
-                setFlash()
+//                setFlash()
 
                 if (binding.bkdView.config.thresholdBetweenDuplicatesScans < 0) {
 

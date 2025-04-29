@@ -154,6 +154,7 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
     <string name="gallery_scan_settings_title">Gallery Scan</string>
     <string name="composite_mode_title">Composite</string>
     <string name="postal_mode_title">Postal codes</string>
+    <string name="ar_mode_title">AR</string>
 
     <string name="scan_from_image_title">Gallery scan</string>
 

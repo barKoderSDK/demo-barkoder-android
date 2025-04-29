@@ -592,7 +592,7 @@
                                     <TextView
                                         style="@style/BarcodesTemplateTitle"
                                         android:text="@string/title_ar_mode"
-                                        app:drawableTopCompat="@drawable/ico_multi" />
+                                        app:drawableTopCompat="@drawable/ico_ar" />
 
                                 </androidx.cardview.widget.CardView>
 
