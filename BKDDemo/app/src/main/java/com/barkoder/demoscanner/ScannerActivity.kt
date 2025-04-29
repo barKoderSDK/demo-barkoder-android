@@ -83,7 +83,7 @@ import java.util.Locale
 
 
 //TODO zoom from pinched can't be reset on resume
-class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvailableCallback,
+class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
     CameraCallback, ResultBottomDialogFragment.BottomSheetStateListener {
 
     private lateinit var binding: ActivityScannerBinding
@@ -183,7 +183,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
         videoStabilization = prefs.getBoolean("pref_key_videostabilization", false)
         frontCamera = prefs.getBoolean("pref_key_frontCamera", false)
 
-        binding.bkdView.getMaxZoomFactor(this)
+
 
         binding.btnSettings.setOnClickListener {
             binding.bkdView.stopScanning()
@@ -207,6 +207,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
             it.setBackgroundResource(if (isFlashOn) R.drawable.ic_flash_off else R.drawable.ic_flash_on)
             isFlashOn = !isFlashOn
             binding.bkdView.setFlashEnabled(isFlashOn)
+            binding.bkdView.setFlashInitial(isFlashOn)
 
         }
         binding.btnCameraSwitch.setOnClickListener {
@@ -346,21 +347,25 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
         }
 
 
-
-        checkCameraPermission { granted ->
-            if (granted) {
-                try {
-
-                    binding.bkdView.startScanning(this)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            } else {
-                if(!showedPermissionDialog) {
-                    showPermissionAlert()
-                }
-            }
+        binding.bkdView.startScanning(this)
+        binding.bkdView.getMaxZoomFactor { maxZoom ->
+            maxZoomFactor = maxZoom
+            Log.d("CameraParams", "$maxZoomFactor")
         }
+//        checkCameraPermission { granted ->
+//            if (granted) {
+//                try {
+//
+//
+//                } catch (e: Exception) {
+//                    e.printStackTrace()
+//                }
+//            } else {
+//                if(!showedPermissionDialog) {
+//                    showPermissionAlert()
+//                }
+//            }
+//        }
     }
 
     override fun onStart() {
@@ -371,9 +376,6 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onResume() {
         super.onResume()
-
-            binding.bkdView.setZoomFactorInitial(factor)
-            binding.bkdView.setFlashInitial(isFlashOn)
 
 
     }
@@ -399,7 +401,10 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
 
     override fun onCameraReady() {
 
-
+//        binding.bkdView.setZoomFactor(factor)
+//            if(!isZoomed) {
+//                binding.bkdView.setZoomFactorInitial(1.0f)
+//            }
 
     }
 
@@ -421,9 +426,6 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
         TODO("Not yet implemented")
     }
 
-    override fun onMaxZoomAvailable(maxZoom: Float) {
-        maxZoomFactor = maxZoom
-    }
 
 
     override fun scanningFinished(
@@ -1113,15 +1115,20 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback, MaxZoomAvai
 
     private fun setZoom() {
         factor = 1.0f
-        if (isZoomed)
+        if (isZoomed) {
             factor = maxZoomFactor / 2f
+        }
 
         binding.bkdView.setZoomFactor(factor)
+        binding.bkdView.setZoomFactorInitial(factor)
     }
 
     private fun setFlash() {
-        if (isFlashOn)
+        if (isFlashOn) {
             binding.bkdView.setFlashEnabled(true)
+            binding.bkdView.setFlashInitial(true)
+        }
+
     }
 
     companion object {
