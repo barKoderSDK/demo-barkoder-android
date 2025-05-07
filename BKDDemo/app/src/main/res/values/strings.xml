@@ -62,7 +62,7 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
     <string name="scanner_ar_mode_title">AR Mode</string>
     <string name="scanner_ar_location_type_title">Location Type</string>
     <string name="scanner_ar_header_show_title">Header Show Mode</string>
-    <string name="scanner_ar_overlay_fps_title">Overlay smoothness</string>
+    <string name="scanner_ar_overlay_fps_title">Overlay refresh</string>
     <string name="scanner_resolution_title">barKoder Resolution</string>
     <string name="continuous_scaning_title">Continuous Scanning</string>
     <string name="continuous_threshold_title">Continuous threshold</string>

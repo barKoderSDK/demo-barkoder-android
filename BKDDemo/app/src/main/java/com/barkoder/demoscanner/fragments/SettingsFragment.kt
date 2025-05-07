@@ -764,6 +764,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_vibrate))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet))
+                makePreferenceVisable(getString(R.string.key_composite_setting))
                 preferenceScreen.getPreference(WEEBHOOK_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(GENERAL_SETTINGS_CATEGORY_INDEX).isVisible = true
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
@@ -822,7 +823,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_blured_scan_eanupc))
                 makePreferenceInvisible(getString(R.string.key_continuous_scaning))
                 makePreferenceInvisible(getString(R.string.key_vibrate))
+                makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet))
                 makePreferenceVisable(getString(R.string.key_ar_preference))
+                makePreferenceVisable(getString(R.string.key_symbology_dotcode))
+
             }
         }
     }

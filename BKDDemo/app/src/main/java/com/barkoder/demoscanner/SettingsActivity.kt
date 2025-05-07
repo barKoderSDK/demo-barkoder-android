@@ -3,6 +3,7 @@ package com.barkoder.demoscanner
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -26,6 +27,7 @@ class SettingsActivity : AppCompatActivity() {
             window.statusBarColor = ContextCompat.getColor(this, R.color.toolBarColor)
         }
         scanMode = ScanMode.values()[this.intent.extras!!.getInt(SettingsFragment.ARGS_MODE_KEY)]
+        Log.d("scanMode", scanMode.ordinal.toString());
         openedFromSettings = intent.getBooleanExtra("opened_from_settings", false)
         supportFragmentManager
             .beginTransaction()
@@ -37,7 +39,7 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (item.itemId == android.R.id.home) {
-            if (openedFromSettings) {
+            if (openedFromSettings || scanMode.ordinal == 14) {
                 // Just go back normally
                 finish()
             } else {
@@ -50,6 +52,19 @@ class SettingsActivity : AppCompatActivity() {
             true
         } else {
             super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onBackPressed() {
+        if (openedFromSettings || scanMode.ordinal == 14) {
+            // Just finish if opened from within settings
+            finish()
+        } else {
+            // Go back to scanner activity with scan mode
+            val intent = Intent(this@SettingsActivity, ScannerActivity::class.java)
+            intent.putExtra(ScannerActivity.ARGS_MODE_KEY, scanMode.ordinal)
+            startActivity(intent)
+            finish()
         }
     }
 

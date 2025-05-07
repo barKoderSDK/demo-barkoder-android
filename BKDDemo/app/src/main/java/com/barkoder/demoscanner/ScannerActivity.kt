@@ -114,6 +114,9 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
     private lateinit var recyclerViewBarcodePrint: RecyclerView
     private lateinit var adapterBarcodePrint: BarcodePrintAdapter
 
+    private val LAST_PAUSED_TIME_KEY = "lastPausedTime"
+    private val TIME_THRESHOLD_MS = 60_000L // 60 seconds
+
     private var isBottomSheetDialogShown = false
     private lateinit var scanMode: ScanMode
     var scannedBarcodes = 0
@@ -376,7 +379,18 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onResume() {
         super.onResume()
+        val sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val lastPausedTime = sharedPreferences.getLong(LAST_PAUSED_TIME_KEY, -1L)
+        val currentTime = System.currentTimeMillis()
 
+        if (lastPausedTime > 0 && currentTime - lastPausedTime > TIME_THRESHOLD_MS) {
+
+            binding.btnFlash.setBackgroundResource(R.drawable.ic_flash_off)
+            isFlashOn = false
+            binding.bkdView.setFlashEnabled(isFlashOn)
+            binding.bkdView.setFlashInitial(isFlashOn)
+            // More than 60 seconds passed
+        }
 
     }
 
@@ -386,6 +400,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
         val sharedPreferences: SharedPreferences =
             getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val editor: SharedPreferences.Editor = sharedPreferences.edit()
+        editor.putLong(LAST_PAUSED_TIME_KEY, System.currentTimeMillis())
         editor.putBoolean("settingsChangedBoolean", false)
         editor.apply()
         showedPermissionDialog = true

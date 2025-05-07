@@ -443,6 +443,7 @@ object BKDConfigUtil {
                 configureDatabar14Symbology(config,resources,sharedPref)
                 configureDatabarExpandedSymbology(config,resources,sharedPref)
                 configureDatabarLimitedSymbology(config,resources,sharedPref)
+                config.decoderConfig.enableComposite = 1
 
             }
 
@@ -1318,7 +1319,7 @@ object BKDConfigUtil {
         prefsEditor.putStringWithOptions(
             sharedPrefs,
             context.getString(R.string.key_ar_header_show_mode),
-            config?.arConfig?.headerShowMode?.ordinal?.toString() ?: 1.toString(),
+            config?.arConfig?.headerShowMode?.ordinal?.toString() ?: 2.toString(),
             onlyIfNotContains
         )
         prefsEditor.putStringWithOptions(
@@ -1379,7 +1380,8 @@ object BKDConfigUtil {
                 || scanMode.template == ScanMode.RETAIL_1D.template || scanMode.template == ScanMode.PDF.template
                 || scanMode.template == ScanMode.QR.template || scanMode.template == ScanMode.ALL_2D.template
                 || scanMode.template == ScanMode.INDUSTRIAL_1D.template || scanMode.template == ScanMode.UPC_EAN_DEBLUR.template
-                || scanMode.template == ScanMode.MISSHAPED_1D.template || scanMode.template == ScanMode.DOTCODE.template || scanMode.template == ScanMode.MRZ.template || scanMode.template == ScanMode.POSTAL_CODES.template) {
+                || scanMode.template == ScanMode.MISSHAPED_1D.template || scanMode.template == ScanMode.DOTCODE.template || scanMode.template == ScanMode.MRZ.template
+            || scanMode.template == ScanMode.POSTAL_CODES.template || scanMode == ScanMode.COMPOSITE || scanMode == ScanMode.AR_MODE) {
             prefsEditor.putStringWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_scanner_resolution),
@@ -1466,7 +1468,7 @@ object BKDConfigUtil {
             config?.isVibrateOnSuccessEnabled ?: DemoDefaults.VIBRATE_ON_SUCCESS_DEFAULT,
             onlyIfNotContains
         )
-        if(scanMode == ScanMode.GALLERY_SCAN) {
+        if(scanMode == ScanMode.GALLERY_SCAN || scanMode == ScanMode.COMPOSITE) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_blured_scan_eanupc),
@@ -1823,7 +1825,7 @@ object BKDConfigUtil {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_upca),
-                config?.decoderConfig?.UpcA?.enabled ?: false,
+                config?.decoderConfig?.UpcA?.enabled ?: true,
                 onlyIfNotContains
             )
         } else {
@@ -1936,7 +1938,7 @@ object BKDConfigUtil {
                 onlyIfNotContains
             )
         }
-        if(scanMode == ScanMode.CONTINUOUS || scanMode == ScanMode.ANYSCAN || scanMode == ScanMode.AR_MODE) {
+        if(scanMode == ScanMode.CONTINUOUS || scanMode == ScanMode.ANYSCAN || scanMode == ScanMode.AR_MODE || scanMode == ScanMode.ALL_2D) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_dotcode),
@@ -1981,7 +1983,7 @@ object BKDConfigUtil {
                 onlyIfNotContains
             )
         }
-        if(scanMode == ScanMode.AR_MODE){
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.RETAIL_1D){
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_databarLimited),
@@ -1996,7 +1998,7 @@ object BKDConfigUtil {
                 onlyIfNotContains
             )
         }
-        if(scanMode == ScanMode.AR_MODE){
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.RETAIL_1D){
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_databarExpanded),
@@ -2045,7 +2047,7 @@ object BKDConfigUtil {
         }
 
 
-        if(scanMode == ScanMode.POSTAL_CODES) {
+        if(scanMode == ScanMode.POSTAL_CODES || scanMode == ScanMode.GALLERY_SCAN) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_kix),
@@ -2339,12 +2341,19 @@ object BKDConfigUtil {
         }
 
         if (scanMode == ScanMode.ANYSCAN) {
-            val compositeMode = if (config?.decoderConfig?.enableComposite == 1) true else false
+
 
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_composite_setting),
-                compositeMode,
+                false,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_composite_setting),
+                true,
                 onlyIfNotContains
             )
         }
@@ -2508,6 +2517,11 @@ object BKDConfigUtil {
         config.decoderConfig.PDF417Micro.enabled = false
         config.decoderConfig.Code128.enabled = false
         config.isVibrateOnSuccessEnabled = false
+        config.decoderConfig.Databar14.enabled = false
+        config.decoderConfig.DatabarLimited.enabled = false
+        config.decoderConfig.DatabarExpanded.enabled = false
+        config.decoderConfig.PostalIMB.enabled = false
+        config.decoderConfig.RoyalMail.enabled = false
     }
 
     private fun adaptConfigForMisshapedScanning(config: BarkoderConfig) {
@@ -2526,6 +2540,11 @@ object BKDConfigUtil {
         config.decoderConfig.UpcA.enabled = false
         config.decoderConfig.Ean8.enabled = false
         config.decoderConfig.Ean13.enabled = false
+        config.decoderConfig.Databar14.enabled = false
+        config.decoderConfig.DatabarLimited.enabled = false
+        config.decoderConfig.DatabarExpanded.enabled = false
+        config.decoderConfig.PostalIMB.enabled = false
+        config.decoderConfig.RoyalMail.enabled = false
     }
 
     private fun adaptConfigForAR(config: BarkoderConfig) {
