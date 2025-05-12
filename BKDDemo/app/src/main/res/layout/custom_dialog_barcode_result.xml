@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFF0EF"
-    android:paddingBottom="5dp">
+    android:fillViewport="true">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:background="#FFF0EF"
+        android:paddingBottom="5dp"
+        android:layout_height="wrap_content">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
@@ -14,6 +18,7 @@
         android:layout_height="?attr/actionBarSize"
         android:background="@color/toolBarColor"
         app:layout_constraintEnd_toEndOf="parent"
+
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -165,7 +170,6 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:gravity="end"
-            android:maxLines="5"
             android:text="23 34 23"
             android:textColor="#000000"
             android:textSize="14sp" />
@@ -242,7 +246,6 @@
             android:layout_weight="1"
             android:ellipsize="end"
             android:gravity="end"
-            android:maxLines="5"
             android:text="23 34 23"
             android:textColor="#000000"
             android:textSize="14sp" />
@@ -396,7 +399,7 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>
