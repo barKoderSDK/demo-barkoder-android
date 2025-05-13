@@ -325,16 +325,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
 //            binding.bkdView.startScanning(this)
 //        } else
 //            binding.bkdView.startCamera()
-        if (receivedBooleanValue) {
-            binding.bkdView.setPerformanceCallback { fps, dps ->
-                val fpsFloat = (fps * 10).toInt() / 10.0f
-                val dpsFloat = (dps * 10).toInt() / 10.0f
-                binding.textFps.text = "FPS: ${fpsFloat.toString()}"
-                binding.textDps.text = "DPS: ${dpsFloat.toString()}"
-                Log.d("fps: ", fps.toString())
-                Log.d("dps: ", dps.toString())
-            }
-        }
+
 
         binding.bkdView.config.roiLineColor = ContextCompat.getColor(this, R.color.brand_color)
         binding.bkdView.config.locationLineColor = ContextCompat.getColor(this, R.color.brand_color)
@@ -379,7 +370,22 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onResume() {
         super.onResume()
-        val sharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
+        val sharedPreferences: SharedPreferences =
+            getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        receivedBooleanValue = sharedPreferences.getBoolean("BOOLEAN_KEY", false)
+        if (receivedBooleanValue) {
+            binding.bkdView.setPerformanceCallback { fps, dps ->
+                val fpsFloat = (fps * 10).toInt() / 10.0f
+                val dpsFloat = (dps * 10).toInt() / 10.0f
+                binding.textFps.text = "FPS: ${fpsFloat.toString()}"
+                binding.textDps.text = "DPS: ${dpsFloat.toString()}"
+                Log.d("fps: ", fps.toString())
+                Log.d("dps: ", dps.toString())
+            }
+        }
+
+
         val lastPausedTime = sharedPreferences.getLong(LAST_PAUSED_TIME_KEY, -1L)
         val currentTime = System.currentTimeMillis()
 
