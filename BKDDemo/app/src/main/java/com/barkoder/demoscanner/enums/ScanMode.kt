@@ -76,7 +76,8 @@ enum class ScanMode(
             R.string.key_symbology_pdf417,
             R.string.key_symbology_pdf417_micro,
             R.string.key_symbology_datamatrix,
-            R.string.key_symbology_dotcode
+            R.string.key_symbology_dotcode,
+            R.string.key_symbology_maxicode
         )
     ),
     CONTINUOUS("Batch MultiScan", "_continuous_mode_settings"),
@@ -91,6 +92,7 @@ enum class ScanMode(
             R.string.key_symbology_pdf417_micro,
             R.string.key_symbology_datamatrix,
             R.string.key_symbology_dotcode,
+            R.string.key_symbology_maxicode,
             R.string.key_symbology_c128,
             R.string.key_symbology_c93,
             R.string.key_symbology_c39,

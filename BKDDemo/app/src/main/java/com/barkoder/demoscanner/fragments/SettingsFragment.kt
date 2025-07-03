@@ -225,7 +225,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     continuisTresHoldPreferences.isVisible = true
                 }
 
-                if(scanMode != ScanMode.AR_MODE  && scanMode != ScanMode.MISSHAPED_1D && scanMode != ScanMode.DPM && scanMode != ScanMode.DOTCODE) {
+                if(scanMode != ScanMode.AR_MODE  && scanMode != ScanMode.MISSHAPED_1D && scanMode != ScanMode.DPM && scanMode != ScanMode.DOTCODE && scanMode != ScanMode.MRZ) {
                     makePreferenceVisable(getString(R.string.key_ar_preference))
                 }
             } else {
@@ -733,7 +733,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
                 makePreferenceInvisible(getString(R.string.key_bigger_viewfinder))
-                makePreferenceInvisible(getString(R.string.key_continuous_scaning))
+//                makePreferenceInvisible(getString(R.string.key_continuous_scaning))
                 makePreferenceInvisible(getString(R.string.key_barkoder_result_settings))
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
@@ -815,6 +815,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
+                makePreferenceInvisible(getString(R.string.key_symbology_dotcode))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(WEEBHOOK_SETTINGS_CATEGORY_INDEX).isVisible = false
@@ -825,7 +826,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_vibrate))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet))
                 makePreferenceVisable(getString(R.string.key_ar_preference))
-                makePreferenceVisable(getString(R.string.key_symbology_dotcode))
 
             }
         }

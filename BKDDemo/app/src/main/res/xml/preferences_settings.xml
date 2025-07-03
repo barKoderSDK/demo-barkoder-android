@@ -278,6 +278,13 @@
                 app:allowDividerBelow="true"
                 app:prefPaddingStart="40" />
 
+            <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
+                android:key="@string/key_symbology_maxicode"
+                android:title="@string/symbology_maxiCode"
+                app:allowDividerAbove="true"
+                app:allowDividerBelow="true"
+                app:prefPaddingStart="40" />
+
         </com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding>
 
         <com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding

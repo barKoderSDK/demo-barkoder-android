@@ -35,6 +35,7 @@ object DemoDefaults {
     const val BIGGER_VIEWFINDER_DEFAULT = false
 
     const val SYMBOLOGY_AZTEC_DEFAULT = true
+    const val SYMBOLOGY_MAXICODE_DEFAULT = true
     const val SYMBOLOGY_AZTEC_COMPACT_DEFAULT = true
     const val SYMBOLOGY_QR_DEFAULT = true
     const val SYMBOLOGY_QR_MICRO_DEFAULT = true

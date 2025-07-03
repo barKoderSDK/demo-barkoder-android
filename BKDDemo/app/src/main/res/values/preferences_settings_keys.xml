@@ -66,6 +66,7 @@
     <string name="key_symbology_c32">pref_key_symbology_c32</string>
     <string name="key_symbology_telepen">pref_key_symbology_telepen</string>
     <string name="key_symbology_dotcode">pref_key_symbology_dotcode</string>
+    <string name="key_symbology_maxicode">pref_key_symbology_maxicode</string>
     <string name="key_symbology_databar14">pref_key_symbology_databar14</string>
     <string name="key_symbology_databarLimited">pref_key_symbology_databarLimited</string>
     <string name="key_symbology_databarExpanded">pref_key_symbology_databarExpanded</string>

@@ -110,6 +110,7 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
     <string name="symbology_c32">Code 32</string>
     <string name="symbology_telepen">Telepen</string>
     <string name="symbology_dotcode">DotCode</string>
+    <string name="symbology_maxiCode">MaxiCode</string>
     <string name="symbology_databar14">Databar 14</string>
     <string name="symbology_databarExpanded">Databar Expanded</string>
     <string name="symbology_databarLimited">Databar Limited</string>
@@ -177,7 +178,7 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
     <string name="webhook_feedback_title">Webhook Confirmation Feedback</string>
     <string name="webhook_encode_data_title">Encode webhook data</string>
     <string name="enabled_webhook">Enabled webhook</string>
-    <string name="enabled_searchweb">Enabled search on Web</string>
+    <string name="enabled_searchweb">Enabled search</string>
 
     <string name="webhook_symobology_title">symbology</string>
     <string name="webhook_value_title">value</string>

@@ -456,7 +456,6 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
     ) {
         val sharedPreferences = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
 
-
         if(binding.bkdView.config.arConfig.arMode != BarkoderARMode.OFF){
             sessionScansAdapterData.clear()
             barcodeListResult.clear()

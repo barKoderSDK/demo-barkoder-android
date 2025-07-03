@@ -309,6 +309,7 @@ object BKDConfigUtil {
                 setBarkoderSettings(config,resources,sharedPref)
                 setResultSettings(config, resources, sharedPref)
                 configureAztecSymbology(config, resources, sharedPref)
+                configureMaxiCodeSymbology(config, resources, sharedPref)
                 configureAztecCompactSymbology(config, resources, sharedPref)
                 configureQRSymbology(config, resources, sharedPref)
                 configureQRMicroSymbology(config, resources, sharedPref)
@@ -348,7 +349,6 @@ object BKDConfigUtil {
             BarkoderConfigTemplate.MRZ -> {
                 setBarkoderSettings(config,resources,sharedPref)
                 config.setRegionOfInterest(0f, 0f, 100f, 100f)
-                config.thresholdBetweenDuplicatesScans = -1
 
             }
             BarkoderConfigTemplate.DOTCODE -> {
@@ -419,6 +419,7 @@ object BKDConfigUtil {
                 configureEan13Symbology(config, resources, sharedPref)
                 configureEan8Symbology(config, resources, sharedPref)
                 configureAztecSymbology(config, resources, sharedPref)
+                configureMaxiCodeSymbology(config, resources, sharedPref)
                 configureAztecCompactSymbology(config, resources, sharedPref)
                 configureQRSymbology(config, resources, sharedPref)
                 configureQRMicroSymbology(config, resources, sharedPref)
@@ -463,6 +464,7 @@ object BKDConfigUtil {
                 setBarkoderSettings(config,resources,sharedPref)
                 setResultSettings(config, resources, sharedPref)
                 configureAztecSymbology(config, resources, sharedPref)
+                configureMaxiCodeSymbology(config, resources, sharedPref)
                 configureAztecCompactSymbology(config, resources, sharedPref)
                 configureQRSymbology(config, resources, sharedPref)
                 configureQRMicroSymbology(config, resources, sharedPref)
@@ -510,6 +512,7 @@ object BKDConfigUtil {
                 setBarkoderSettings(config,resources,sharedPref)
                 setResultSettings(config, resources, sharedPref)
                 configureAztecSymbology(config, resources, sharedPref)
+                configureMaxiCodeSymbology(config, resources, sharedPref)
                 configureAztecCompactSymbology(config, resources, sharedPref)
                 configureQRSymbology(config, resources, sharedPref)
                 configureQRMicroSymbology(config, resources, sharedPref)
@@ -561,6 +564,17 @@ object BKDConfigUtil {
         config.decoderConfig.Aztec.enabled =
             sharedPref.getBoolean(
                 resources.getString(R.string.key_symbology_aztec)
+            )
+    }
+
+    private fun configureMaxiCodeSymbology(
+        config: BarkoderConfig,
+        resources: Resources,
+        sharedPref: SharedPreferences
+    ) {
+        config.decoderConfig.MaxiCode.enabled =
+            sharedPref.getBoolean(
+                resources.getString(R.string.key_symbology_maxicode)
             )
     }
 
@@ -1313,7 +1327,7 @@ object BKDConfigUtil {
         prefsEditor.putStringWithOptions(
             sharedPrefs,
             context.getString(R.string.key_ar_location_type),
-            config?.arConfig?.locationType?.ordinal?.toString() ?: 1.toString(),
+            config?.arConfig?.locationType?.ordinal?.toString() ?: 2.toString(),
             onlyIfNotContains
         )
         prefsEditor.putStringWithOptions(
@@ -1585,6 +1599,22 @@ object BKDConfigUtil {
                 sharedPrefs,
                 context.getString(R.string.key_symbology_aztec),
                 config?.decoderConfig?.Aztec?.enabled ?: DemoDefaults.SYMBOLOGY_AZTEC_DEFAULT,
+                onlyIfNotContains
+            )
+        }
+
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.UPC_EAN_DEBLUR){
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_maxicode),
+                config?.decoderConfig?.MaxiCode?.enabled ?: false,
+                onlyIfNotContains
+            )
+        } else {
+            prefsEditor.putBooleanWithOptions(
+                sharedPrefs,
+                context.getString(R.string.key_symbology_maxicode),
+                config?.decoderConfig?.MaxiCode?.enabled ?: DemoDefaults.SYMBOLOGY_MAXICODE_DEFAULT,
                 onlyIfNotContains
             )
         }
