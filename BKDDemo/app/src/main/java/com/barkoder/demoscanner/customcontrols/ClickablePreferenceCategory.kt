@@ -32,7 +32,7 @@ class ClickablePreferenceCategory(
         context,
         attrs,
         TypedArrayUtils.getAttr(
-            context, R.attr.preferenceCategoryStyle,
+            context, androidx.preference.R.attr.preferenceCategoryStyle,
             android.R.attr.preferenceCategoryStyle
         )
     )

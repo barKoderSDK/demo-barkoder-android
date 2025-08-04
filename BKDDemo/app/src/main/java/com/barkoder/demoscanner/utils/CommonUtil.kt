@@ -38,6 +38,13 @@ object CommonUtil {
             false
     }
 
+    fun cleanResultString(result: String): String {
+        return result.filter {
+            // Keep only printable characters: letters, digits, punctuation, and whitespace
+            !it.isISOControl() && it != '?' && it.code in 32..126 || it.isWhitespace()
+        }
+    }
+
     fun openURLInBrowser(url: String, activity: Activity) {
         try {
             var urlToOpen = url

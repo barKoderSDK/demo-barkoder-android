@@ -107,7 +107,7 @@ object DemoDefaults {
     const val SYMBOLOGY_DOTCODE_MAX_DEFAULT = CustomRangePreference.MAX_ALLOWED_VALUE
 
     val PARSER_TYPE_DEFAULT = Barkoder.FormattingType.Disabled
-    val PARSER_TYPE_PDF_DEFAULT = Barkoder.FormattingType.AAMVA
+    val PARSER_TYPE_PDF_DEFAULT = Barkoder.FormattingType.Automatic
     val PARSER_TYPE_GALLERY_DEFAULT = Barkoder.FormattingType.Automatic
     const val RESULT_CHARSET_DEFAULT = ""
 

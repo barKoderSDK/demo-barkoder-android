@@ -7,14 +7,15 @@ plugins {
 
 apply plugin: 'kotlin-kapt'
 android {
-    compileSdkVersion 34
+    compileSdkVersion 35
+    namespace "com.barkoder.demoscanner"
     defaultConfig {
         ndkVersion "26.0.10792818"
         applicationId "com.barkoder.demoscanner"
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode 98
-        versionName "1.8.6"
+        versionName "1.8.7"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -56,6 +57,7 @@ android {
     }
     buildFeatures {
         viewBinding true
+        buildConfig true
     }
 }
 

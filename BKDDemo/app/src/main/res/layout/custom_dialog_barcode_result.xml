@@ -1,278 +1,294 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true">
+    android:layout_height="match_parent">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+    <!-- Scrollable Content -->
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
         android:background="#FFF0EF"
         android:paddingBottom="5dp"
-        android:layout_height="wrap_content">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/constraintLayout"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/toolBarColor"
-        app:layout_constraintEnd_toEndOf="parent"
-
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintEnd_toEndOf="parent">
 
-
-        <ImageButton
-            android:id="@+id/btn_optionss"
-            android:layout_width="wrap_content"
+        <!-- Single container for all scrollable views -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:backgroundTint="@color/transparent"
-            android:src="@drawable/more_vert"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/titleMRZ"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Barcode Details"
-            android:textColor="@color/black"
-            android:textSize="20sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <!-- Top Bar -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/toolBarColor">
 
-        <ImageButton
-            android:id="@+id/buttonClose"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="15dp"
-            android:backgroundTint="@color/toolBarColor"
-            android:src="@drawable/ic_close_black"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+                <ImageButton
+                    android:id="@+id/btn_optionss"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="10dp"
+                    android:backgroundTint="@color/transparent"
+                    android:src="@drawable/more_vert"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
-        <ImageButton
-            android:id="@+id/buttonCloseBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:visibility="gone"
-            android:backgroundTint="@color/toolBarColor"
-            android:src="@drawable/ic_arrrow_back_black"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+                <TextView
+                    android:id="@+id/titleMRZ"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Barcode Details"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
+                <ImageButton
+                    android:id="@+id/buttonClose"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="15dp"
+                    android:backgroundTint="@color/toolBarColor"
+                    android:src="@drawable/ic_close_black"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <ImageButton
+                    android:id="@+id/buttonCloseBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:backgroundTint="@color/toolBarColor"
+                    android:src="@drawable/ic_arrrow_back_black"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <ImageView
-        android:id="@+id/barcodeImage"
-        android:layout_width="200dp"
-        android:layout_height="150dp"
-        android:layout_marginTop="30dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
-        tools:srcCompat="@tools:sample/avatars" />
+            <!-- Barcode Image -->
+            <ImageView
+                android:id="@+id/barcodeImage"
+                android:layout_width="200dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="30dp"
+                tools:srcCompat="@tools:sample/avatars" />
 
+            <!-- Data Header -->
+            <LinearLayout
+                android:id="@+id/linearLayout"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="40dp"
+                android:orientation="vertical"
+                android:padding="15dp">
 
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:background="#FFFFFF"
-        android:orientation="horizontal"
-        android:padding="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Data"
+                    android:textColor="@color/brand_color"
+                    android:textSize="12sp" />
+            </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="Barcode Type"
-            android:textColor="#666666"
-            android:textSize="12sp" />
+            <!-- Rows -->
+            <LinearLayout
+                android:id="@+id/rowsLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/barcodeTypeText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:gravity="end"
-            android:maxLines="2"
-            android:text="23 34 23"
-            android:textColor="#000000"
-            android:textSize="14sp" />
+                <!-- Barcode Type -->
+                <LinearLayout
+                    android:id="@+id/linearLayout2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:background="#FFFFFF"
+                    android:orientation="horizontal"
+                    android:padding="15dp">
 
-    </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:text="Barcode Type"
+                        android:textColor="#666666"
+                        android:textSize="12sp" />
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="40dp"
-        android:orientation="vertical"
-        android:padding="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/barcodeImage">
+                    <TextView
+                        android:id="@+id/barcodeTypeText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:text="23 34 23"
+                        android:textColor="#000000"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Data"
-            android:textColor="@color/brand_color"
-            android:textSize="12sp" />
+                <!-- Value -->
+                <LinearLayout
+                    android:id="@+id/aewsf"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:background="#FFFFFF"
+                    android:orientation="horizontal"
+                    android:padding="15dp">
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Value"
+                        android:textColor="#666666"
+                        android:textSize="12sp" />
 
-    </LinearLayout>
+                    <TextView
+                        android:id="@+id/barcodeValueText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:text="23 34 23"
+                        android:textColor="#000000"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/aewsf"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:background="#FFFFFF"
-        android:orientation="horizontal"
-        android:padding="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+                <!-- Times Scanned -->
+                <LinearLayout
+                    android:id="@+id/timesScannedLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:background="#FFFFFF"
+                    android:orientation="horizontal"
+                    android:padding="15dp">
 
-        <!-- Label on the left -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="Value"
-            android:textColor="#666666"
-            android:textSize="12sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Times scanned"
+                        android:textColor="#666666"
+                        android:textSize="12sp" />
 
-        <!-- Result Text on the right -->
-        <TextView
-            android:id="@+id/barcodeValueText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="20dp"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:gravity="end"
-            android:text="23 34 23"
-            android:textColor="#000000"
-            android:textSize="14sp" />
-    </LinearLayout>
+                    <TextView
+                        android:id="@+id/timesScannedText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:text="23 34 23"
+                        android:textColor="#000000"
+                        android:textSize="14sp" />
+                </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/timesScannedLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:background="#FFFFFF"
-        android:orientation="horizontal"
-        android:padding="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/aewsf">
+                <!-- Formatted -->
+                <LinearLayout
+                    android:id="@+id/formattedTextLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:background="#FFFFFF"
+                    android:orientation="horizontal"
+                    android:padding="15dp">
 
-        <!-- Label on the left -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="Times scanned"
-            android:textColor="#666666"
-            android:textSize="12sp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Formatted"
+                        android:textColor="#666666"
+                        android:textSize="12sp" />
 
-        <!-- Result Text on the right -->
-        <TextView
-            android:id="@+id/timesScannedText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="20dp"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:gravity="end"
-            android:maxLines="5"
-            android:text="23 34 23"
-            android:textColor="#000000"
-            android:textSize="14sp" />
-    </LinearLayout>
+                    <TextView
+                        android:id="@+id/FormattedValueText"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:text="23 34 23"
+                        android:textColor="#000000"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/formattedTextLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="2dp"
-        android:background="#FFFFFF"
-        android:orientation="horizontal"
-        android:paddingBottom="15dp"
-        android:paddingTop="15dp"
-        android:paddingEnd="15dp"
-        android:paddingStart="15dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/timesScannedLayout">
+            <!-- Captured Media -->
+            <TextView
+                android:id="@+id/textCapturedMedia"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginTop="10dp"
+                android:text="Captured Media"
+                android:textSize="12sp"
+                android:textColor="@color/brand_color" />
 
-        <!-- Label on the left -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="Formatted"
-            android:textColor="#666666"
-            android:textSize="12sp" />
+            <!-- Image Layout -->
+            <LinearLayout
+                android:id="@+id/sadlImagesLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:background="@color/white"
+                android:orientation="horizontal">
 
-        <!-- Result Text on the right -->
-        <TextView
-            android:id="@+id/FormattedValueText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="20dp"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:gravity="end"
-            android:text="23 34 23"
-            android:textColor="#000000"
-            android:textSize="14sp" />
-    </LinearLayout>
+                <androidx.cardview.widget.CardView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="8dp"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="4dp"
+                    app:cardUseCompatPadding="true">
 
+                    <ImageView
+                        android:id="@+id/sadlImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="true"
+                        android:scaleType="centerCrop" />
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Bottom Fixed Layout -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout5"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="2dp"
+        android:layout_height="wrap_content"
         android:background="@color/white"
-        android:backgroundTint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/formattedTextLayout">
+        app:layout_constraintStart_toStartOf="parent">
 
-
+        <!-- Your bottom controls -->
+        <!-- Copy Button -->
         <LinearLayout
             android:id="@+id/linearLayout5"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="7dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/linearLayout6"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnCopy"
@@ -288,44 +304,19 @@
                 app:cornerRadius="20dp"
                 app:icon="@drawable/ico_copy"
                 app:iconGravity="textStart"
+                app:iconSize="20dp"
                 app:iconTint="@color/brand_color"
-                app:layout_constraintBottom_toTopOf="@+id/txtCopy"
-                app:layout_constraintEnd_toStartOf="@+id/btnSearch"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
                 app:strokeColor="@color/transparent" />
-
 
             <TextView
                 android:id="@+id/txtCopy"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginEnd="2dp"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginBottom="15dp"
                 android:text="Copy"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/txtSearch"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent" />
-
+                android:textSize="12sp" />
         </LinearLayout>
-
-
-        <TextView
-            android:id="@+id/txtPDF"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="25dp"
-            android:layout_marginBottom="15dp"
-            android:text="PDF"
-            android:textSize="12sp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/btnSearch"
-            app:layout_constraintStart_toEndOf="@+id/txtCopy" />
-
 
         <LinearLayout
             android:id="@+id/linearLayout6"
@@ -335,7 +326,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/linearLayout5">
+            app:layout_constraintStart_toEndOf="@+id/linearLayout5"
+            app:layout_constraintTop_toTopOf="parent">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSearch"
@@ -351,11 +343,8 @@
                 app:cornerRadius="20dp"
                 app:icon="@drawable/ico_search"
                 app:iconGravity="textStart"
+                app:iconSize="20dp"
                 app:iconTint="@color/brand_color"
-                app:layout_constraintBottom_toTopOf="@+id/txtSearch"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/btnCopy"
                 app:strokeColor="@color/transparent" />
 
             <TextView
@@ -374,32 +363,7 @@
 
         </LinearLayout>
 
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnPDF"
-            style="?attr/materialButtonOutlinedStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:backgroundTint="@color/transparent"
-            android:gravity="center"
-            android:textAllCaps="false"
-            android:textColor="@color/brand_color"
-            android:textSize="11sp"
-            android:visibility="gone"
-            app:cornerRadius="20dp"
-            app:icon="@drawable/picture_as_pdf"
-            app:iconGravity="textStart"
-            app:iconTint="@color/brand_color"
-            app:layout_constraintBottom_toTopOf="@+id/txtPDF"
-            app:layout_constraintEnd_toStartOf="@+id/btnSearch"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/btnCopy"
-            app:strokeColor="@color/transparent" />
+        <!-- Add more buttons here as before -->
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-</androidx.core.widget.NestedScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

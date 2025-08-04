@@ -68,7 +68,7 @@ open class SwitchWithPaddingPreference(
                 paddingStart = attributeValues.getIntOrThrow(
                     R.styleable.SwitchWithPaddingPreference_prefPaddingStart
                 )
-                isIconSpaceReserved = true
+                isIconSpaceReserved = false
             } catch (ignored: IllegalArgumentException) {
             } finally {
                 attributeValues.recycle()
@@ -97,11 +97,11 @@ open class SwitchWithPaddingPreference(
             true
         }
 
-        holder?.run {
-            paddingStart?.let {
-                val iconFrame = findViewById(R.id.icon_frame)
-                iconFrame.minimumWidth = it
-            }
-        }
+//        holder?.run {
+//            paddingStart?.let {
+//                val iconFrame = findViewById(R.id.cardScanIdDocument)
+//                iconFrame.minimumWidth = it
+//            }
+//        }
     }
 }

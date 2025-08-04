@@ -30,7 +30,7 @@ open class PreferenceCategoryWithPadding(
         context,
         attrs,
         TypedArrayUtils.getAttr(
-            context, R.attr.preferenceCategoryStyle,
+            context, androidx.preference.R.attr.preferenceCategoryStyle,
             android.R.attr.preferenceCategoryStyle
         )
     )
@@ -54,7 +54,7 @@ open class PreferenceCategoryWithPadding(
                 paddingStart = attributeValues.getIntOrThrow(
                     R.styleable.PreferenceCategoryWithPadding_prefCategoryPaddingStart
                 )
-                isIconSpaceReserved = true
+                isIconSpaceReserved = false
             } catch (ignored: IllegalArgumentException) {
             } finally {
                 attributeValues.recycle()
@@ -65,11 +65,11 @@ open class PreferenceCategoryWithPadding(
     override fun onBindViewHolder(holder: PreferenceViewHolder?) {
         super.onBindViewHolder(holder)
 
-        holder?.run {
-            paddingStart?.let {
-                val iconFrame = findViewById(R.id.icon_frame)
-                iconFrame.minimumWidth = it
-            }
-        }
+//        holder?.run {
+//            paddingStart?.let {
+//                val iconFrame = findViewById(com.barkoder.R.id.icon_frame)
+//                iconFrame.minimumWidth = it
+//            }
+//        }
     }
 }

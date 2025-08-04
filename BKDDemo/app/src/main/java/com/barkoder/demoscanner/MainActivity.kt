@@ -351,17 +351,25 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
 
     private fun scanImageFromUri(uri: Uri?) {
         binding.progressIndicator.isVisible = true
-        ImageUtil.bitmapFromUri(contentResolver, uri,3000,3000)?.let {
-            BarkoderHelper.scanImage(
-                it,
-                BKDConfigUtil.configureBKD(
-                    this,
-                    ScanMode.GALLERY_SCAN,
-                    true
-                ),
-                this, this
-            )
 
+        // Create a single instance of the configuration
+        val config = BKDConfigUtil.configureBKD(
+            this,
+            ScanMode.GALLERY_SCAN,
+            true
+        )
+
+        // Apply custom options to the decoder config
+        Barkoder.SetCustomOption(config.getDecoderConfig(), "SADL_decode_image", 1)
+
+        // Use the same config when scanning the image
+        ImageUtil.bitmapFromUri(contentResolver, uri, 3000, 3000)?.let { bitmap ->
+            BarkoderHelper.scanImage(
+                bitmap,
+                config,
+                this,
+                this
+            )
         }
     }
 
@@ -468,7 +476,7 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
                         }
                     }
 
-                    sessionScansAdapterData.add(SessionScan(scannedDate,result.textualData, if(result.extra != null) formatBarcodeName(result.barcodeTypeName, result.extra.toList()) else result.barcodeTypeName,picturePath, documentPath, signaturePath,mainPath,croppedBarcodePath,if(result.extra != null) formattedText(result.extra.toList()) else ""))
+                    sessionScansAdapterData.add(SessionScan(scannedDate,result.textualData, if(result.extra != null) formatBarcodeName(result.barcodeTypeName, result.extra.toList()) else result.barcodeTypeName,picturePath, documentPath, signaturePath,mainPath,croppedBarcodePath,if(result.extra != null) formattedText(result.extra.toList()) else "",if(result.extra != null) extractImageRawBase64(result.extra.toList()) else ""))
                     recentViewModel.addRecentScan(
                         RecentScan2(
                             scannedDate,
@@ -479,7 +487,8 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
                             signaturePath,
                             mainPath,
                             croppedBarcodePath,
-                            if(result.extra != null) formattedText(result.extra.toList()) else ""
+                            if(result.extra != null) formattedText(result.extra.toList()) else "",
+                            if(result.extra != null) extractImageRawBase64(result.extra.toList()) else ""
                         )
                     )
                 } else {
@@ -492,7 +501,7 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
                         )
                     }
 
-                    sessionScansAdapterData.add(SessionScan(scannedDate,result.textualData, if(result.extra != null) formatBarcodeName(result.barcodeTypeName, result.extra.toList()) else result.barcodeTypeName,picturePath, documentPath, signaturePath,mainPath,croppedBarcodePath,if(result.extra != null) formattedText(result.extra.toList()) else ""))
+                    sessionScansAdapterData.add(SessionScan(scannedDate,result.textualData, if(result.extra != null) formatBarcodeName(result.barcodeTypeName, result.extra.toList()) else result.barcodeTypeName,picturePath, documentPath, signaturePath,mainPath,croppedBarcodePath,if(result.extra != null) formattedText(result.extra.toList()) else "",if(result.extra != null) extractImageRawBase64(result.extra.toList()) else ""))
                     // Handle barcodes without images (most barcodes will likely not have images)
                     for(i in sessionScansAdapterData) {
                         i.highLight = true
@@ -507,7 +516,8 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
                             null,  // No signature
                             null,  // No main
                             croppedBarcodePath,  // May still have cropped barcode image
-                            if(result.extra != null) formattedText(result.extra.toList()) else ""
+                            if(result.extra != null) formattedText(result.extra.toList()) else "",
+                            if(result.extra != null) extractImageRawBase64(result.extra.toList()) else ""
                         )
                     )
                 }
@@ -605,16 +615,37 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
             return ""
         }
 
-        // Iterate over the list to find the key "formattedText"
-        for (item in extra) {
-            if (item.key == "formattedText") {
-                // Return the value associated with the key "formattedText"
-                return item.value ?: ""
-            }
-        }
+        // Find the "formattedText" value
+        val originalText = extra.firstOrNull { it.key == "formattedText" }?.value ?: return ""
 
-        // If the key "formattedText" is not found, return a default message
-        return ""
+        // Remove any line that starts with "ImageRawBase64:"
+        val filteredText = originalText
+            .lineSequence()
+            .filterNot { line ->
+                val trimmed = line.trim()
+                trimmed.startsWith("ImageRawBase64:") ||
+                        trimmed.startsWith("Image width:") ||
+                        trimmed.startsWith("Image height:")
+            }
+
+            .joinToString("\n") // Join lines back together
+
+        Log.d("pwqe" , filteredText)
+        return filteredText
+    }
+
+    fun extractImageRawBase64(extra: List<Barkoder.BKKeyValue>?): String {
+        if (extra.isNullOrEmpty()) return ""
+
+        val formattedText = extra.firstOrNull { it.key == "formattedText" }?.value ?: return ""
+
+        return formattedText
+            .lineSequence()
+            .map { it.trim() }
+            .firstOrNull { it.startsWith("ImageRawBase64:") }
+            ?.substringAfter("ImageRawBase64:")
+            ?.trim()
+            ?: ""
     }
 
     fun formatBarcodeName(barcodeTypeName: String, extra: List<Barkoder.BKKeyValue>?): String {

@@ -5,9 +5,7 @@ import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.ClipboardManager
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -24,19 +22,17 @@ import android.text.method.ScrollingMovementMethod
 import android.util.Base64
 import android.util.Log
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.PopupWindow
+import android.widget.TableLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.addCallback
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -46,18 +42,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.barkoder.demoscanner.MainActivity
 import com.barkoder.demoscanner.R
-import com.barkoder.demoscanner.ScannerActivity
-import com.barkoder.demoscanner.adapters.RecentScansAdapter
 import com.barkoder.demoscanner.adapters.SessionScanAdapter
 import com.barkoder.demoscanner.api.RetrofitIInstance
 import com.barkoder.demoscanner.databinding.FragmentResultBottomDialogBinding
 import com.barkoder.demoscanner.models.BarcodeScanedData
-import com.barkoder.demoscanner.models.RecentScan2
 import com.barkoder.demoscanner.models.SessionScan
 import com.barkoder.demoscanner.repositories.BarcodeDataRepository
 import com.barkoder.demoscanner.utils.CommonUtil
 import com.barkoder.demoscanner.utils.NetworkUtils
-import com.barkoder.demoscanner.utils.getBoolean
 import com.barkoder.demoscanner.utils.getString
 import com.barkoder.demoscanner.viewmodels.BarcodeDataViewModel
 import com.barkoder.demoscanner.viewmodels.BarcodeDataViewModelFactory
@@ -78,7 +70,6 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import kotlin.math.exp
 
 
 class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapter.OnSessionScanItemClickListener {
@@ -1075,7 +1066,8 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
                     item.scanText,
                     item.scanTypeName,
                     item.formattedText,
-                    item.scannedTimesInARow
+                    item.scannedTimesInARow,
+                    item.sadlImageRawBase64
                 )
 
             }
@@ -1110,7 +1102,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
     public fun showFullScreenDialog(context: Context , picutreImage : String?, documentImage : String?, signatureImage : String?, mainImage : String?, results: String?) {
             // or use `this` if in an Activity
             val builder =
-                AlertDialog.Builder(context, R.style.FullScreenDialogStyle)
+                AlertDialog.Builder(context, com.barkoder.R.style.FullScreenDialogStyle)
             // Inflate the custom layout
             val inflater = LayoutInflater.from(context)
             val dialogView = inflater.inflate(R.layout.custom_dialog_results, null)
@@ -1382,8 +1374,8 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         }
 
     @SuppressLint("MissingInflatedId")
-    public fun showBarcodeDetailsDialog(context: Context, mainImage: String, result: String, typname: String, formattedTextValue : String, scannedTimes: Int) {
-        val dialog = Dialog(requireContext(), R.style.FullScreenDialogStyle)
+    public fun showBarcodeDetailsDialog(context: Context, mainImage: String, result: String, typname: String, formattedTextValue : String, scannedTimes: Int, sadlImageRawBase64 : String) {
+        val dialog = Dialog(requireContext(), com.barkoder.R.style.FullScreenDialogStyle)
 
         // Inflate the custom layout
         val inflater = LayoutInflater.from(requireContext())
@@ -1398,11 +1390,41 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         val formattedLayout = dialogView.findViewById<LinearLayout>(R.id.formattedTextLayout)
         val scannedTimesLayout = dialogView.findViewById<LinearLayout>(R.id.timesScannedLayout)
         val scannedTimesText = dialogView.findViewById<TextView>(R.id.timesScannedText)
+        val sadlImage = dialogView.findViewById<ImageView>(R.id.sadlImage)
+        val textCapturedMedia = dialogView.findViewById<TextView>(R.id.textCapturedMedia)
+        val sadlImagesLayout = dialogView.findViewById<LinearLayout>(R.id.sadlImagesLayout)
 
         if(scannedTimes > 1) {
             scannedTimesLayout.visibility = View.VISIBLE
         } else {
             scannedTimesLayout.visibility = View.GONE
+        }
+
+        if (sadlImageRawBase64 != null && sadlImageRawBase64.length > 1) {
+            try {
+                val grayscalePixels: ByteArray = Base64.decode(sadlImageRawBase64, Base64.NO_WRAP)
+                Log.d("DecodeDebug", "Decoded bytes: " + grayscalePixels.size)
+
+                val width = 200
+                val height = 250
+
+
+                // OPTION 1: Try ARGB_8888 with grayscale values
+                val argbPixels = IntArray(width * height)
+                for (i in grayscalePixels.indices) {
+                    val gray = grayscalePixels[i].toInt() and 0xFF // Convert to unsigned
+                    argbPixels[i] = -0x1000000 or (gray shl 16) or (gray shl 8) or gray
+                }
+
+                val grayscaleBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                grayscaleBitmap.setPixels(argbPixels, 0, width, 0, 0, width, height)
+                sadlImage.setImageBitmap(grayscaleBitmap)
+            }  catch (e: Exception) {
+                Log.e("ImageError", "Failed to decode grayscale pixels", e)
+            }
+        } else {
+            textCapturedMedia.visibility = View.GONE
+            sadlImagesLayout.visibility = View.GONE
         }
 
         if(formattedTextValue.length > 0) {
@@ -1423,11 +1445,14 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             Log.e("Error", "Bitmap is null for the given image string.")
         }
 
-
-        barcodeValueText.text = result
+        val cleanedResult = CommonUtil.cleanResultString(result)
+        barcodeValueText.text = cleanedResult
+        Log.d("results", result)
         barcodeTypeText.text = typname
         formattedText.text = formattedTextValue
         scannedTimesText.text = scannedTimes.toString()
+
+
 
 
         val closeButton = dialogView.findViewById<ImageButton>(R.id.buttonClose)
@@ -1436,14 +1461,83 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         val btnPDF = dialogView.findViewById<MaterialButton>(R.id.btnPDF)
         val txtSearch = dialogView.findViewById<TextView>(R.id.txtSearch)
         var bitmapsArray = mutableListOf<Pair<Bitmap, String>>()
+        val rowsLayout = dialogView.findViewById<LinearLayout>(R.id.rowsLayout)
+
+
+        if (formattedTextValue.isNotEmpty()) {
+            formattedTextValue.lines().forEach { line ->
+                val parts = line.split(":", limit = 2)
+                if (parts.size == 2) {
+                    val key = parts[0].trim()
+                    val value = parts[1].trim()
+
+                    // **Skip adding the row if value is empty**
+                    if (value.isEmpty()) {
+                        return@forEach  // Skip this iteration
+                    }
+
+                    // Create parent horizontal LinearLayout
+                    val rowLayout = LinearLayout(context).apply {
+                        orientation = LinearLayout.HORIZONTAL
+                        setBackgroundColor(Color.WHITE)
+                        setPadding(15, 15, 15, 15)
+
+                        val params = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        )
+                        params.topMargin = 2
+                        layoutParams = params
+                    }
+
+                    // Key TextView (left side)
+                    val keyView = TextView(context).apply {
+                        text = key
+                        setTextColor(Color.parseColor("#666666"))
+                        textSize = 14f
+                        setPadding(15, 20, 15, 20)
+                    }
+
+                    // Value TextView (right side)
+                    val valueView = TextView(context).apply {
+                        text = value
+                        setTextColor(Color.parseColor("#000000"))
+                        textSize = 14f
+                        gravity = Gravity.END
+                        setPadding(15, 20, 15, 20)
+                        layoutParams = LinearLayout.LayoutParams(
+                            0,
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            1f
+                        )
+                    }
+
+                    formattedLayout.visibility = View.GONE
+
+                    // Add views
+                    rowLayout.addView(keyView)
+                    rowLayout.addView(valueView)
+                    rowsLayout.addView(rowLayout)
+
+                    // Divider line
+                    val divider = View(context).apply {
+                        layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT, 2
+                        )
+                        setBackgroundColor(Color.parseColor("#FFF0EF"))
+                    }
+                    rowsLayout.addView(divider)
+                }
+            }
+        }
 
         if (mainImage != null) {
             CommonUtil.getBitmapFromInternalStorage(mainImage)?.let { bitmapsArray.add(Pair(it,"barcode")) }
         }
 
-        btnPDF.setOnClickListener {
-            CommonUtil.createPdf(requireContext(), bitmapsArray, "${typname}\n${result}")
-        }
+//        btnPDF.setOnClickListener {
+//            CommonUtil.createPdf(requireContext(), bitmapsArray, "${typname}\n${result}")
+//        }
 
         if(CommonUtil.isTextURL(result)) {
             btnSearch.setIconResource(R.drawable.ico_webhook) // Replace with your new icon
@@ -1509,6 +1603,13 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             params.height = newHeightInPixels
 
             binding.constraintLayout4.layoutParams = params
+        }
+    }
+
+    fun cleanResultString(result: String): String {
+        return result.filter {
+            // Keep only printable characters: letters, digits, punctuation, and whitespace
+            !it.isISOControl() && it != '?' && it.code in 32..126 || it.isWhitespace()
         }
     }
 

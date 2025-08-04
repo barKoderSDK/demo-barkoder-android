@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.barkoder.demoscanner.R
 import com.barkoder.demoscanner.models.RecentScan2
 import com.barkoder.demoscanner.models.SessionScan
+import com.barkoder.demoscanner.utils.CommonUtil
 import okhttp3.internal.notifyAll
 import java.lang.ref.WeakReference
 
@@ -112,7 +113,8 @@ class SessionScanAdapter(
             if (currentItem.scanTypeName == "MRZ") {
                 holder.resultTextView.text = "Full name: ${firstName} ${lastName}"
             } else {
-                holder.resultTextView.text = currentItem.scanText
+                val cleanedResult = CommonUtil.cleanResultString(currentItem.scanText)
+                holder.resultTextView.text = cleanedResult
             }
 
             // Highlight the last `highlightCount` items

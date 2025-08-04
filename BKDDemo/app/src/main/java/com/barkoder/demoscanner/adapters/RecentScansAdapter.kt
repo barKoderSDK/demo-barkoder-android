@@ -19,6 +19,7 @@ import com.barkoder.demoscanner.R
 import com.barkoder.demoscanner.RecentActivity
 import com.barkoder.demoscanner.models.RecentScan
 import com.barkoder.demoscanner.models.RecentScan2
+import com.barkoder.demoscanner.utils.CommonUtil
 import com.barkoder.demoscanner.utils.ResultItem
 import com.barkoder.demoscanner.utils.ScannedResultsUtil
 import com.barkoder.demoscanner.viewmodels.RecentScanViewModel
@@ -79,7 +80,7 @@ class RecentScansAdapter(
                         if (scanDate.substring(0, 10) != lastDate) {
 
                             recentScansAdapterData.add(recentScansAdapterData.indexOf(i),
-                                RecentScan2(scanDate.substring(0, 10), i.scanText, i.scanTypeName, i.pictureBitmap, i.documentBitmap, i.signatureBitmap, i.mainBitmap,i.thumbnailBitmap,i.formattedText, asHeaderOnly = true))
+                                RecentScan2(scanDate.substring(0, 10), i.scanText, i.scanTypeName, i.pictureBitmap, i.documentBitmap, i.signatureBitmap, i.mainBitmap,i.thumbnailBitmap,i.formattedText,i.sadlImageRawBase64, asHeaderOnly = true))
                             // Notify data set changed
                             notifyDataSetChanged()
                         }
@@ -181,7 +182,8 @@ class RecentScansAdapter(
                 barcodeResult.text = if (currentItem.scanTypeName == "MRZ") {
                     extractDocumentRawTextinRecents(currentItem.scanText)
                 } else {
-                    currentItem.scanText
+                    val cleanedResult = CommonUtil.cleanResultString(currentItem.scanText)
+                  cleanedResult;
                 }
 
                 // Toggle visibility based on check mode
@@ -255,7 +257,7 @@ class RecentScansAdapter(
                         if (scanDate.substring(0, 10) != lastDate) {
                             // Update the list with new item
                             recentScansAdapterData.add(recentScansAdapterData.indexOf(i),
-                                RecentScan2(scanDate.substring(0, 10), i.scanText, i.scanTypeName,i.pictureBitmap, i.documentBitmap, i.signatureBitmap,  i.mainBitmap, i.thumbnailBitmap,i.formattedText, asHeaderOnly = true))
+                                RecentScan2(scanDate.substring(0, 10), i.scanText, i.scanTypeName,i.pictureBitmap, i.documentBitmap, i.signatureBitmap,  i.mainBitmap, i.thumbnailBitmap,i.formattedText,i.sadlImageRawBase64, asHeaderOnly = true))
                             // Notify data set changed
                             notifyDataSetChanged()
                         }
@@ -310,7 +312,7 @@ class RecentScansAdapter(
                         if (scanDate.substring(0, 10) != lastDate) {
                             // Update the list with new item
                             recentScansAdapterData.add(recentScansAdapterData.indexOf(i),
-                                RecentScan2(scanDate.substring(0, 10), i.scanText, i.scanTypeName, i.pictureBitmap, i.documentBitmap, i.signatureBitmap, i.mainBitmap,i.thumbnailBitmap,i.formattedText, asHeaderOnly = true))
+                                RecentScan2(scanDate.substring(0, 10), i.scanText, i.scanTypeName, i.pictureBitmap, i.documentBitmap, i.signatureBitmap, i.mainBitmap,i.thumbnailBitmap,i.formattedText,i.sadlImageRawBase64, asHeaderOnly = true))
                             // Notify data set changed
                             notifyDataSetChanged()
                         }
@@ -381,7 +383,7 @@ class RecentScansAdapter(
                                 if (scanDate.substring(0, 10) != lastDate) {
                                     // Update the list with new item
                                     recentScansAdapterData.add(recentScansAdapterData.indexOf(i),
-                                        RecentScan2(scanDate.substring(0, 10), i.scanText, i.scanTypeName, i.pictureBitmap, i.documentBitmap, i.signatureBitmap, i.mainBitmap,i.thumbnailBitmap,i.formattedText, asHeaderOnly = true))
+                                        RecentScan2(scanDate.substring(0, 10), i.scanText, i.scanTypeName, i.pictureBitmap, i.documentBitmap, i.signatureBitmap, i.mainBitmap,i.thumbnailBitmap,i.formattedText,i.sadlImageRawBase64, asHeaderOnly = true))
                                     // Notify data set changed
                                     notifyDataSetChanged()
                                 }

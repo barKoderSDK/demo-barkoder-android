@@ -18,6 +18,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Base64
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -216,7 +217,7 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
                                 if (scanDate.substring(0, 10) != lastDate) {
                                     // Update the list with new item
                                     recentScansAdapterData.add(recentScansAdapterData.indexOf(i),
-                                        RecentScan2(scanDate.substring(0, 10), i.scanText, i.scanTypeName,i.pictureBitmap, i.documentBitmap, i.signatureBitmap,  i.mainBitmap, i.thumbnailBitmap,i.formattedText, asHeaderOnly = true))
+                                        RecentScan2(scanDate.substring(0, 10), i.scanText, i.scanTypeName,i.pictureBitmap, i.documentBitmap, i.signatureBitmap,  i.mainBitmap, i.thumbnailBitmap,i.formattedText,i.sadlImageRawBase64, asHeaderOnly = true))
                                     // Notify data set changed
                                     notifyDataSetChanged()
                                 }
@@ -526,7 +527,7 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
             if(item.scanTypeName == "MRZ") {
                 showFullScreenDialog(item.pictureBitmap,item.documentBitmap,item.signatureBitmap, item.mainBitmap, item.scanText, item)
             } else {
-                showBarcodeDetailsDialog(item.thumbnailBitmap, item.scanText, item.scanTypeName, item.formattedText, item, item.scannedTimesInARow)
+                showBarcodeDetailsDialog(item.thumbnailBitmap, item.scanText, item.scanTypeName, item.formattedText, item, item.scannedTimesInARow, item.sadlImageRawBase64)
             }
         }
     }
@@ -751,10 +752,10 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
         }
     }
 
-    fun showBarcodeDetailsDialog(barcodePicture: String?, barcodeValue: String, barcodeType: String, formattedTextValue: String, item: RecentScan2, scannedTimes: Int) {
+    fun showBarcodeDetailsDialog(barcodePicture: String?, barcodeValue: String, barcodeType: String, formattedTextValue: String, item: RecentScan2, scannedTimes: Int, sadlImageRawBase64 : String) {
         runOnUiThread {
             // Create a regular Dialog for more control
-            val dialog = Dialog(this, R.style.FullScreenDialogStyle)
+            val dialog = Dialog(this, com.barkoder.R.style.FullScreenDialogStyle)
 
             // Inflate the custom layout
             val inflater = LayoutInflater.from(this)
@@ -771,11 +772,41 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
             val formattedLayout = dialogView.findViewById<LinearLayout>(R.id.formattedTextLayout)
             val scannedTimesLayout = dialogView.findViewById<LinearLayout>(R.id.timesScannedLayout)
             val scannedTimesText = dialogView.findViewById<TextView>(R.id.timesScannedText)
+            val sadlImage = dialogView.findViewById<ImageView>(R.id.sadlImage)
+            val textCapturedMedia = dialogView.findViewById<TextView>(R.id.textCapturedMedia)
+            val sadlImagesLayout = dialogView.findViewById<LinearLayout>(R.id.sadlImagesLayout)
 
             if(scannedTimes > 1) {
                 scannedTimesLayout.visibility = View.VISIBLE
             } else {
                 scannedTimesLayout.visibility = View.GONE
+            }
+
+            if (sadlImageRawBase64 != null && sadlImageRawBase64.length > 1) {
+                try {
+                    val grayscalePixels: ByteArray = Base64.decode(sadlImageRawBase64, Base64.NO_WRAP)
+                    Log.d("DecodeDebug", "Decoded bytes: " + grayscalePixels.size)
+
+                    val width = 200
+                    val height = 250
+
+
+                    // OPTION 1: Try ARGB_8888 with grayscale values
+                    val argbPixels = IntArray(width * height)
+                    for (i in grayscalePixels.indices) {
+                        val gray = grayscalePixels[i].toInt() and 0xFF // Convert to unsigned
+                        argbPixels[i] = -0x1000000 or (gray shl 16) or (gray shl 8) or gray
+                    }
+
+                    val grayscaleBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                    grayscaleBitmap.setPixels(argbPixels, 0, width, 0, 0, width, height)
+                    sadlImage.setImageBitmap(grayscaleBitmap)
+                }  catch (e: Exception) {
+                    Log.e("ImageError", "Failed to decode grayscale pixels", e)
+                }
+            } else {
+                textCapturedMedia.visibility = View.GONE
+                sadlImagesLayout.visibility = View.GONE
             }
 
             if(formattedTextValue.length > 0) {
@@ -790,9 +821,9 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
                 .placeholder(R.drawable.container__2_)
                 .into(barcodeBitmap)
 
+            val cleanedResult = CommonUtil.cleanResultString(barcodeValue)
 
-
-            barcodeValueText.text = barcodeValue
+            barcodeValueText.text = cleanedResult
             barcodeTypeText.text = barcodeType
             formattedText.text = formattedTextValue
             scannedTimesText.text = scannedTimes.toString()
@@ -800,14 +831,69 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
 
             val btnCopy = dialogView.findViewById<MaterialButton>(R.id.btnCopy)
             val btnSearch = dialogView.findViewById<MaterialButton>(R.id.btnSearch)
-            val btnPDF = dialogView.findViewById<MaterialButton>(R.id.btnPDF)
             val btnOptions = dialogView.findViewById<ImageButton>(R.id.btn_optionss)
+            val rowsLayout = dialogView.findViewById<LinearLayout>(R.id.rowsLayout)
             btnOptions.visibility = View.VISIBLE
 
             btnOptions.setOnClickListener {
                 showCustomPopupMenuItem(it, item, dialog)
             }
 
+            if (formattedTextValue.isNotEmpty()) {
+                formattedTextValue.lines().forEach { line ->
+                    val parts = line.split(":", limit = 2)
+                    if (parts.size == 2) {
+                        val key = parts[0].trim()
+                        val value = parts[1].trim()
+
+                        // Create parent horizontal LinearLayout
+                        val rowLayout = LinearLayout(applicationContext).apply {
+                            orientation = LinearLayout.HORIZONTAL
+                            setBackgroundColor(Color.WHITE)
+                            setPadding(15, 15, 15, 15)
+
+                            val params = LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                            )
+                            params.topMargin = 2
+                            layoutParams = params
+                        }
+
+                        // Key TextView (left side)
+                        val keyView = TextView(applicationContext).apply {
+                            text = key
+                            setTextColor(Color.parseColor("#666666"))
+                            textSize = 14f
+                            setPadding(15, 20, 15, 20)
+                        }
+
+                        // Value TextView (right side)
+                        val valueView = TextView(applicationContext).apply {
+                            text = value
+                            setTextColor(Color.parseColor("#000000"))
+                            textSize = 14f
+                            gravity = Gravity.END
+                            setPadding(15, 20, 15, 20)
+                            layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
+                        }
+                        formattedLayout.visibility = View.GONE
+                        // Add views
+                        rowLayout.addView(keyView)
+                        rowLayout.addView(valueView)
+                        rowsLayout.addView(rowLayout)
+
+                        // Divider line
+                        val divider = View(applicationContext).apply {
+                            layoutParams = LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT, 2
+                            )
+                            setBackgroundColor(Color.parseColor("#FFF0EF"))
+                        }
+                        rowsLayout.addView(divider)
+                    }
+                }
+            }
 
             var bitmapsArray = arrayListOf<Bitmap>()
 
@@ -859,7 +945,7 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
         runOnUiThread {
             // or use `this` if in an Activity
             val builder =
-                android.app.AlertDialog.Builder(this, R.style.FullScreenDialogStyle)
+                android.app.AlertDialog.Builder(this, com.barkoder.R.style.FullScreenDialogStyle)
             // Inflate the custom layout
             val inflater = LayoutInflater.from(this)
             val dialogView = inflater.inflate(R.layout.custom_dialog_filter, null)
@@ -924,7 +1010,7 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
         runOnUiThread {
             // or use `this` if in an Activity
             val builder =
-                android.app.AlertDialog.Builder(this, R.style.FullScreenDialogStyle)
+                android.app.AlertDialog.Builder(this, com.barkoder.R.style.FullScreenDialogStyle)
             // Inflate the custom layout
             val inflater = LayoutInflater.from(this)
             val dialogView = inflater.inflate(R.layout.custom_dialog_results, null)
@@ -1036,8 +1122,7 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
                 formatDateString(dateOfBirth) // Ensure this method returns a formatted date string
             val formattedDateExpiry = formatDateString(expirationDate)
 
-            val colorPassed = ContextCompat.getColor(this, R.color.colorPassed)
-            val colorFailed = ContextCompat.getColor(this, R.color.colorFailed)
+
 
 
 //            compareDates(expirationDate!!, textVerificationExpire, iconVerificationExpire, this)

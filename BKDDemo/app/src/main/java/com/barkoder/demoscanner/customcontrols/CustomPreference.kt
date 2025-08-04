@@ -29,7 +29,7 @@ class CustomPreference(
         context,
         attrs,
         TypedArrayUtils.getAttr(
-            context, R.attr.preferenceStyle,
+            context, androidx.preference.R.attr.preferenceCategoryStyle,
             android.R.attr.preferenceStyle
         )
     )

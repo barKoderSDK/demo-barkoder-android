@@ -398,6 +398,8 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
             // More than 60 seconds passed
         }
 
+        Barkoder.SetCustomOption(binding.bkdView.config.getDecoderConfig(), "SADL_decode_image", 1);
+
     }
 
     override fun onPause() {
@@ -454,6 +456,8 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
         thumbnails: Array<out Bitmap>?,
         imageResult: Bitmap?
     ) {
+        results?.get(0)?.extra?.forEach { Log.d("res33", "Key=${it.key}, Value=${it.value}") }
+
         val sharedPreferences = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
 
         if(binding.bkdView.config.arConfig.arMode != BarkoderARMode.OFF){
@@ -675,6 +679,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                                                     mainPath,
                                                     croppedBarcodePath,
                                                     if (i.extra != null) formattedText(i.extra.toList()) else "",
+                                                    if (i.extra != null) extractImageRawBase64(i.extra.toList()) else "",
                                                     1, // Initialize scannedInARow to 1
                                                     highLight = true
                                                 )
@@ -692,6 +697,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                                                         mainPath,
                                                         croppedBarcodePath,
                                                         if (i.extra != null) formattedText(i.extra.toList()) else "",
+                                                        if (i.extra != null) extractImageRawBase64(i.extra.toList()) else "",
                                                         scannedTimesInARow = 1
                                                     )
                                                 )
@@ -826,6 +832,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                                                     mainPath,
                                                     croppedBarcodePath,
                                                     if (i.extra != null) formattedText(i.extra.toList()) else "",
+                                                    if (i.extra != null) extractImageRawBase64(i.extra.toList()) else "",
                                                     1, // Initialize scannedInARow to 1
                                                     highLight = true
                                                 )
@@ -843,6 +850,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                                                         mainPath,
                                                         croppedBarcodePath,
                                                         if (i.extra != null) formattedText(i.extra.toList()) else "",
+                                                        if (i.extra != null) extractImageRawBase64(i.extra.toList()) else "",
                                                         scannedTimesInARow = 1
                                                     )
                                                 )
@@ -957,6 +965,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                                 mainPath,
                                 croppedBarcodePath,
                                 if (i.extra != null) formattedText(i.extra.toList()) else "",
+                                if (i.extra != null) extractImageRawBase64(i.extra.toList()) else "",
                                 1,
                                 highLight = true
                             )
@@ -974,6 +983,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                                     null,
                                     croppedBarcodePath,
                                     if (i.extra != null) formattedText(i.extra.toList()) else "",
+                                    if (i.extra != null) extractImageRawBase64(i.extra.toList()) else "",
                                     scannedTimesInARow = 1,
                                     highlighted = true
                                 )
@@ -1023,16 +1033,36 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
             return ""
         }
 
-        // Iterate over the list to find the key "formattedText"
-        for (item in extra) {
-            if (item.key == "formattedText") {
-                // Return the value associated with the key "formattedText"
-                return item.value ?: ""
-            }
-        }
+        // Find the "formattedText" value
+        val originalText = extra.firstOrNull { it.key == "formattedText" }?.value ?: return ""
 
-        // If the key "formattedText" is not found, return a default message
-        return ""
+        // Remove any line that starts with "ImageRawBase64:"
+        val filteredText = originalText
+            .lineSequence()
+            .filterNot { line ->
+                val trimmed = line.trim()
+                trimmed.startsWith("ImageRawBase64:") ||
+                        trimmed.startsWith("Image width:") ||
+                        trimmed.startsWith("Image height:")
+            }
+
+            .joinToString("\n") // Join lines back together
+
+
+        return filteredText
+    }
+
+    fun extractImageRawBase64(extra: List<Barkoder.BKKeyValue>?): String {
+        val formattedText = extra?.firstOrNull { it.key == "formattedText" }?.value
+            ?: return "" // If no formattedText, return empty string
+
+        return formattedText
+            .lineSequence()
+            .map { it.trim() }
+            .firstOrNull { it.startsWith("ImageRawBase64:") }
+            ?.substringAfter("ImageRawBase64:")
+            ?.trim()
+            ?: "" // If ImageRawBase64 is not found, return empty string
     }
 
     fun onBarcodeScanned(
@@ -1186,7 +1216,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
         runOnUiThread {
             // or use `this` if in an Activity
             val builder =
-                AlertDialog.Builder(context, R.style.FullScreenDialogStyle)
+                AlertDialog.Builder(context, com.barkoder.R.style.FullScreenDialogStyle)
             // Inflate the custom layout
             val inflater = LayoutInflater.from(context)
             val dialogView = inflater.inflate(R.layout.custom_dialog_results, null)
@@ -1386,7 +1416,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
     public fun showBarcodeDetailsDialog(context: Context) {
         runOnUiThread {
             // or use `this` if in an Activity
-            val dialog = Dialog(this, R.style.FullScreenDialogStyle)
+            val dialog = Dialog(this, com.barkoder.R.style.FullScreenDialogStyle)
 
             // Inflate the custom layout
             val inflater = LayoutInflater.from(this)
