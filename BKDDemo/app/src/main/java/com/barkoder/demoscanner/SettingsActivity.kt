@@ -56,15 +56,18 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (openedFromSettings || scanMode.ordinal == 14) {
-            // Just finish if opened from within settings
-            finish()
+        val fm = supportFragmentManager
+        if (fm.backStackEntryCount > 0) {
+            fm.popBackStack() // Go back to previous fragment
         } else {
-            // Go back to scanner activity with scan mode
-            val intent = Intent(this@SettingsActivity, ScannerActivity::class.java)
-            intent.putExtra(ScannerActivity.ARGS_MODE_KEY, scanMode.ordinal)
-            startActivity(intent)
-            finish()
+            if (openedFromSettings || scanMode.ordinal == 14) {
+                finish()
+            } else {
+                val intent = Intent(this@SettingsActivity, ScannerActivity::class.java)
+                intent.putExtra(ScannerActivity.ARGS_MODE_KEY, scanMode.ordinal)
+                startActivity(intent)
+                finish()
+            }
         }
     }
 

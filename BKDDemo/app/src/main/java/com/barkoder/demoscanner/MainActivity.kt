@@ -360,7 +360,6 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
         )
 
         // Apply custom options to the decoder config
-        Barkoder.SetCustomOption(config.getDecoderConfig(), "SADL_decode_image", 1)
 
         // Use the same config when scanning the image
         ImageUtil.bitmapFromUri(contentResolver, uri, 3000, 3000)?.let { bitmap ->

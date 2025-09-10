@@ -398,7 +398,6 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
             // More than 60 seconds passed
         }
 
-        Barkoder.SetCustomOption(binding.bkdView.config.getDecoderConfig(), "SADL_decode_image", 1);
 
     }
 

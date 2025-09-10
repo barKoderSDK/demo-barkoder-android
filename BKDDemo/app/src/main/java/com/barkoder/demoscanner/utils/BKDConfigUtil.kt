@@ -348,7 +348,7 @@ object BKDConfigUtil {
             }
             BarkoderConfigTemplate.MRZ -> {
                 setBarkoderSettings(config,resources,sharedPref)
-                config.setRegionOfInterest(0f, 0f, 100f, 100f)
+                config.setRegionOfInterest(0f, 30f, 100f, 40f)
 
             }
             BarkoderConfigTemplate.DOTCODE -> {
@@ -1350,7 +1350,7 @@ object BKDConfigUtil {
                     sharedPrefs,
                     context.getString(R.string.key_scanner_decoding_speed),
                     config?.decoderConfig?.decodingSpeed?.ordinal?.toString()
-                        ?: 1.toString(),
+                        ?: 2.toString(),
                     onlyIfNotContains
                 )
             }  else if(scanMode == ScanMode.GALLERY_SCAN) {
@@ -1455,7 +1455,7 @@ object BKDConfigUtil {
         }
 
 
-        if(scanMode.title == "Batch MultiScan") {
+        if(scanMode.title == "Batch MultiScan" || scanMode == ScanMode.MRZ) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_enable_roi), true,

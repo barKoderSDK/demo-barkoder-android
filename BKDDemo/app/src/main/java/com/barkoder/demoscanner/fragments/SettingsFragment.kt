@@ -723,7 +723,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
             ScanMode.MRZ ->  {
                 makePreferenceInvisible(getString(R.string.key_mrz_mode))
                 makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
-                makePreferenceInvisible(getString(R.string.key_enable_roi))
                 makePreferenceInvisible(getString(R.string.key_blured_scan_eanupc))
                 makePreferenceInvisible(getString(R.string.key_misshaped_code_capture))
                 makePreferenceInvisible(getString(R.string.key_auto_start_scan))
