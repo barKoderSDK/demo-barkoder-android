@@ -6,7 +6,7 @@ import retrofit2.Response
 
 class BarcodeDataRepository {
 
-    suspend fun createPost(endPoint: String, post: BarcodeScanedData) : Response<BarcodeScanedData> {
+    suspend fun createPost(endPoint: String, post: BarcodeScanedData): retrofit2.Response<Void> {
         return RetrofitIInstance.api.createPost(endPoint, post)
     }
 }

@@ -208,6 +208,14 @@ object BKDConfigUtil {
                 resources.getString(R.string.key_beep)
             )
 
+        val isMasterChecksumRequired = sharedPref.getBoolean(
+            resources.getString(R.string.key_require_master_checksum),
+            false
+        )
+
+        config.decoderConfig.IDDocument.masterChecksumType =
+            if (isMasterChecksumRequired) Barkoder.StandardChecksumType.valueOf(1) else Barkoder.StandardChecksumType.valueOf(0)
+
         config.isVibrateOnSuccessEnabled =
             sharedPref.getBoolean(
                 resources.getString(R.string.key_vibrate)
@@ -1339,7 +1347,7 @@ object BKDConfigUtil {
         prefsEditor.putStringWithOptions(
             sharedPrefs,
             context.getString(R.string.key_ar_overlay_fps),
-            config?.arConfig?.overlayRefresh?.ordinal?.toString() ?: 1.toString(),
+            config?.arConfig?.overlayRefresh?.ordinal?.toString() ?: 0.toString(),
             onlyIfNotContains
         )
 
@@ -1474,6 +1482,15 @@ object BKDConfigUtil {
             sharedPrefs,
             context.getString(R.string.key_beep),
             config?.isBeepOnSuccessEnabled ?: DemoDefaults.BEEP_ON_SUCCESS_DEFAULT,
+            onlyIfNotContains
+        )
+
+        val isRequired = config?.decoderConfig?.IDDocument?.masterChecksumType == Barkoder.StandardChecksumType.valueOf(1)
+
+        prefsEditor.putBooleanWithOptions(
+            sharedPrefs,
+            context.getString(R.string.key_require_master_checksum),
+            isRequired,
             onlyIfNotContains
         )
         prefsEditor.putBooleanWithOptions(
@@ -2436,7 +2453,7 @@ object BKDConfigUtil {
         //endregion Barcode Types
 
         //region Result
-        if(scanMode == ScanMode.PDF) {
+        if(scanMode == ScanMode.PDF || scanMode == ScanMode.ANYSCAN) {
             prefsEditor.putStringWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_result_parser),

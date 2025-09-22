@@ -14,8 +14,8 @@ android {
         applicationId "com.barkoder.demoscanner"
         minSdkVersion 21
         targetSdkVersion 35
-        versionCode 99
-        versionName "1.8.7"
+        versionCode 100
+        versionName "1.8.8"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

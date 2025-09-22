@@ -15,6 +15,7 @@
     <string name="key_ar_overlay_fps">pref_key_ar_overlay_fps</string>
     <string name="key_scanner_resolution">pref_key_scanner_resolution</string>
     <string name="key_continuous_scaning">pref_key_continuous_scanning</string>
+    <string name="key_require_master_checksum">pref_key_require_master_checksum</string>
     <string name="key_continuous_treshold">pref_key_continuous_treshold</string>
     <string name="key_composite_setting">pref_key_composite_mode</string>
     <string name="key_continuous_treshold2">pref_key_continuous_treshold2</string>

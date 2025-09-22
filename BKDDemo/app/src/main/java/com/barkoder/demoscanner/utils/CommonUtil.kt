@@ -1,5 +1,6 @@
 package com.barkoder.demoscanner.utils
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.*
 import android.content.Context.CLIPBOARD_SERVICE
@@ -7,6 +8,7 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.pdf.PdfDocument
 import android.net.Uri
@@ -16,12 +18,15 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.util.Patterns
+import android.view.View
+import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.FileProvider
 import com.barkoder.demoscanner.R
+import com.google.android.material.internal.ViewUtils.dpToPx
 import java.io.File
 import java.io.IOException
 
@@ -44,6 +49,7 @@ object CommonUtil {
             !it.isISOControl() && it != '?' && it.code in 32..126 || it.isWhitespace()
         }
     }
+
 
     fun openURLInBrowser(url: String, activity: Activity) {
         try {

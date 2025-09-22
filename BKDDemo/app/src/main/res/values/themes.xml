@@ -19,6 +19,13 @@
         <item name="bottomSheetDialogTheme">@style/CustomBottomSheetDialog</item>
     </style>
 
+
+    <style name="AppPreferenceStyle" parent="Preference.Material">
+        <item name="android:divider">@drawable/preference_divider</item>
+        <item name="android:dividerHeight">1dp</item>
+    </style>
+
+
     <style name ="TextInputLayoutOutlinedStyle" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="boxStrokeColor">@color/purple_200</item>
         <item name="hintTextColor">@color/purple_200</item>

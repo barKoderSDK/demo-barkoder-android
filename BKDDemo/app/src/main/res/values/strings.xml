@@ -15,7 +15,7 @@
     <string name="storage_final_warning_message">Scan image cannot work without the requested permissions.</string>
     <string name="configuration_from_template_failed">Scanning configuration failed. %s</string>
     <string name="please_wait_message">Please wait…</string>
-    <string name="title_barcodes">Barcodes</string>
+    <string name="title_barcodes">1D Barcodes</string>
     <string name="title_barcodes_2d">2D Barcodes</string>
     <string name="title_barcodes_1d_retail">1D Retail</string>
     <string name="title_barcodes_dotcode">DotCode</string>
@@ -65,6 +65,7 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
     <string name="scanner_ar_overlay_fps_title">Overlay refresh</string>
     <string name="scanner_resolution_title">barKoder Resolution</string>
     <string name="continuous_scaning_title">Continuous Scanning</string>
+    <string name="require_master_checksum_title">Require master checksum</string>
     <string name="continuous_threshold_title">Continuous threshold</string>
     <string name="composite_settings_title">Composite Mode</string>
     <string name="enable_location_in_preview_title">Enable location in preview</string>
@@ -81,7 +82,8 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
     <string name="automatically_show_bottomsheet_title">Automatically show bottomsheet</string>
     <string name="double_tap_to_freez_title">Double Tap to Freeze</string>
 
-    <string name="symbologies_settings_title">Barcode Types %s</string>
+    <string name="symbologies_settings_title">Barcode Types (Scan Mode) </string>
+    <string name="barkodes_types_key">barkode_types_key</string>
     <string name="symbology_aztec">Aztec</string>
     <string name="symbology_aztec_compact">Aztec Compact</string>
     <string name="symbology_qr">QR</string>

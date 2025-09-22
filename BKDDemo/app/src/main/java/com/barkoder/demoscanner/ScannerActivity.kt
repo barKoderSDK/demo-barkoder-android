@@ -22,6 +22,7 @@ import android.text.SpannableString
 import android.text.TextUtils
 import android.text.method.ScrollingMovementMethod
 import android.text.style.ForegroundColorSpan
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -35,8 +36,12 @@ import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -45,18 +50,24 @@ import com.barkoder.Barkoder
 import com.barkoder.BarkoderConfig
 import com.barkoder.demoscanner.adapters.BarcodePrintAdapter
 import com.barkoder.demoscanner.adapters.RecentScansAdapter
+import com.barkoder.demoscanner.api.RetrofitIInstance
 import com.barkoder.demoscanner.databinding.ActivityScannerBinding
 import com.barkoder.demoscanner.enums.ScanMode
 import com.barkoder.demoscanner.fragments.ResultBottomDialogFragment
 import com.barkoder.demoscanner.fragments.SettingsFragment
 import com.barkoder.demoscanner.models.BarcodeDataPrint
+import com.barkoder.demoscanner.models.BarcodeScanedData
 import com.barkoder.demoscanner.models.RecentScan2
 import com.barkoder.demoscanner.models.SessionScan
+import com.barkoder.demoscanner.repositories.BarcodeDataRepository
 import com.barkoder.demoscanner.utils.BKDConfigUtil
 import com.barkoder.demoscanner.utils.CommonUtil
+import com.barkoder.demoscanner.utils.NetworkUtils
 import com.barkoder.demoscanner.utils.ScannedResultsUtil
 import com.barkoder.demoscanner.utils.getBoolean
 import com.barkoder.demoscanner.utils.getString
+import com.barkoder.demoscanner.viewmodels.BarcodeDataViewModel
+import com.barkoder.demoscanner.viewmodels.BarcodeDataViewModelFactory
 import com.barkoder.demoscanner.viewmodels.RecentScanViewModel
 import com.barkoder.enums.BarkoderARHeaderShowMode
 import com.barkoder.enums.BarkoderARMode
@@ -76,6 +87,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URLEncoder
+import java.security.MessageDigest
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -89,9 +101,17 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
     private lateinit var binding: ActivityScannerBinding
     private lateinit var recentViewModel: RecentScanViewModel
 
+    private val latestResults = mutableListOf<Barkoder.Result>()
+    private val resultsLock = Any()
+    private lateinit var viewModel : BarcodeDataViewModel
+
     private var pictureBitmap: Bitmap? = null
     private var documentBitmap: Bitmap? = null
     private var signatureBitmap: Bitmap? = null
+
+
+
+    private var pendingBottomSheetArgs: (() -> Unit)? = null
     private var mainBitmap: Bitmap? = null
     private var croppedBarcodePath: String? = null
     private var croppedBarcodeImageOnScannedBarcode: Bitmap? = null
@@ -117,7 +137,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
     private val LAST_PAUSED_TIME_KEY = "lastPausedTime"
     private val TIME_THRESHOLD_MS = 60_000L // 60 seconds
 
-    private var isBottomSheetDialogShown = false
+    var isBottomSheetDialogShown = false
     private lateinit var scanMode: ScanMode
     var scannedBarcodes = 0
     private var isZoomed = false
@@ -370,7 +390,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onResume() {
         super.onResume()
-
+        Log.d("requirededasd", binding.bkdView.config.decoderConfig.IDDocument.masterChecksumType.toString() )
         val sharedPreferences: SharedPreferences =
             getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         receivedBooleanValue = sharedPreferences.getBoolean("BOOLEAN_KEY", false)
@@ -455,7 +475,16 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
         thumbnails: Array<out Bitmap>?,
         imageResult: Bitmap?
     ) {
-        results?.get(0)?.extra?.forEach { Log.d("res33", "Key=${it.key}, Value=${it.value}") }
+
+        val snapshot = results?.toList() ?: emptyList()
+
+        synchronized(resultsLock) {
+            latestResults.clear()
+            latestResults.addAll(snapshot)
+        }
+
+        autoSendWebhook()
+
 
         val sharedPreferences = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
 
@@ -726,14 +755,16 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
 
                                         croppedBarcodeImage = thumbnails!!.get(index)
                                         if (imageResult != null) {
-                                            uiScope.launch {
-                                                onBarcodeScanned(
-                                                    barcodeListResult,
-                                                    barcodeListType,
-                                                    barcodeListDate,
-                                                    scannedBarcodes.toString(),
-                                                    croppedBarcodeImage
-                                                )
+                                            uiScope.launch(Dispatchers.Main.immediate) {
+                                                uiScope.launch {
+                                                    onBarcodeScanned(
+                                                        barcodeListResult,
+                                                        barcodeListType,
+                                                        barcodeListDate,
+                                                        scannedBarcodes.toString(),
+                                                        croppedBarcodeImage
+                                                    )
+                                                }
                                             }
                                         }
                                         if (pictureBitmap != null) {
@@ -998,7 +1029,45 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
 
 
 
+    private fun showOrUpdateBottomSheet(
+        barcodeDataList: MutableList<String>,
+        barcodeTypeList: MutableList<String>,
+        barcodeListDate: MutableList<String>,
+        scannedBarcodes: String,
+        imageResult: Bitmap?
+    ) {
+        lifecycleScope.launch(Dispatchers.Main.immediate) {
+            val fm = supportFragmentManager
 
+            // If not safe to commit now, defer until resumed
+            if (!lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) || fm.isStateSaved) {
+                pendingBottomSheetArgs = {
+                    showOrUpdateBottomSheet(barcodeDataList, barcodeTypeList, barcodeListDate, scannedBarcodes, imageResult)
+                }
+                lifecycleScope.launchWhenResumed {
+                    pendingBottomSheetArgs?.invoke()
+                    pendingBottomSheetArgs = null
+                }
+                return@launch
+            }
+
+            val tag = "ResultBottomDialogFragment"
+            val existing = fm.findFragmentByTag(tag) as? ResultBottomDialogFragment
+
+            if (existing?.isVisible == true) {
+                existing.updateBarcodeInfo(
+                    barcodeDataList, barcodeTypeList, barcodeListDate, scannedBarcodes, imageResult, sessionScansAdapterData
+                )
+                if (automaticShowBottomSheet) existing.changeBottomSheetState()
+            } else if (automaticShowBottomSheet && !isBottomSheetDialogShown) {
+                val frag = ResultBottomDialogFragment.newInstance(
+                    barcodeDataList, barcodeTypeList, barcodeListDate, imageResult, scannedBarcodes, sessionScansAdapterData
+                )
+                frag.show(fm, tag)
+                isBottomSheetDialogShown = true
+            }
+        }
+    }
 
     fun formatBarcodeName(barcodeTypeName: String, extra: List<Barkoder.BKKeyValue>?): String {
         if (extra.isNullOrEmpty()) {
@@ -1090,8 +1159,9 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
             automaticShowBottomSheet = prefs.getBoolean("showBottomSHeet")
         }
 
-        existingFragment =
-            supportFragmentManager.findFragmentByTag("ResultBottomDialogFragment") as ResultBottomDialogFragment?
+        existingFragment = supportFragmentManager
+            .findFragmentByTag("ResultBottomDialogFragment") as ResultBottomDialogFragment?
+
         if (existingFragment != null && existingFragment!!.isVisible) {
             existingFragment!!.updateBarcodeInfo(
                 barcodeDataList,
@@ -1102,46 +1172,28 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                 sessionScansAdapterData
             )
             if (automaticShowBottomSheet) {
-                existingFragment!!.changeBottomSheetState()
-                if(existingFragment!!.getPeekHeightBehavior() == 0){
-                    val newBottomSheetFragment = ResultBottomDialogFragment.newInstance(
-                        barcodeDataList,
-                        barcodeTypeList,
-                        barcodeListDate,
-                        imageResult,
-                        scannedBarcodes,
-                        sessionScansAdapterData
-                    )
-
-                    if (automaticShowBottomSheet) {
-                        newBottomSheetFragment.show(
-                            supportFragmentManager,
-                            "ResultBottomDialogFragment"
-                        )
-                    }
-                }
-                isBottomSheetDialogShown = true
+                existingFragment!!.changeBottomSheetState() // expand/show; DO NOT create a new fragment here
             }
+            isBottomSheetDialogShown = true
+        } else if (automaticShowBottomSheet && !isBottomSheetDialogShown) {
+            // set the flag BEFORE show to avoid double-show races
+            isBottomSheetDialogShown = true
 
-        } else {
-            if (!isBottomSheetDialogShown) {
+            val newBottomSheetFragment = ResultBottomDialogFragment.newInstance(
+                barcodeDataList,
+                barcodeTypeList,
+                barcodeListDate,
+                imageResult,
+                scannedBarcodes,
+                sessionScansAdapterData
+            )
 
-                val newBottomSheetFragment = ResultBottomDialogFragment.newInstance(
-                    barcodeDataList,
-                    barcodeTypeList,
-                    barcodeListDate,
-                    imageResult,
-                    scannedBarcodes,
-                    sessionScansAdapterData
+            // Optional: avoid showing during state save
+            if (!supportFragmentManager.isStateSaved) {
+                newBottomSheetFragment.show(
+                    supportFragmentManager,
+                    "ResultBottomDialogFragment"
                 )
-
-                if (automaticShowBottomSheet) {
-                    newBottomSheetFragment.show(
-                        supportFragmentManager,
-                        "ResultBottomDialogFragment"
-                    )
-                    isBottomSheetDialogShown = true
-                }
             }
         }
     }
@@ -1673,6 +1725,122 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
         recyclerViewBarcodePrint.scrollToPosition(0)
     }
 
+
+    private fun autoSendWebhook() {
+        val repository = BarcodeDataRepository()
+        val viewModelFactory = BarcodeDataViewModelFactory(repository)
+        viewModel = ViewModelProvider(this, viewModelFactory).get(BarcodeDataViewModel::class.java)
+        val sharedPreferences = this.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val urlWebHook = sharedPreferences.getString(getString(R.string.key_url_webhook), "")
+        val keyWebHook = sharedPreferences.getString(getString(R.string.key_secret_word_webhook), "")
+        val uri = Uri.parse(urlWebHook)
+        val baseUrl = "${uri.scheme}://${uri.host}/"
+
+        var endPointUrl = extractEndpointFromUrl(urlWebHook!!)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        var webHookEncodeData = prefs.getBoolean(getString(R.string.key_webhook_encode_data), false)
+        var enabledWebhook = prefs.getBoolean(getString(R.string.key_enable_webhook), true)
+        var webHookFeedBack = prefs.getBoolean(getString(R.string.key_webhook_feedback), true)
+
+        if (enabledWebhook) {
+
+            if (!NetworkUtils.isInternetAvailable(this)) {
+                Toast.makeText(
+                    this,
+                    getString(R.string.toast_network_error_autosend),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+
+                if (!urlWebHook.isNullOrBlank()) {
+                    RetrofitIInstance.rebuild(baseUrl)
+
+                    val secretWord = keyWebHook.orEmpty()
+                    val timestamp  = generate10BitTimestamp()
+                    val securityHash = generateMD5Hash(timestamp, secretWord)
+
+                    val jsonArray = ArrayList<Map<String, String>>()
+
+                    // use ALL items, not just last()
+//                    val count = minOf(scannedBarcodesResultList.size, scannedBarcodesTypesList.size)
+                    for (i in 0 until latestResults.size) {
+                        val result = latestResults[i].textualData
+                        val symbology = latestResults[i].barcodeTypeName
+
+                        val encodedResult    = if (webHookEncodeData) encodeStringToBase64(result) else result
+                        val encodedSymbology = if (webHookEncodeData) encodeStringToBase64(symbology) else symbology
+
+                        val jsonData = mapOf(
+                            "base64" to if (webHookEncodeData) "true" else "false",   // stays string since Map<String,String>
+                            getString(R.string.webhook_value_title) to encodedResult,
+                            getString(R.string.webhook_symobology_title) to encodedSymbology,
+                            getString(R.string.webhook_date_title)  to timestamp
+
+                        )
+                        jsonArray.add(jsonData)
+                    }
+                    val payload = BarcodeScanedData(timestamp, securityHash, jsonArray)
+
+                    Log.d("endousada", urlWebHook)
+                    viewModel.createPost(urlWebHook, payload) { success, code, message ->
+                        runOnUiThread {
+                            if (success) {
+                                if (webHookFeedBack) {
+                                    Toast.makeText(
+                                        this,
+                                        "Webhook accepted : \n$message",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            } else {
+                                if (webHookFeedBack) {
+                                    Toast.makeText(
+                                        this,
+                                        "Webhook failed : $message $code",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun materialDialogError(title : String, message : String, context : Context) {
+        MaterialAlertDialogBuilder(context)
+            .setTitle(title)
+            .setMessage(message)
+            .setNegativeButton("Continue") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+    private fun encodeStringToBase64(stringToEncode: String): String {
+        val data = stringToEncode.toByteArray(Charsets.UTF_8)
+        return Base64.encodeToString(data, Base64.DEFAULT)
+    }
+
+    private fun extractEndpointFromUrl(url: String): String {
+        val trimmedUrl = url.trimEnd('/')
+        val uriParts = trimmedUrl.split('/')
+        return uriParts.last()
+    }
+
+    private fun generate10BitTimestamp(): String {
+        val currentTimestamp = System.currentTimeMillis()
+        val timestamp10Bit = currentTimestamp / 1000
+
+        return timestamp10Bit.toString()
+    }
+
+    private fun generateMD5Hash(timestamp: String, secretWord: String): String {
+        val input = timestamp + secretWord
+        val md = MessageDigest.getInstance("MD5")
+        val digest = md.digest(input.toByteArray())
+        return digest.joinToString("") { "%02x".format(it) }
+    }
 
 
 }

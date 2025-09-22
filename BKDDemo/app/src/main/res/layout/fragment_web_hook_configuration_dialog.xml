@@ -20,21 +20,62 @@
         android:text="Configure Webhook" />
 
 
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/toggleGroupWebhookMode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        app:singleSelection="true"
+        app:checkedButton="@id/btnHTTPS"
+        app:selectionRequired="true">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/editTextWebHookUrl"
-            android:layout_width="260dp"
-            android:layout_height="40dp"
-            android:layout_gravity="center"
-            android:ems="10"
-            android:backgroundTint="@color/textFieldColor"
-            android:background="@color/textFieldColor"
-            android:padding="8dp"
-            android:textSize="11dp"
-            android:layout_marginTop="20dp"
-            android:hint="Enter Webhook URL"
-            android:inputType="text"
-            />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnHTTPS"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:text="HTTPS"
+            android:textSize="12sp"
+            android:textAllCaps="false"
+            android:paddingHorizontal="12dp"
+            android:minWidth="0dp"
+            app:cornerRadius="4dp"
+            app:iconGravity="textStart"
+            app:backgroundTint="@color/toggle_button_bg_color"
+            android:textColor="@color/toggle_button_text_color"
+            app:strokeColor="@color/brand_color"
+            app:strokeWidth="1dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnHTTP"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:text="HTTP"
+            android:textSize="12sp"
+            android:textAllCaps="false"
+            android:paddingHorizontal="12dp"
+            android:minWidth="0dp"
+            app:cornerRadius="4dp"
+            app:iconGravity="textStart"
+            app:backgroundTint="@color/toggle_button_bg_color"
+            android:textColor="@color/toggle_button_text_color"
+            app:strokeColor="@color/brand_color"
+            app:strokeWidth="1dp" />
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/editTextWebHookUrl"
+        android:layout_width="260dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:background="@drawable/custom_edit_text_bg"
+        android:padding="8dp"
+        android:textSize="11sp"
+        android:layout_marginTop="20dp"
+        android:hint="example.com/api/webhook"
+        android:inputType="text" />
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editTextWebHookKey"
@@ -64,14 +105,14 @@
             android:id="@+id/btnShowMeHowSettings"
             style="?attr/materialButtonOutlinedStyle"
             app:strokeColor="@color/brand_color"
-            android:textSize="11sp"
+            android:textSize="9sp"
             app:cornerRadius="20dp"
             android:gravity="center"
             app:icon="@drawable/ic_information_circle"
             app:iconGravity="textStart"
             android:textAllCaps="false"
-            android:layout_width="130dp"
-            android:layout_height="50dp"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
             android:layout_gravity="center"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="5dp"
@@ -81,14 +122,14 @@
             android:id="@+id/btnSaveWebHook"
             style="?attr/materialButtonOutlinedStyle"
             app:strokeColor="@color/brand_color"
-            android:layout_width="130dp"
+            android:layout_width="120dp"
             android:layout_marginStart="5dp"
             app:icon="@drawable/ic_check_24px"
             app:iconGravity="textStart"
-            android:textSize="11sp"
+            android:textSize="9sp"
             app:cornerRadius="20dp"
             android:textAllCaps="false"
-            android:layout_height="50dp"
+            android:layout_height="40dp"
             android:layout_gravity="center"
             android:layout_marginTop="5dp"
             android:text="Save" />
@@ -107,14 +148,14 @@
             android:id="@+id/btnResetWebHook"
             style="?attr/materialButtonOutlinedStyle"
             app:strokeColor="@color/brand_color"
-            android:textSize="11sp"
+            android:textSize="9sp"
             app:cornerRadius="20dp"
             app:icon="@drawable/ic_arrow_path_rounded_square"
             app:iconGravity="textStart"
             android:textAllCaps="false"
-            android:layout_width="130dp"
+            android:layout_width="120dp"
             android:layout_marginEnd="5dp"
-            android:layout_height="50dp"
+            android:layout_height="40dp"
             android:layout_gravity="center"
             android:layout_marginTop="5dp"
             android:text="Reset Value" />
@@ -123,14 +164,14 @@
             android:id="@+id/btnCancelWebHook"
             style="?attr/materialButtonOutlinedStyle"
             app:strokeColor="@color/brand_color"
-            android:textSize="11sp"
+            android:textSize="9sp"
             app:cornerRadius="20dp"
             app:icon="@drawable/ic_close_24px"
             app:iconGravity="textStart"
             android:layout_marginStart="5dp"
             android:textAllCaps="false"
-            android:layout_width="130dp"
-            android:layout_height="50dp"
+            android:layout_width="120dp"
+            android:layout_height="40dp"
             android:layout_gravity="center"
             android:layout_marginTop="5dp"
             android:text="Cancel" />

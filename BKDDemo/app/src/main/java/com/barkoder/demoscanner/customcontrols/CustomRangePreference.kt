@@ -14,6 +14,7 @@ import androidx.preference.PreferenceViewHolder
 import androidx.preference.SeekBarPreference
 import com.barkoder.demoscanner.R
 import com.barkoder.demoscanner.utils.CommonUtil
+import com.google.android.material.internal.ViewUtils.dpToPx
 import com.google.android.material.slider.LabelFormatter
 import com.google.android.material.slider.RangeSlider
 import kotlin.math.roundToInt
@@ -65,6 +66,7 @@ class CustomRangePreference(
         showSeekBarValue = false
     }
 
+    @SuppressLint("RestrictedApi")
     override fun onBindViewHolder(holder: PreferenceViewHolder?) {
         super.onBindViewHolder(holder)
 
@@ -78,6 +80,20 @@ class CustomRangePreference(
 
             if (onChangeListener != null)
                 rangeSlider.addOnChangeListener(onChangeListener!!)
+        }
+
+        val itemView = holder?.itemView
+        itemView?.setPadding(
+            itemView.paddingLeft,
+            dpToPx(context, 6).toInt(),  // reduce top padding
+            itemView.paddingRight,
+            dpToPx(context, 6).toInt()   // reduce bottom padding
+        )
+        holder?.itemView?.let { view ->
+            val params = view.layoutParams as? ViewGroup.MarginLayoutParams
+            params?.marginStart = CommonUtil.dpToPx(16).toInt()
+            params?.marginEnd = CommonUtil.dpToPx(16).toInt()
+            view.layoutParams = params
         }
     }
 

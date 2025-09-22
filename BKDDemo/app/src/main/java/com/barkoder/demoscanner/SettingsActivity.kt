@@ -39,7 +39,10 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (item.itemId == android.R.id.home) {
-            if (openedFromSettings || scanMode.ordinal == 14) {
+            val fm = supportFragmentManager
+            if (fm.backStackEntryCount > 0) {
+                fm.popBackStack() // Go back to previous fragment
+            } else if (openedFromSettings || scanMode.ordinal == 14) {
                 // Just go back normally
                 finish()
             } else {

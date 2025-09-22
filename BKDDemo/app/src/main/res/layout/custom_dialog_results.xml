@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:background="@drawable/bg_shape_png"
     android:layout_height="match_parent">
 
 
@@ -12,7 +13,7 @@
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="#FFE1E0"
+        android:background="@color/toolBarColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -81,69 +82,78 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#FFF0EF"
+
             android:paddingBottom="40dp">
 
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/layoutTitleUser"
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/userCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#FFF0EF"
-                android:paddingBottom="10dp"
-                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="20dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="1dp"
+                app:cardBackgroundColor="@android:color/white"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintEnd_toEndOf="parent">
 
-                <TextView
-                    android:id="@+id/firstNameUser"
-                    android:layout_width="wrap_content"
+                <!-- Inner content: ConstraintLayout with image + texts -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/layoutTitleUser"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="5dp"
-                    android:text="Viktor Krstev"
-                    android:textColor="#000000"
-                    android:textSize="16sp"
-                    app:layout_constraintStart_toEndOf="@+id/cardViewImageDialog"
-                    app:layout_constraintTop_toBottomOf="@+id/textView" />
+                    android:paddingBottom="10dp"
+                    android:paddingTop="15dp">
 
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="40dp"
-                    android:text="Name"
-                    android:textColor="#666666"
-                    android:textSize="12sp"
-                    app:layout_constraintStart_toEndOf="@+id/cardViewImageDialog"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/cardViewImageDialog"
-                    android:layout_width="96dp"
-                    android:layout_height="96dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="15dp"
-                    android:layout_marginBottom="10dp"
-                    app:cardBackgroundColor="#F2F2F2"
-                    app:cardCornerRadius="12dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <ImageView
-                        android:id="@+id/imageViewDialog"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/container_2"
+                    <!-- Profile Image -->
+                    <androidx.cardview.widget.CardView
+                        android:id="@+id/cardViewImageDialog"
+                        android:layout_width="84dp"
+                        android:layout_height="96dp"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginBottom="10dp"
+                        app:cardBackgroundColor="#F2F2F2"
                         app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent">
+
+                        <ImageView
+                            android:id="@+id/imageViewDialog"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/container_2"
+                            android:scaleType="centerCrop" />
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Label -->
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="30dp"
+                        android:text="Name"
+                        android:textColor="#666666"
+                        android:textSize="12sp"
+                        app:layout_constraintStart_toEndOf="@id/cardViewImageDialog"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                </androidx.cardview.widget.CardView>
+                    <!-- User Name -->
+                    <TextView
+                        android:id="@+id/firstNameUser"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="5dp"
+                        android:text="Viktor Krstev"
+                        android:textColor="#000000"
+                        android:textSize="16sp"
+                        app:layout_constraintStart_toEndOf="@id/cardViewImageDialog"
+                        app:layout_constraintTop_toBottomOf="@id/textView" />
 
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -151,10 +161,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="15dp"
-                android:background="#FFF0EF"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/layoutTitleUser">
+                app:layout_constraintTop_toBottomOf="@+id/userCard">
 
 
                 <TextView
@@ -300,20 +309,30 @@
 
                 </LinearLayout>
 
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginHorizontal="15dp"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="1dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    >
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="55dp"
-                    android:layout_marginTop="3dp"
+                    android:layout_height="45dp"
                     android:background="#FFFFFF"
-                    android:orientation="horizontal"
-                    android:padding="15dp">
+                    android:layout_marginHorizontal="15dp"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
+                        android:textSize="13sp"
                         android:text="Nationality"
                         android:textColor="#666666" />
 
@@ -325,17 +344,30 @@
                         android:maxLines="6"
                         android:text="United States of Ireland"
                         android:textColor="#000000"
-                        android:textSize="16sp" />
+                        android:textSize="13sp" />
 
                 </LinearLayout>
 
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardView1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginHorizontal="15dp"
+                    android:padding="15dp"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="1dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    >
+
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="55dp"
-                    android:layout_marginTop="3dp"
+                    android:layout_height="45dp"
+                    android:layout_marginHorizontal="15dp"
                     android:background="#FFFFFF"
-                    android:orientation="horizontal"
-                    android:padding="15dp">
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="0dp"
@@ -343,6 +375,7 @@
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
                         android:text="Gender"
+                        android:textSize="13sp"
                         android:textColor="#666666" />
 
                     <TextView
@@ -353,23 +386,36 @@
                         android:maxLines="6"
                         android:text="United States of Ireland"
                         android:textColor="#000000"
-                        android:textSize="16sp" />
+                        android:textSize="13sp"/>
 
                 </LinearLayout>
 
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardView2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginHorizontal="15dp"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="1dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    >
+
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="55dp"
-                    android:layout_marginTop="3dp"
+                    android:layout_height="45dp"
+                    android:layout_marginHorizontal="15dp"
                     android:background="#FFFFFF"
-                    android:orientation="horizontal"
-                    android:padding="15dp">
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="1"
+                        android:textSize="13sp"
                         android:text="Date of birth"
                         android:textColor="#666666" />
 
@@ -381,23 +427,36 @@
                         android:maxLines="6"
                         android:text="United States of Ireland"
                         android:textColor="#000000"
-                        android:textSize="16sp" />
+                        android:textSize="13sp" />
 
                 </LinearLayout>
 
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardView3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginHorizontal="15dp"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="1dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    >
+
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="55dp"
-                    android:layout_marginTop="3dp"
+                    android:layout_height="45dp"
+                    android:layout_marginHorizontal="15dp"
                     android:background="#FFFFFF"
-                    android:orientation="horizontal"
-                    android:padding="15dp">
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_gravity="center_vertical"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textSize="13sp"
                         android:text="Document Number"
                         android:textColor="#666666" />
 
@@ -409,22 +468,35 @@
                         android:maxLines="6"
                         android:text="N234SDF324"
                         android:textColor="#000000"
-                        android:textSize="16sp" />
+                        android:textSize="13sp" />
 
                 </LinearLayout>
 
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardView4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginHorizontal="15dp"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="1dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    >
+
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="55dp"
-                    android:layout_marginTop="3dp"
+                    android:layout_height="45dp"
+                    android:layout_marginHorizontal="15dp"
                     android:background="#FFFFFF"
-                    android:orientation="horizontal"
-                    android:padding="15dp">
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textSize="13sp"
                         android:layout_gravity="center_vertical"
                         android:text="Issuing country"
                         android:textColor="#666666" />
@@ -437,22 +509,35 @@
                         android:maxLines="6"
                         android:text="United States of Ireland"
                         android:textColor="#000000"
-                        android:textSize="16sp" />
+                        android:textSize="13sp"/>
 
                 </LinearLayout>
 
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardView5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:layout_marginHorizontal="15dp"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="1dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    >
+
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="55dp"
+                    android:layout_height="45dp"
                     android:background="#FFFFFF"
-                    android:layout_marginTop="3dp"
-                    android:orientation="horizontal"
-                    android:padding="15dp">
+                    android:layout_marginHorizontal="15dp"
+                    android:orientation="horizontal">
 
                     <TextView
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textSize="13sp"
                         android:layout_gravity="center_vertical"
                         android:text="Date of expiry"
                         android:textColor="#666666" />
@@ -467,17 +552,18 @@
                         android:maxLines="6"
                         android:text="23 34 23"
                         android:textColor="#000000"
-                        android:textSize="16sp" />
+                        android:textSize="13sp" />
 
                 </LinearLayout>
 
+            </com.google.android.material.card.MaterialCardView>
+
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="45dp"
                     android:layout_marginTop="3dp"
                     android:background="#FFFFFF"
                     android:orientation="horizontal"
-                    android:padding="15dp"
                     android:visibility="gone">
 
                     <TextView
@@ -519,7 +605,6 @@
                     <HorizontalScrollView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@color/white"
                         android:paddingBottom="60dp"
                         android:fillViewport="true"
 

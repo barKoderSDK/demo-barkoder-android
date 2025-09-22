@@ -11,6 +11,7 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
@@ -147,6 +148,20 @@ class RecentScansAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         val currentItem = recentScansAdapterData[position]
+
+        if (getItemViewType(position) == ROW_ITEM_VIEW) {
+            val isFirst = isFirstInGroup(position)
+            val isLast = isLastInGroup(position)
+
+            val backgroundRes = when {
+                isFirst && isLast -> R.drawable.bg_rounded_recents_all
+                isFirst -> R.drawable.bg_rounded_recents_top
+                isLast -> R.drawable.bg_rounded_recents_bottom
+                else -> R.drawable.not_rounded_background
+            }
+
+            holder.itemView.background = ContextCompat.getDrawable(context, backgroundRes)
+        }
 
         if (getItemViewType(position) == HEADER_ITEM_VIEW) {
             (holder as HeaderViewHolder).dateHeader.text = currentItem.scanDate
@@ -437,6 +452,16 @@ class RecentScansAdapter(
     public fun switchCheckMode() {
         checkModeAdapter = !checkModeAdapter
         notifyDataSetChanged()
+    }
+
+    private fun isFirstInGroup(position: Int): Boolean {
+        if (position == 0 || getItemViewType(position - 1) == HEADER_ITEM_VIEW) return true
+        return false
+    }
+
+    private fun isLastInGroup(position: Int): Boolean {
+        if (position == itemCount - 1 || getItemViewType(position + 1) == HEADER_ITEM_VIEW) return true
+        return false
     }
 }
 

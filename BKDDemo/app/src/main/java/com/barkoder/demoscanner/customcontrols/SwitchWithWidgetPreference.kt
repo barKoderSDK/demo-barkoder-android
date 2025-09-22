@@ -12,6 +12,8 @@ import android.widget.LinearLayout
 import androidx.core.content.res.TypedArrayUtils
 import androidx.preference.PreferenceViewHolder
 import com.barkoder.demoscanner.R
+import com.barkoder.demoscanner.utils.CommonUtil.dpToPx
+import com.google.android.material.internal.ViewUtils.dpToPx
 
 @Suppress("unused")
 class SwitchWithWidgetPreference(
@@ -54,8 +56,11 @@ class SwitchWithWidgetPreference(
         fun onSwitchStateChanged(preference: SwitchWithWidgetPreference, newState: Boolean)
     }
 
+    @SuppressLint("RestrictedApi")
     override fun onBindViewHolder(holder: PreferenceViewHolder?) {
         super.onBindViewHolder(holder)
+
+
 
         setOnPreferenceChangeListener { _, newValue ->
             if (newValue is Boolean) {
@@ -96,6 +101,23 @@ class SwitchWithWidgetPreference(
             } else if (advancedImage != null && !isChecked)
                 widgetParent.removeView(advancedImage)
         }
+
+
+        val itemView = holder?.itemView
+        itemView?.setPadding(
+            itemView.paddingLeft,
+            dpToPx(context, -12).toInt(),  // reduce top padding
+            itemView.paddingRight,
+            dpToPx(context, -12).toInt()   // reduce bottom padding
+        )
+
+        holder?.itemView?.let { view ->
+            val params = view.layoutParams as? ViewGroup.MarginLayoutParams
+            params?.marginStart = dpToPx(16).toInt()
+            params?.marginEnd = dpToPx(16).toInt()
+            view.layoutParams = params
+        }
+
     }
 
     override fun onClick() {

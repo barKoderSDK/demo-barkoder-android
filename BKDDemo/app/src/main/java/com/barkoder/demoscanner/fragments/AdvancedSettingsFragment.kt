@@ -1,13 +1,17 @@
 package com.barkoder.demoscanner.fragments
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.preference.ListPreference
 import androidx.preference.Preference
@@ -15,14 +19,18 @@ import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreference
 import androidx.preference.get
+import androidx.recyclerview.widget.RecyclerView
 import com.barkoder.Barkoder
 import com.barkoder.demoscanner.R
+import com.barkoder.demoscanner.customcontrols.CategoryRoundedCornersDecoration
 import com.barkoder.demoscanner.customcontrols.ClickablePreferenceCategory
 import com.barkoder.demoscanner.customcontrols.CustomRangePreference
+import com.barkoder.demoscanner.customcontrols.MarginDividerItemDecoration
 import com.barkoder.demoscanner.enums.ScanMode
 import com.barkoder.demoscanner.utils.getBoolean
 import com.barkoder.demoscanner.utils.getInt
 import com.barkoder.demoscanner.utils.getString
+import com.google.android.material.internal.ViewUtils.dpToPx
 import kotlin.math.roundToInt
 
 class AdvancedSettingsFragment : PreferenceFragmentCompat() {
@@ -58,8 +66,33 @@ class AdvancedSettingsFragment : PreferenceFragmentCompat() {
     }
 
 
+    @SuppressLint("RestrictedApi")
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
+        val recyclerView = view.findViewById<RecyclerView>(androidx.preference.R.id.recycler_view)
 
+        recyclerView?.apply {
+            background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_shape_png)
+            // Remove setBackgroundColor if setting background already
+            // setBackgroundColor(Color.TRANSPARENT)
+
+            val marginStartPx = dpToPx(requireContext(), 20).toInt()
+            val marginEndPx = dpToPx(requireContext(), 20).toInt()
+
+            addItemDecoration(
+                MarginDividerItemDecoration(
+                    requireContext(),
+                    R.drawable.preference_divider,
+                    marginStartPx,
+                    marginEndPx
+                )
+            )
+
+            addItemDecoration(CategoryRoundedCornersDecoration(requireContext()))
+            invalidateItemDecorations()
+        }
+    }
     private fun setLengthPrefs() {
         when (typeKey) {
             getString(R.string.key_symbology_c128),

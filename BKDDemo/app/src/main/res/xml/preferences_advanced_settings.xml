@@ -20,7 +20,7 @@
 
     </com.barkoder.demoscanner.customcontrols.ClickablePreferenceCategory>
 
-    <PreferenceCategory
+    <com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding
         android:title="@string/checksum_settings_title"
         app:allowDividerAbove="false"
         app:allowDividerBelow="false"
@@ -28,7 +28,7 @@
         app:isPreferenceVisible="false"
         tools:isPreferenceVisible="true">
 
-        <ListPreference
+        <com.barkoder.demoscanner.customcontrols.ListPreferenceWhiteBg
             android:key="@string/key_checksum_type"
             android:persistent="false"
             android:title="@string/checksum_type_title"
@@ -37,9 +37,9 @@
             app:iconSpaceReserved="false"
             app:useSimpleSummaryProvider="true" />
 
-    </PreferenceCategory>
+    </com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding>
 
-    <PreferenceCategory
+    <com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding
         android:title="@string/additional_setting_title"
         app:allowDividerAbove="false"
         app:allowDividerBelow="false"
@@ -48,7 +48,7 @@
         tools:isPreferenceVisible="true">
 
         <!--In the future if we need more we should create them from code-->
-        <SwitchPreference
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
             android:persistent="false"
             app:allowDividerAbove="false"
             app:allowDividerBelow="false"
@@ -56,5 +56,5 @@
             app:useSimpleSummaryProvider="true"
             tools:title="Title" />
 
-    </PreferenceCategory>
+    </com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding>
 </PreferenceScreen>

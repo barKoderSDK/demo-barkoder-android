@@ -718,7 +718,7 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
                         }
                         val barcodeData = BarcodeScanedData(timestamp, securityHash, jsonArray)
 
-                        viewModelWebHook.createPost(endPointUrl, barcodeData)
+//                        viewModelWebHook.createPost(endPointUrl, barcodeData)
 
                         viewModelWebHook.barcodeDataResponse.observe(
                             this@RecentActivity,

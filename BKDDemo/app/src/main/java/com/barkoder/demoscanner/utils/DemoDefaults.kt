@@ -23,6 +23,7 @@ object DemoDefaults {
     const val ROI_WIDTH_DEFAULT_VALUE = 94f
     const val ROI_HEIGHT_DEFAULT_VALUE = 60f
     const val BEEP_ON_SUCCESS_DEFAULT = true
+    val REQUIRE_MASTER_CHECKSUM = Barkoder.StandardChecksumType.valueOf(0)
     const val VIBRATE_ON_SUCCESS_DEFAULT = false
     const val CONTINUOUS_MODE_DEFAULT = false
     const val AUTOMATIC_SHOWBOTTOMSHEET_DEFAULT = true

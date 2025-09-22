@@ -6,6 +6,7 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
@@ -42,6 +43,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.barkoder.demoscanner.MainActivity
 import com.barkoder.demoscanner.R
+import com.barkoder.demoscanner.ScannerActivity
 import com.barkoder.demoscanner.adapters.SessionScanAdapter
 import com.barkoder.demoscanner.api.RetrofitIInstance
 import com.barkoder.demoscanner.databinding.FragmentResultBottomDialogBinding
@@ -95,6 +97,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
     var bottomSheet: View? = null
 
     private val scannedBarcodesResultList: MutableList<String> = mutableListOf()
+    private val resultsFromLastFrame: MutableList<String> = mutableListOf()
     private val scannedBarcodesTypesList:  MutableList<String> = mutableListOf()
     private val scannedBarcodesDateList : MutableList<String> = mutableListOf()
 
@@ -135,6 +138,11 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 
     }
 
+    override fun onDismiss(dialog: DialogInterface) {
+        super.onDismiss(dialog)
+        (activity as? ScannerActivity)?.isBottomSheetDialogShown = false
+    }
+
 
 
     fun updateBarcodeInfo(
@@ -153,7 +161,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         scannedBarcodesDateList.clear()
         sessionScanCheck = sessionScan
 
-
+        resultsFromLastFrame.addAll(numResults)
         scannedBarcodesResultList.addAll(numResults)
         scannedBarcodesTypesList.addAll(typeResults)
         scannedBarcodesDateList.addAll(dateResults)
@@ -412,6 +420,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         scannedBarcodesResultList.addAll(resultsList!!)
         scannedBarcodesTypesList.addAll(typesList!!)
         scannedBarcodesDateList.addAll(dateList!!)
+        resultsFromLastFrame.addAll(resultsList)
 
 
         if(resultsSize != null) {
@@ -543,44 +552,47 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         val viewModelFactory = BarcodeDataViewModelFactory(repository)
         viewModel = ViewModelProvider(this, viewModelFactory).get(BarcodeDataViewModel::class.java)
 
-        if (autoSendWebhook && enabledWebhook) {
-
-            if (!NetworkUtils.isInternetAvailable(requireContext())) {
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.toast_network_error_autosend),
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                if(!urlWebHook.isNullOrBlank()) {
-                    RetrofitIInstance.rebuild(baseUrl)
-                    val secretWord = keyWebHook
-                    val timestamp = generate10BitTimestamp()
-                    val securityHash = generateMD5Hash(timestamp, secretWord!!)
-
-                    val jsonArray = ArrayList<Map<String, String>>()
-                    if(scannedBarcodesResultList.size == scannedBarcodesTypesList.size) {
-                        val result = scannedBarcodesResultList.last()
-                        val symbology = scannedBarcodesTypesList.last()
-                            val encodedResult = encodeStringToBase64(result)
-                            val encodedSymbology = encodeStringToBase64(symbology)
-
-                            val jsonData = mapOf(
-                                getString(R.string.webhook_symobology_title) to if(webHookEncodeData) encodedSymbology else symbology,
-                                getString(R.string.webhook_value_title) to if(webHookEncodeData) encodedResult else result,
-                                getString(R.string.webhook_date_title) to timestamp,
-                                "encoded" to if(webHookEncodeData) "true" else "false"
-                            )
-                            jsonArray.add(jsonData)
-//                        }
-                    }
-
-                    val barcodeData = BarcodeScanedData(timestamp, securityHash, jsonArray)
-
-                    viewModel.createPost(endPointUrl, barcodeData)
-                }
-            }
-        }
+//        if (autoSendWebhook && enabledWebhook) {
+//
+//            if (!NetworkUtils.isInternetAvailable(requireContext())) {
+//                Toast.makeText(
+//                    requireContext(),
+//                    getString(R.string.toast_network_error_autosend),
+//                    Toast.LENGTH_SHORT
+//                ).show()
+//            } else {
+//                if (!urlWebHook.isNullOrBlank()) {
+//                    RetrofitIInstance.rebuild(baseUrl)
+//
+//                    val secretWord = keyWebHook.orEmpty()
+//                    val timestamp  = generate10BitTimestamp()
+//                    val securityHash = generateMD5Hash(timestamp, secretWord)
+//
+//                    val jsonArray = ArrayList<Map<String, String>>()
+//
+//                    // use ALL items, not just last()
+////                    val count = minOf(scannedBarcodesResultList.size, scannedBarcodesTypesList.size)
+//                    for (i in 0 until resultsFromLastFrame.size) {
+//                        val result = resultsFromLastFrame[i]
+//                        val symbology = scannedBarcodesTypesList[i]
+//
+//                        val encodedResult    = if (webHookEncodeData) encodeStringToBase64(result) else result
+//                        val encodedSymbology = if (webHookEncodeData) encodeStringToBase64(symbology) else symbology
+//
+//                        val jsonData = mapOf(
+//                            "base64" to if (webHookEncodeData) "true" else "false",   // stays string since Map<String,String>
+//                            getString(R.string.webhook_value_title) to encodedResult,
+//                            getString(R.string.webhook_date_title)  to timestamp,
+//                            getString(R.string.webhook_symobology_title) to encodedSymbology
+//                        )
+//                        jsonArray.add(jsonData)
+//                    }
+//                    resultsFromLastFrame.clear()
+//                    val payload = BarcodeScanedData(timestamp, securityHash, jsonArray)
+//                    viewModel.createPost(endPointUrl, payload)
+//                }
+//            }
+//        }
 
 //        binding.btnWebHook.setOnClickListener {
 //
@@ -727,6 +739,8 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         }
 
     }
+
+
 
 
     private fun updatePeekHeight(originalHeight: Int, updatedHeight: Int, behavior : BottomSheetBehavior<*>) {

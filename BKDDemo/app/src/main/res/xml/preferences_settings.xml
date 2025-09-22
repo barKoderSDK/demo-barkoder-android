@@ -4,27 +4,27 @@
 
 
 
-    <PreferenceCategory
+    <com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding
         android:key="@string/key_barkoder_settings"
         android:title="@string/scanner_settings_title"
         app:allowDividerAbove="false"
         app:allowDividerBelow="false"
         app:iconSpaceReserved="false">
 
-        <ListPreference
+        <com.barkoder.demoscanner.customcontrols.ListPreferenceWhiteBg
             android:key="@string/key_scanner_decoding_speed"
             android:title="@string/scanner_decoding_speed_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false"
             app:useSimpleSummaryProvider="true" />
 
 
-        <ListPreference
+        <com.barkoder.demoscanner.customcontrols.ListPreferenceWhiteBg
             android:key="@string/key_scanner_resolution"
             android:title="@string/scanner_resolution_title"
-            app:allowDividerAbove="true"
-            app:allowDividerBelow="true"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false"
             app:useSimpleSummaryProvider="true" />
 
@@ -32,134 +32,147 @@
 
 
 
-        <SwitchPreference
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
             android:key="@string/key_composite_setting"
             android:title="@string/composite_settings_title"
-            app:allowDividerAbove="true"
+            app:allowDividerAbove="false"
             android:defaultValue="false"
             app:isPreferenceVisible="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-
-
-        <SwitchPreference
-            android:key="@string/key_enable_location_in_preview"
-            android:title="@string/enable_location_in_preview_title"
-            app:allowDividerAbove="true"
-            app:allowDividerBelow="true"
-            app:iconSpaceReserved="false" />
-
-        <SwitchPreference
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
             android:key="@string/key_allow_pinch_to_zoom"
             android:title="@string/allow_pinch_to_zoom_title"
-            app:allowDividerAbove="true"
-            app:allowDividerBelow="true"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <SwitchPreference
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
+            android:key="@string/key_enable_location_in_preview"
+            android:title="@string/enable_location_in_preview_title"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
+            app:iconSpaceReserved="false" />
+
+
+
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
             android:key="@string/key_enable_roi"
             android:title="@string/enable_roi_title"
-            app:allowDividerAbove="true"
-            app:allowDividerBelow="true"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <SwitchPreference
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
             android:key="@string/key_beep"
             android:title="@string/beep_on_success_title"
-            app:allowDividerAbove="true"
-            app:allowDividerBelow="true"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <SwitchPreference
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
             android:key="@string/key_vibrate"
             android:title="@string/vibrate_on_success_title"
-            app:allowDividerAbove="true"
-            app:allowDividerBelow="true"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <SwitchPreference
-            android:key="@string/key_misshaped_code_capture"
-            android:title="@string/misshapped_code_capture_title"
-            app:allowDividerAbove="true"
-            app:allowDividerBelow="true"
-            app:iconSpaceReserved="false" />
-
-        <SwitchPreference
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
             android:key="@string/key_blured_scan_eanupc"
             android:title="@string/blurred_scan_upcean_title"
-            app:allowDividerAbove="true"
-            app:allowDividerBelow="true"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <SwitchPreference
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
             android:key="@string/key_narrow_viewfinder"
             android:title="@string/narrow_viewfinder_dpm_title"
-            app:allowDividerAbove="true"
+            app:allowDividerAbove="false"
             app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <SwitchPreference
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
+            android:key="@string/key_misshaped_code_capture"
+            android:title="@string/misshapped_code_capture_title"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
+            app:iconSpaceReserved="false" />
+
+
+
+
+
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
             android:key="@string/key_bigger_viewfinder"
             android:title="@string/bigger_viewfinder_dpm_title"
-            app:allowDividerAbove="true"
+            app:allowDividerAbove="false"
             app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <SwitchPreference
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
             android:key="@string/key_dpm_mode"
             android:title="@string/setting_dpm_title"
-            app:allowDividerAbove="true"
+            app:allowDividerAbove="false"
             app:allowDividerBelow="false"
             android:defaultValue="true"
             app:iconSpaceReserved="false" />
 
-        <SwitchPreference
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
             android:key="@string/key_mrz_mode"
             android:title="@string/setting_mrz_title"
-            app:allowDividerAbove="true"
+            app:allowDividerAbove="false"
             app:allowDividerBelow="false"
             android:defaultValue="true"
             app:iconSpaceReserved="false" />
 
-
-        <SwitchPreference
-            android:key="@string/key_continuous_scaning"
-            android:title="@string/continuous_scaning_title"
-            app:allowDividerAbove="true"
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
+            android:key="@string/key_require_master_checksum"
+            android:title="@string/require_master_checksum_title"
+            app:allowDividerAbove="false"
+            app:isPreferenceVisible="false"
             android:defaultValue="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <ListPreference
+
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
+            android:key="@string/key_continuous_scaning"
+            android:title="@string/continuous_scaning_title"
+            app:allowDividerAbove="false"
+            android:defaultValue="false"
+            app:allowDividerBelow="false"
+            app:iconSpaceReserved="false" />
+
+        <com.barkoder.demoscanner.customcontrols.ListPreferenceWhiteBg
             android:key="@string/key_continuous_treshold"
             android:title="@string/continuous_threshold_title"
             app:isPreferenceVisible="false"
             android:entries="@array/continuous_treshold_entries"
             android:entryValues="@array/continuous_treshold_values"
             android:defaultValue="5"
-            app:allowDividerAbove="true"
-            app:allowDividerBelow="true"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false"
             app:useSimpleSummaryProvider="true" />
 
-        <ListPreference
+        <com.barkoder.demoscanner.customcontrols.ListPreferenceWhiteBg
             android:key="@string/key_continuous_treshold2"
             android:title="@string/continuous_threshold_title"
             app:isPreferenceVisible="false"
             android:entries="@array/continuous_treshold_entries"
             android:entryValues="@array/continuous_treshold_values"
             android:defaultValue="5"
-            app:allowDividerAbove="true"
-            app:allowDividerBelow="true"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false"
             app:useSimpleSummaryProvider="true" />
 
 
 
-    </PreferenceCategory>
+    </com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding>
 
-    <PreferenceCategory
+    <com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding
         android:key="@string/key_ar_preference"
         android:title="@string/ar_settings_titlee"
         app:allowDividerAbove="false"
@@ -167,35 +180,35 @@
         app:isPreferenceVisible="false"
         app:iconSpaceReserved="false">
 
-        <ListPreference
+        <com.barkoder.demoscanner.customcontrols.ListPreferenceWhiteBg
             android:key="@string/key_ar_mode_options"
             android:title="@string/scanner_ar_mode_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false"
             app:useSimpleSummaryProvider="true" />
 
-        <ListPreference
+        <com.barkoder.demoscanner.customcontrols.ListPreferenceWhiteBg
             android:key="@string/key_ar_location_type"
             android:title="@string/scanner_ar_location_type_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false"
             app:useSimpleSummaryProvider="true" />
 
-        <ListPreference
+        <com.barkoder.demoscanner.customcontrols.ListPreferenceWhiteBg
             android:key="@string/key_ar_header_show_mode"
             android:title="@string/scanner_ar_header_show_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false"
             app:useSimpleSummaryProvider="true" />
 
-        <ListPreference
+        <com.barkoder.demoscanner.customcontrols.ListPreferenceWhiteBg
             android:key="@string/key_ar_overlay_fps"
             android:title="@string/scanner_ar_overlay_fps_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false"
             app:useSimpleSummaryProvider="true" />
 
@@ -203,437 +216,434 @@
             android:key="@string/key_double_tap_to_freez"
             android:title="@string/double_tap_to_freez_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             android:defaultValue="true"
             app:prefPaddingStart="40" />
 
-    </PreferenceCategory>
+    </com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding>
 
-    <PreferenceCategory
+    <com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding
         android:title="@string/symbologies_settings_title"
+        android:key="@string/barkodes_types_key"
         app:allowDividerAbove="false"
         app:allowDividerBelow="false"
         app:iconSpaceReserved="false">
 
-        <com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding
+        <com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPaddingGreyText
             android:key="@string/key_barkode_types2D_settings"
             android:title="@string/title_barcodes_2d"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:prefCategoryPaddingStart="15">
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_aztec"
                 android:title="@string/symbology_aztec"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_aztec_compact"
                 android:title="@string/symbology_aztec_compact"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_qr"
                 android:title="@string/symbology_qr"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_qr_micro"
                 android:title="@string/symbology_qr_micro"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_pdf417"
                 android:title="@string/symbology_pdf417"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_pdf417_micro"
                 android:title="@string/symbology_pdf417_micro"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_datamatrix"
                 android:title="@string/symbology_datamatrix"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_dotcode"
                 android:title="@string/symbology_dotcode"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_maxicode"
                 android:title="@string/symbology_maxiCode"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
-        </com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding>
+        </com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPaddingGreyText>
 
-        <com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding
+        <com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPaddingGreyText
             android:title="@string/title_barcodes"
             android:key="@string/key_barkode_types1D_settings"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:prefCategoryPaddingStart="15">
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithWidgetPreference
                 android:key="@string/key_symbology_c128"
                 android:title="@string/symbology_c128"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithWidgetPreference
                 android:key="@string/key_symbology_c93"
                 android:title="@string/symbology_c93"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithWidgetPreference
                 android:key="@string/key_symbology_c39"
                 android:title="@string/symbology_c39"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithWidgetPreference
                 android:key="@string/key_symbology_codabar"
                 android:title="@string/symbology_codabar"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithWidgetPreference
                 android:key="@string/key_symbology_c11"
                 android:title="@string/symbology_c11"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithWidgetPreference
                 android:key="@string/key_symbology_msi"
                 android:title="@string/symbology_msi"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_upca"
                 android:title="@string/symbology_upca"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithWidgetPreference
                 android:key="@string/key_symbology_upce"
                 android:title="@string/symbology_upce"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithWidgetPreference
                 android:key="@string/key_symbology_upce1"
                 android:title="@string/symbology_upce1"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_ean13"
                 android:title="@string/symbology_ean13"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_ean8"
                 android:title="@string/symbology_ean8"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithWidgetPreference
                 android:key="@string/key_symbology_c25"
                 android:title="@string/symbology_c25"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithWidgetPreference
                 android:key="@string/key_symbology_i2o5"
                 android:title="@string/symbology_i2o5"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_itf14"
                 android:title="@string/symbology_itf14"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithWidgetPreference
                 android:key="@string/key_symbology_iata25"
                 android:title="@string/symbology_iata25"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithWidgetPreference
                 android:key="@string/key_symbology_matrix25"
                 android:title="@string/symbology_matrix25"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithWidgetPreference
                 android:key="@string/key_symbology_dataLogic25"
                 android:title="@string/symbology_dataLogic25"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithWidgetPreference
                 android:key="@string/key_symbology_coop25"
                 android:title="@string/symbology_coop25"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithWidgetPreference
                 android:key="@string/key_symbology_c32"
                 android:title="@string/symbology_c32"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
             <com.barkoder.demoscanner.customcontrols.SwitchWithWidgetPreference
                 android:key="@string/key_symbology_telepen"
                 android:title="@string/symbology_telepen"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_databar14"
                 android:title="@string/symbology_databar14"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
-            <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
-                android:key="@string/key_symbology_databarExpanded"
-                android:title="@string/symbology_databarExpanded"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
-                app:prefPaddingStart="40" />
+
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_databarLimited"
                 android:title="@string/symbology_databarLimited"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
+
+            <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
+                android:key="@string/key_symbology_databarExpanded"
+                android:title="@string/symbology_databarExpanded"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
+                app:prefPaddingStart="40" />
+
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_postalImb"
                 android:title="@string/symbology_postalImb"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_postnet"
                 android:title="@string/symbology_postnet"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_planet"
                 android:title="@string/symbology_planet"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_australianPost"
                 android:title="@string/symbology_australianPost"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_royalMail"
                 android:title="@string/symbology_royalMail"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_kix"
                 android:title="@string/symbology_kix"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_japanasePost"
                 android:title="@string/symbology_japanasePost"
-                app:allowDividerAbove="true"
-                app:allowDividerBelow="true"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
-        </com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding>
+        </com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPaddingGreyText>
 
-    </PreferenceCategory>
+    </com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding>
 
-    <PreferenceCategory
+    <com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding
         android:key="@string/key_barkoder_result_settings"
         android:title="@string/result_settings_title"
         app:allowDividerAbove="false"
         app:allowDividerBelow="false"
         app:iconSpaceReserved="false">
 
-        <ListPreference
+        <com.barkoder.demoscanner.customcontrols.ListPreferenceWhiteBg
             android:key="@string/key_result_parser"
             android:title="@string/result_parser_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false"
             app:useSimpleSummaryProvider="true" />
 
-        <ListPreference
+        <com.barkoder.demoscanner.customcontrols.ListPreferenceWhiteBg
             android:key="@string/key_result_charset"
             android:title="@string/result_charset_title"
-            app:allowDividerAbove="true"
-            app:allowDividerBelow="true"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false"
             app:useSimpleSummaryProvider="true" />
 
 
 
-    </PreferenceCategory>
+    </com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding>
 
 
 
 
 
-    <PreferenceCategory
+    <com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding
         android:title="@string/webhook_settings_title"
-        app:allowDividerAbove="true"
+        app:allowDividerAbove="false"
         app:allowDividerBelow="false"
         app:iconSpaceReserved="false">
-        <SwitchPreference
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
             android:key="@string/key_enable_webhook"
             android:title="@string/enabled_webhook"
             android:defaultValue="true"
-            app:allowDividerAbove="true"
-            app:allowDividerBelow="true"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false"/>
 
-        <com.barkoder.demoscanner.customcontrols.CustomPreference
+        <com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreferenceWithArrow
             android:key="@string/key_webhook_configuration"
             android:persistent="false"
             android:title="@string/webhook_configuration_title"
-            app:allowDividerAbove="true"
-            app:allowDividerBelow="true"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
-            android:key="@string/key_webhook_autosend"
-            android:title="@string/webhook_autosend_title"
-            android:defaultValue="false"
-            app:allowDividerAbove="true"
-            app:allowDividerBelow="true"
-            app:iconSpaceReserved="false"/>
 
         <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
             android:key="@string/key_webhook_feedback"
             android:title="@string/webhook_feedback_title"
             android:defaultValue="false"
-            app:allowDividerAbove="true"
-            app:allowDividerBelow="true"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false"/>
 
         <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
             android:key="@string/key_webhook_encode_data"
             android:title="@string/webhook_encode_data_title"
             android:defaultValue="false"
-            app:allowDividerAbove="true"
-            app:allowDividerBelow="true"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false"/>
 
-    </PreferenceCategory>
+    </com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding>
 
-    <PreferenceCategory
+    <com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding
         android:title="@string/general_settings_title"
-        app:allowDividerAbove="true"
+        app:allowDividerAbove="false"
         app:allowDividerBelow="false"
         app:iconSpaceReserved="false">
 
 
-        <Preference
+        <com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreference
             android:key="@string/key_reset_config"
             android:persistent="false"
             android:title="@string/general_reset_config_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <SwitchPreference
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
             android:key="@string/key_enable_searchweb"
             android:title="@string/enabled_searchweb"
             android:defaultValue="true"
-            app:allowDividerAbove="true"
-            app:allowDividerBelow="true"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false"/>
 
-        <ListPreference
+        <com.barkoder.demoscanner.customcontrols.ListPreferenceWhiteBg
             android:key="@string/key_result_searchEngine"
             android:title="@string/result_searchEngine_title"
             android:entries="@array/search_engine_entries"
             android:entryValues="@array/search_engine_values"
             android:defaultValue="Google"
-            app:allowDividerAbove="true"
+            app:allowDividerAbove="false"
             app:allowDividerBelow="false"
             app:iconSpaceReserved="false"
             app:useSimpleSummaryProvider="true" />
 
-        <ListPreference
+        <com.barkoder.demoscanner.customcontrols.ListPreferenceWhiteBg
             android:key="@string/key_result_copyTerminator"
             android:title="@string/copyTerminator_title"
             android:entries="@array/copy_terminator_entries"
             android:entryValues="@array/copy_terminator_values"
             android:defaultValue="Comma (,)"
-            app:allowDividerAbove="true"
+            app:allowDividerAbove="false"
             app:allowDividerBelow="false"
             app:iconSpaceReserved="false"
             app:useSimpleSummaryProvider="true" />
 
-        <SwitchPreference
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
             android:key="@string/key_automatic_show_bottomsheet"
             android:title="@string/automatically_show_bottomsheet_title"
             app:defaultValue="true"
-            app:allowDividerAbove="true"
+            app:allowDividerAbove="false"
             app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <SwitchPreference
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
             android:key="@string/key_automatic_show_bottomsheet2"
             android:title="@string/automatically_show_bottomsheet_title"
             app:defaultValue="true"
-            app:allowDividerAbove="true"
+            app:allowDividerAbove="false"
             app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
@@ -642,229 +652,207 @@
             android:persistent="false"
             android:title="@string/general_all_reset_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-    </PreferenceCategory>
+    </com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding>
 
-    <PreferenceCategory
+    <com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding
         android:title="Camera Settings"
-        app:allowDividerAbove="true"
+        app:allowDividerAbove="false"
         app:allowDividerBelow="false"
         app:iconSpaceReserved="false">
 
 
-        <ListPreference
+        <com.barkoder.demoscanner.customcontrols.ListPreferenceWhiteBg
             android:key="pref_key_dynamic_exposureee"
             android:title="Dynamic Exposure"
             android:entries="@array/exposure_intensity_entries"
             android:entryValues="@array/exposure_intensity_values"
             android:defaultValue="0"
-            app:allowDividerAbove="true"
+            app:allowDividerAbove="false"
             app:allowDividerBelow="false"
             app:iconSpaceReserved="false"
             app:useSimpleSummaryProvider="true" />
 
-        <SwitchPreference
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
             android:key="pref_key_autofocus"
             android:title="Centered Focus and Exposure"
             app:defaultValue="false"
-            app:allowDividerAbove="true"
-            app:allowDividerBelow="true"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
 
-        <SwitchPreference
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
             android:key="pref_key_videostabilization"
             android:title="Video Stabilization"
             app:defaultValue="false"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <SwitchPreference
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
             android:key="pref_key_frontCamera"
             android:title="Front Camera"
             app:isPreferenceVisible="false"
             app:defaultValue="false"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
 
 
-    </PreferenceCategory>
+    </com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding>
 
-    <PreferenceCategory
+    <com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding
         android:key="@string/individual_templates_settings"
         android:title="@string/individual_templates_settings"
-        app:allowDividerAbove="true"
+        app:allowDividerAbove="false"
         app:allowDividerBelow="false"
         app:iconSpaceReserved="false">
 
-        <Preference
+        <com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreference
             android:key="@string/key_All1D_settings"
             android:persistent="false"
             android:title="@string/all1d_settings_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <Preference
+        <com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreference
             android:key="@string/key_1d_industrial_settings"
             android:persistent="false"
             android:title="@string/indusrial_settings_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <Preference
+        <com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreference
             android:key="@string/key_1d_retail_settings"
             android:persistent="false"
             android:title="@string/retail_settings_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <Preference
+        <com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreference
             android:key="@string/key_PDF_settings"
             android:persistent="false"
             android:title="@string/PDF_settings_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
 
-        <Preference
+        <com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreference
             android:key="@string/key_All2D_settings"
             android:persistent="false"
             android:title="@string/all2d_settings_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <Preference
+        <com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreference
             android:key="@string/key_BatchMultiscan_settings"
             android:persistent="false"
             android:title="@string/batchmultiscan_settings_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <Preference
+        <com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreference
             android:key="@string/key_DPM_settings"
             android:persistent="false"
             android:title="@string/dpm_settings_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <Preference
+        <com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreference
             android:key="@string/key_VIN_settings"
             android:persistent="false"
             android:title="@string/vin_settings_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <Preference
+        <com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreference
             android:key="@string/key_Dotcode_settings"
             android:persistent="false"
             android:title="@string/dotcode_settings_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <Preference
+        <com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreference
             android:key="@string/key_Deblur_settings"
             android:persistent="false"
             android:title="@string/deblur_settings_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <Preference
+        <com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreference
             android:key="@string/key_Misshaped_settings"
             android:persistent="false"
             android:title="@string/misshaped_settings_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <Preference
+        <com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreference
             android:key="@string/key_anyscan_settings"
             android:persistent="false"
             android:title="@string/anyscan_settings_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <Preference
+        <com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreference
             android:key="@string/key_mrz_settings"
             android:persistent="false"
             android:title="@string/mrz_settings_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <Preference
+        <com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreference
             android:key="@string/key_gallery_scan_settings"
             android:persistent="false"
             android:title="@string/gallery_scan_settings_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <Preference
+        <com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreference
             android:key="@string/key_composite_settings"
             android:persistent="false"
             android:title="@string/composite_mode_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <Preference
+        <com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreference
             android:key="@string/key_postal_settings"
             android:persistent="false"
             android:title="@string/postal_mode_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
-        <Preference
+        <com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreference
             android:key="@string/key_arMode_settings"
             android:persistent="false"
             android:title="@string/ar_mode_title"
             app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
+            app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
 
 
 
 
-    </PreferenceCategory>
-
-
-    <PreferenceCategory
-        android:key="@string/key_checksum_mrz_preference"
-        android:title="@string/checksum_settings_titlee"
-        app:allowDividerAbove="false"
-        app:allowDividerBelow="false"
-        app:isPreferenceVisible="false"
-        app:iconSpaceReserved="false">
-
-
-        <ListPreference
-            android:key="@string/key_checksum_mrz"
-            android:title="Type"
-            app:allowDividerAbove="false"
-            app:allowDividerBelow="true"
-            app:defaultValue="Disabled"
-            android:defaultValue="Disabled"
-            app:iconSpaceReserved="false"
-            app:useSimpleSummaryProvider="true" />
-
-    </PreferenceCategory>
+    </com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding>
 
 
 

@@ -4,12 +4,18 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.util.AttributeSet
+import android.view.View
+import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.res.TypedArrayUtils
 import androidx.core.content.res.getIntOrThrow
 import androidx.preference.PreferenceViewHolder
 import androidx.preference.SwitchPreference
 import com.barkoder.demoscanner.R
+import com.barkoder.demoscanner.utils.CommonUtil
+import com.barkoder.demoscanner.utils.CommonUtil.dpToPx
+import com.google.android.material.internal.ViewUtils.dpToPx
 
 
 @Suppress("unused")
@@ -76,8 +82,25 @@ open class SwitchWithPaddingPreference(
         }
     }
 
+    @SuppressLint("RestrictedApi")
     override fun onBindViewHolder(holder: PreferenceViewHolder?) {
         super.onBindViewHolder(holder)
+
+        val itemView = holder?.itemView
+        itemView?.setPadding(
+            itemView.paddingLeft,
+            dpToPx(context, -12).toInt(),  // reduce top padding
+            itemView.paddingRight,
+            dpToPx(context, -12).toInt()   // reduce bottom padding
+        )
+        holder?.itemView?.let { view ->
+            val params = view.layoutParams as? ViewGroup.MarginLayoutParams
+            params?.marginStart = dpToPx(16).toInt()
+            params?.marginEnd = dpToPx(16).toInt()
+            view.layoutParams = params
+        }
+        // ✅ Set white background
+        holder?.itemView?.setBackgroundColor(Color.WHITE)
 
         val titleTextView = holder?.findViewById(android.R.id.title)
 
@@ -87,15 +110,16 @@ open class SwitchWithPaddingPreference(
             titleTextView.setTextColor(titleColor)
         }
 
+
         setOnPreferenceChangeListener { _, newValue ->
             if (newValue is Boolean) {
                 if (isChecked != newValue) {
                     switchStateChangeListener?.onSwitchStateChanged(this, newValue)
                 }
-
             }
             true
         }
+    }
 
 //        holder?.run {
 //            paddingStart?.let {
@@ -104,4 +128,4 @@ open class SwitchWithPaddingPreference(
 //            }
 //        }
     }
-}
+

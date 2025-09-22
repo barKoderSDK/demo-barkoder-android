@@ -16,10 +16,11 @@
     <color name="textFieldColor">#F0F3F6</color>
     <color name="swipeCheckBackground">#2FC72F</color>
     <color name="swipeCheckBackground2">#0000001A</color>
-    <color name="toolBarColor">#FFE1E0</color>
+    <color name="toolBarColor">#FFFFFF</color>
     <color name="btnColapseColor">#FFF0EF</color>
     <color name="lastDecodedResultsLayoutColor">#E4F5DC</color>
     <color name="defaultDecodedResultsLayoutColor">#F5F5F5</color>
+    <color name="greyColorSettingsCatgeroy">#A4A0A0</color>
 
     <color name="mtrl_textinput_default_box_stroke_color" tools:override="true">@color/brand_color</color>
 </resources>

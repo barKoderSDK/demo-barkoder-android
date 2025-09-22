@@ -9,6 +9,9 @@ import retrofit2.http.Url
 interface ApiService {
 
     @POST
-    suspend fun createPost(@Url endPoint: String, @Body post: BarcodeScanedData): Response<BarcodeScanedData>
+    suspend fun createPost(
+        @Url endPoint: String,
+        @Body post: BarcodeScanedData
+    ): Response<Void>
 }
 

@@ -3,11 +3,15 @@ package com.barkoder.demoscanner.customcontrols
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
+import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.content.res.TypedArrayUtils
 import androidx.core.content.res.getIntOrThrow
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceViewHolder
 import com.barkoder.demoscanner.R
+import com.barkoder.demoscanner.utils.CommonUtil
+import com.google.android.material.internal.ViewUtils.dpToPx
 
 
 @Suppress("unused")
@@ -62,8 +66,23 @@ open class PreferenceCategoryWithPadding(
         }
     }
 
+    @SuppressLint("RestrictedApi")
     override fun onBindViewHolder(holder: PreferenceViewHolder?) {
         super.onBindViewHolder(holder)
+
+        val itemView = holder?.itemView
+        itemView?.setPadding(
+            itemView.paddingLeft,
+            dpToPx(context, 6).toInt(),  // reduce top padding
+            itemView.paddingRight,
+            dpToPx(context, 6).toInt()   // reduce bottom padding
+        )
+        holder?.itemView?.let { view ->
+            val params = view.layoutParams as? ViewGroup.MarginLayoutParams
+            params?.marginStart = CommonUtil.dpToPx(16).toInt()
+            params?.marginEnd = CommonUtil.dpToPx(16).toInt()
+            view.layoutParams = params
+        }
 
 //        holder?.run {
 //            paddingStart?.let {
@@ -72,4 +91,7 @@ open class PreferenceCategoryWithPadding(
 //            }
 //        }
     }
+
+
+
 }

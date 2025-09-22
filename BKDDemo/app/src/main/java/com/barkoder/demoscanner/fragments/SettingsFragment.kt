@@ -1,31 +1,45 @@
 package com.barkoder.demoscanner.fragments
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceGroup
 import androidx.preference.PreferenceManager
 import androidx.preference.SwitchPreference
 import androidx.preference.SwitchPreferenceCompat
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.RecyclerView
 import com.barkoder.Barkoder
 import com.barkoder.demoscanner.MainActivity
 import com.barkoder.demoscanner.R
 import com.barkoder.demoscanner.ScannerActivity
 import com.barkoder.demoscanner.SettingsActivity
+import com.barkoder.demoscanner.customcontrols.CategoryRoundedCornersDecoration
+import com.barkoder.demoscanner.customcontrols.MarginDividerItemDecoration
 import com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding
+import com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPaddingGreyText
 import com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
 import com.barkoder.demoscanner.customcontrols.SwitchWithWidgetPreference
+import com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreference
+import com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreferenceWithArrow
 import com.barkoder.demoscanner.enums.Charset
 import com.barkoder.demoscanner.enums.ScanMode
 import com.barkoder.demoscanner.utils.BKDConfigUtil
+import com.barkoder.demoscanner.utils.CommonUtil.dpToPx
 import com.barkoder.demoscanner.utils.DemoDefaults
 import com.barkoder.demoscanner.utils.getBoolean
 import com.barkoder.demoscanner.utils.getString
@@ -36,6 +50,7 @@ import com.barkoder.enums.BarkoderConfigTemplate
 import com.barkoder.enums.BarkoderResolution
 import com.barkoder.overlaymanager.BarkoderAROverlayRefresh
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.internal.ViewUtils.dpToPx
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
@@ -58,10 +73,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     lateinit var continuisTresHoldPreferences : ListPreference
 
-    private lateinit var webhookConfigurationPreference: Preference
+    private lateinit var webhookConfigurationPreference: WhiteBackgroundPreferenceWithArrow
     private lateinit var webhookAutosendPreference: SwitchPreference
-    private lateinit var webhookFeedbackPreference: SwitchPreference
-    private lateinit var webhookEncodeDataPreference: SwitchPreference
+    private lateinit var webhookFeedbackPreference: SwitchWithPaddingPreference
+    private lateinit var webhookEncodeDataPreference: SwitchWithPaddingPreference
     private lateinit var defaultSearchWebPreference: ListPreference
 
 
@@ -69,8 +84,48 @@ class SettingsFragment : PreferenceFragmentCompat() {
         preferenceScreen.getPreference(GENERAL_SETTINGS_CATEGORY_INDEX)
     }
 
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
+        val view = super.onCreateView(inflater, container, savedInstanceState)
+        view?.setBackgroundResource(R.drawable.bg_shape_png) // Set your drawable or color here
+        return view
+    }
+    @SuppressLint("RestrictedApi")
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val recyclerView = view.findViewById<RecyclerView>(android.R.id.list)
+        recyclerView?.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_shape_png)
+        recyclerView?.setBackgroundColor(Color.TRANSPARENT)
+        val recyclerView2 = view.findViewById<RecyclerView>(androidx.preference.R.id.recycler_view)
+        val marginStartPx = dpToPx(requireContext(), 20).toInt()
+        val marginEndPx = dpToPx(requireContext(), 20).toInt()
+
+        recyclerView2?.addItemDecoration(
+            MarginDividerItemDecoration(
+                requireContext(),
+                R.drawable.preference_divider,
+                marginStartPx,
+                marginEndPx
+            )
+        )
+
+        recyclerView2?.apply {
+            // Add your rounded corner decorator
+            addItemDecoration(CategoryRoundedCornersDecoration(requireContext()))
+
+            val bottomPaddingPx = dpToPx(requireContext(), 50).toInt()
+            setPaddingRelative(paddingStart, paddingTop, paddingEnd, bottomPaddingPx)
+            // Optionally add other decoration
+        }
+    }
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         scanMode = ScanMode.values()[requireActivity().intent.extras!!.getInt(ARGS_MODE_KEY)]
+
+
 
         if (scanMode != ScanMode.GLOBAL)
             preferenceManager.sharedPreferencesName =
@@ -82,6 +137,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         setPreferencesFromResource(R.xml.preferences_settings, rootKey)
 
 
+
         searchEnginePreferenceChangeListener()
         copyTerminatorPreferenceChangeListener()
         setSymbologyPrefs()
@@ -89,8 +145,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
         settingsChangedTemplateMessage()
         onEnabledWebhookListener()
         onEnableSearchListener()
-        makeSomeInvisiblePreferencesForTemplates()
 
+
+        if(scanMode != ScanMode.ANYSCAN && scanMode != ScanMode.CONTINUOUS) {
+            flattenSymbologyPreferences()
+        }
 
         if (scanMode.template != null) {
             setUIForScanModeWithTemplate()
@@ -99,7 +158,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
             setARLocationTypeEntries()
             setARHeaderShowModeEntries()
             setAROverlayFPSEntries()
-            setMrzCheckSum()
             setBarkoderResolutionEntries()
             setResultParserEntries()
             setResultCharsetEntries()
@@ -119,7 +177,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
             setARLocationTypeEntries()
             setARHeaderShowModeEntries()
             setAROverlayFPSEntries()
-            setMrzCheckSum()
             setBarkoderResolutionEntries()
             setResultParserEntries()
             setResultCharsetEntries()
@@ -144,52 +201,321 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 setUIForContinuosModeSettings()
 
         }
+
+        makeSomeInvisiblePreferencesForTemplates()
+
+        if(scanMode != ScanMode.ANYSCAN && scanMode != ScanMode.CONTINUOUS) {
+
+            val barcodeCategorySettings = findPreference<PreferenceGroup>("pref_key_barkoder_settings")
+
+            if(scanMode == ScanMode.MRZ) {
+
+                val barkoderSettingsOrderMRZ = listOf(
+                    "pref_key_scanner_decoding_speed",
+                    "pref_key_scanner_resolution",
+                    "pref_key_allow_pinch_to_zoom",
+                    "pref_key_beep_on_success",
+                    "pref_key_vibrate_on_success",
+                    "pref_key_enable_roi",
+                    "pref_key_require_master_checksum",
+                    "pref_key_continuous_scanning",
+                    "pref_key_continuous_treshold"
+                )
+
+                barcodeCategorySettings?.let { category ->
+                    val visiblePrefs = mutableListOf<Preference>()
+                    for (i in 0 until category.preferenceCount) {
+                        val pref = category.getPreference(i)
+                        if (pref.isVisible) {
+                            visiblePrefs.add(pref)
+                        }
+                    }
+
+                    var newOrder = 0
+                    visiblePrefs.forEach { pref ->
+                            newOrder = barkoderSettingsOrderMRZ.indexOf(pref.key)
+
+
+                        if (newOrder != -1) {
+                            pref.order = newOrder
+                        } else {
+                            // Assign a high order to preferences not in your custom list
+                            pref.order = Int.MAX_VALUE
+                        }
+                    }
+                }
+            }
+                val barcodeCategory = findPreference<PreferenceGroup>("barkode_types_key")
+
+            barcodeCategory?.let { category ->
+                val visiblePrefs = mutableListOf<Preference>()
+                for (i in 0 until category.preferenceCount) {
+                    val pref = category.getPreference(i)
+                    if (pref.isVisible) {
+                        visiblePrefs.add(pref)
+                    }
+                }
+
+
+                // Assign a new order to each preference based on your custom list
+                val customKeyOrderALL1D = listOf(
+                    "pref_key_symbology_c128",
+                    "pref_key_symbology_c93",
+                    "pref_key_symbology_c39",
+                    "pref_key_symbology_c25",
+                    "pref_key_symbology_codabar",
+                    "pref_key_symbology_c11",
+                    "pref_key_symbology_msi",
+                    "pref_key_symbology_c32",
+                    "pref_key_symbology_i2o5",
+                    "pref_key_symbology_itf14",
+                    "pref_key_symbology_iata25",
+                    "pref_key_symbology_matrix25",
+                    "pref_key_symbology_dataLogic25",
+                    "pref_key_symbology_coop25",
+                    "pref_key_symbology_telepen",
+                    "pref_key_symbology_upca",
+                    "pref_key_symbology_upce",
+                    "pref_key_symbology_upce1",
+                    "pref_key_symbology_ean13",
+                    "pref_key_symbology_ean8",
+                    "pref_key_symbology_databar14",
+                    "pref_key_symbology_databarLimited",
+                    "pref_key_symbology_databarExpanded",
+                    "pref_key_symbology_postalImb",
+                    "pref_key_symbology_postnet",
+                    "pref_key_symbology_planet",
+                    "pref_key_symbology_australianPost",
+                    "pref_key_symbology_royalMail",
+                    "pref_key_symbology_kix",
+                    "pref_key_symbology_japanesePost"
+                )
+
+                val customKeyOrderComposite = listOf(
+                    "pref_key_symbology_pdf417",
+                    "pref_key_symbology_pdf417_micro",
+                    "pref_key_symbology_c128",
+                    "pref_key_symbology_upca",
+                    "pref_key_symbology_upce",
+                    "pref_key_symbology_upce1",
+                    "pref_key_symbology_ean13",
+                    "pref_key_symbology_ean8",
+                    "pref_key_symbology_databarExpanded",
+                    "pref_key_symbology_databar14",
+                    "pref_key_symbology_databarLimited",
+                )
+                val customKeyOrderALL2D = listOf(
+                    "pref_key_symbology_aztec",
+                    "pref_key_symbology_aztec_compact",
+                    "pref_key_symbology_qr",
+                    "pref_key_symbology_qr_micro",
+                    "pref_key_symbology_pdf417",
+                    "pref_key_symbology_pdf417_micro",
+                    "pref_key_symbology_datamatrix",
+                    "pref_key_symbology_dotcode",
+                    "pref_key_symbology_maxicode",
+                )
+
+                val customKeyOrderVIN = listOf(
+                    "pref_key_symbology_c39",
+                    "pref_key_symbology_c128",
+                    "pref_key_symbology_datamatrix",
+                    "pref_key_symbology_qr_micro",
+                )
+
+                val customKeyOrderPostal = listOf(
+                    "pref_key_symbology_postalImb",
+                    "pref_key_symbology_postnet",
+                    "pref_key_symbology_planet",
+                    "pref_key_symbology_australianPost",
+                    "pref_key_symbology_royalMail",
+                    "pref_key_symbology_kix",
+                    "pref_key_symbology_japanesePost",
+                )
+
+                val customKeyOrderDeblur = listOf(
+                    "pref_key_symbology_upca",
+                    "pref_key_symbology_upce",
+                    "pref_key_symbology_upce1",
+                    "pref_key_symbology_ean13",
+                    "pref_key_symbology_ean8",
+                )
+
+                val customKeyOrderMisshapped = listOf(
+                    "pref_key_symbology_c128",
+                    "pref_key_symbology_c93",
+                    "pref_key_symbology_c39",
+                    "pref_key_symbology_codabar",
+                    "pref_key_symbology_c11",
+                    "pref_key_symbology_msi",
+                    "pref_key_symbology_c25",
+                    "pref_key_symbology_i2o5",
+                    "pref_key_symbology_itf14",
+                    "pref_key_symbology_iata25",
+                    "pref_key_symbology_matrix25",
+                    "pref_key_symbology_dataLogic25",
+                    "pref_key_symbology_coop25",
+                    "pref_key_symbology_c32",
+                    "pref_key_symbology_telepen",
+                )
+
+                val customKeyOrderArMode = listOf(
+                    "pref_key_symbology_aztec",
+                    "pref_key_symbology_aztec_compact",
+                    "pref_key_symbology_qr",
+                    "pref_key_symbology_qr_micro",
+                    "pref_key_symbology_pdf417",
+                    "pref_key_symbology_pdf417_micro",
+                    "pref_key_symbology_datamatrix",
+                    "pref_key_symbology_maxicode",
+                    "pref_key_symbology_c128",
+                    "pref_key_symbology_c93",
+                    "pref_key_symbology_c39",
+                    "pref_key_symbology_codabar",
+                    "pref_key_symbology_c11",
+                    "pref_key_symbology_msi",
+                    "pref_key_symbology_upca",
+                    "pref_key_symbology_upce",
+                    "pref_key_symbology_upce1",
+                    "pref_key_symbology_ean13",
+                    "pref_key_symbology_ean8",
+                    "pref_key_symbology_c25",
+                    "pref_key_symbology_i2o5",
+                    "pref_key_symbology_itf14",
+                    "pref_key_symbology_iata25",
+                    "pref_key_symbology_matrix25",
+                    "pref_key_symbology_dataLogic25",
+                    "pref_key_symbology_coop25",
+                    "pref_key_symbology_c32",
+                    "pref_key_symbology_telepen",
+                    "pref_key_symbology_databar14",
+                    "pref_key_symbology_databarLimited",
+                    "pref_key_symbology_databarExpanded",
+                    "pref_key_symbology_postalImb",
+                    "pref_key_symbology_postnet",
+                    "pref_key_symbology_planet",
+                    "pref_key_symbology_australianPost",
+                    "pref_key_symbology_royalMail",
+                    "pref_key_symbology_kix",
+                    "pref_key_symbology_japanesePost",
+                )
+
+                var newOrder = 0
+                visiblePrefs.forEach { pref ->
+                    if (scanMode == ScanMode.COMPOSITE) {
+                        newOrder = customKeyOrderComposite.indexOf(pref.key)
+                    } else if (scanMode == ScanMode.ALL_2D) {
+                        newOrder = customKeyOrderALL2D.indexOf(pref.key)
+                    } else if (scanMode == ScanMode.ALL_1D || scanMode == ScanMode.INDUSTRIAL_1D || scanMode == ScanMode.RETAIL_1D) {
+                        newOrder = customKeyOrderALL1D.indexOf(pref.key)
+                    } else if (scanMode == ScanMode.VIN) {
+                        newOrder = customKeyOrderVIN.indexOf(pref.key)
+                    } else if (scanMode == ScanMode.POSTAL_CODES) {
+                        newOrder = customKeyOrderPostal.indexOf(pref.key)
+                    } else if (scanMode == ScanMode.UPC_EAN_DEBLUR) {
+                        newOrder = customKeyOrderDeblur.indexOf(pref.key)
+                    } else if (scanMode == ScanMode.MISSHAPED_1D) {
+                        newOrder = customKeyOrderMisshapped.indexOf(pref.key)
+                    }  else if (scanMode == ScanMode.AR_MODE) {
+                        newOrder = customKeyOrderArMode.indexOf(pref.key)
+                    }
+
+
+                    if (newOrder != -1) {
+                        pref.order = newOrder
+                    } else {
+                        // Assign a high order to preferences not in your custom list
+                        pref.order = Int.MAX_VALUE
+                    }
+                }
+
+                Log.d("ReorderDebug", "Successfully reordered preferences.")
+            }
+
+        }
+
+
+
+
+    }
+
+
+    private fun flattenSymbologyPreferences() {
+        val outerCategory = preferenceScreen.findPreference<PreferenceCategoryWithPadding>("barkode_types_key")
+        if (outerCategory == null) {
+            Log.e("PrefsDebug", "Outer category not found!")
+            return
+        }
+
+
+
+        val flattenedPreferences = mutableListOf<Preference>()
+
+        for (i in outerCategory.preferenceCount - 1 downTo 0) {
+            val subPref = outerCategory.getPreference(i)
+
+
+            if (subPref is PreferenceCategory) {
+
+
+                for (j in subPref.preferenceCount - 1 downTo 0) {
+                    val innerPref = subPref.getPreference(j)
+                    flattenedPreferences.add(innerPref)
+                    subPref.removePreference(innerPref)
+                }
+                outerCategory.removePreference(subPref)
+
+            }
+        }
+
+        flattenedPreferences.reverse() // Maintain original order
+        flattenedPreferences.forEach { pref ->
+            if (pref.parent != null) {
+                (pref.parent as PreferenceGroup).removePreference(pref)
+            }
+            outerCategory.addPreference(pref)
+        }
+
     }
 
     private fun onEnabledWebhookListener() {
-        var  enabledWebhookPreference = findPreference<SwitchPreference>("pref_key_enable_webhook")
+        // Find preferences by exact keys matching your XML
+        val enabledWebhookPreference = findPreference<SwitchPreference>(getString(R.string.key_enable_webhook))
         webhookConfigurationPreference = findPreference(getString(R.string.key_webhook_configuration))!!
-        webhookAutosendPreference = findPreference(getString(R.string.key_webhook_autosend))!!
         webhookFeedbackPreference = findPreference(getString(R.string.key_webhook_feedback))!!
         webhookEncodeDataPreference = findPreference(getString(R.string.key_webhook_encode_data))!!
 
-        if(enabledWebhookPreference!!.isChecked){
-            webhookEncodeDataPreference.isEnabled = true
-            webhookFeedbackPreference.isEnabled = true
-            webhookConfigurationPreference.isEnabled = true
-            webhookAutosendPreference.isEnabled = true
-        } else {
-            webhookEncodeDataPreference.isEnabled = false
-            webhookFeedbackPreference.isEnabled = false
-            webhookConfigurationPreference.isEnabled = false
-            webhookAutosendPreference.isEnabled = false
+        // Set initial enabled state based on the current switch state
+        val isEnabled = enabledWebhookPreference?.isChecked ?: false
+        setWebhookPreferencesEnabled(isEnabled)
+
+        enabledWebhookPreference?.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
+            val enabled = newValue as Boolean
+            // Log to confirm listener triggers
+            Log.d("WebhookPref", "Toggle changed to: $enabled")
+            setWebhookPreferencesEnabled(enabled)
+
+            // Optional: Show dialog if enabling but URL is empty
+            val urlWebHook = sharedPreferences.getString(getString(R.string.key_url_webhook), "") ?: ""
+            if (urlWebHook.isBlank() && enabled) {
+                val notConfiguredWebHookDialog = NotConfiguredWebHookDialog()
+                notConfiguredWebHookDialog.show(parentFragmentManager, "NotConfiguredWebHookDialog")
+            }
+
+            true // Allow change
         }
 
-        enabledWebhookPreference.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
-            sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
 
-            val urlWebHook = sharedPreferences.getString(getString(R.string.key_url_webhook), "")
-            val valueBoolean = newValue as Boolean
-            if(urlWebHook.isNullOrBlank()) {
-                if(valueBoolean) {
-                    var notConfiguredWebHookDialog = NotConfiguredWebHookDialog()
-                    notConfiguredWebHookDialog.show(requireFragmentManager(), "NotConfiguredWebHookDialog")
-                }
-            }
-            if(!valueBoolean) {
-                webhookEncodeDataPreference.isEnabled = false
-                webhookFeedbackPreference.isEnabled = false
-                webhookConfigurationPreference.isEnabled = false
-                webhookAutosendPreference.isEnabled = false
-            } else {
-                webhookEncodeDataPreference.isEnabled = true
-                webhookFeedbackPreference.isEnabled = true
-                webhookConfigurationPreference.isEnabled = true
-                webhookAutosendPreference.isEnabled = true
-            }
+        enabledWebhookPreference?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            setWebhookPreferencesEnabled(enabledWebhookPreference?.isChecked!!)
             true
         }
+    }
 
+    private fun setWebhookPreferencesEnabled(enabled: Boolean) {
+        webhookConfigurationPreference.isEnabled = enabled
+        webhookFeedbackPreference.isEnabled = enabled
+        webhookEncodeDataPreference.isEnabled = enabled
     }
 
     private fun onEnableSearchListener() {
@@ -213,29 +539,57 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun onContiniousModeOnListener () {
-        var continuiusModePreference = findPreference<SwitchPreference>("pref_key_continuous_scanning")
+        var continuiusModePreference = findPreference<SwitchWithPaddingPreference>("pref_key_continuous_scanning")
         continuisTresHoldPreferences = findPreference<ListPreference>("pref_key_continuous_treshold")!!
         val arModePreference = findPreference<ListPreference>("pref_key_ar_mode_options")!!
 
-        continuiusModePreference!!.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
-            val isVisible = newValue as Boolean
-            if (isVisible) {
-                Log.d("asdada", arModePreference.value.toString())
+//        continuiusModePreference!!.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { preference, newValue ->
+//            val isVisible = newValue as Boolean
+//            if (isVisible) {
+//                Log.d("asdada", arModePreference.value.toString())
+//                if(arModePreference.value.toInt() == 0) {
+//                    continuisTresHoldPreferences.isVisible = true
+//                }
+//
+//                if(scanMode != ScanMode.AR_MODE  && scanMode != ScanMode.MISSHAPED_1D && scanMode != ScanMode.DPM && scanMode != ScanMode.DOTCODE && scanMode != ScanMode.MRZ) {
+//                    makePreferenceVisable(getString(R.string.key_ar_preference))
+//                }
+//            } else {
+//                continuisTresHoldPreferences.isVisible = false
+//                if(scanMode != ScanMode.AR_MODE  && scanMode != ScanMode.MISSHAPED_1D && scanMode != ScanMode.DPM && scanMode != ScanMode.DOTCODE) {
+//                    makePreferenceInvisible(getString(R.string.key_ar_preference))
+//                }
+//            }
+//            true
+//        }
+
+        continuiusModePreference?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            val isEnabled = continuiusModePreference?.isChecked
+
+
+
+            // Perform any action you need
+            if (isEnabled!!) {
                 if(arModePreference.value.toInt() == 0) {
                     continuisTresHoldPreferences.isVisible = true
                 }
-
+//
                 if(scanMode != ScanMode.AR_MODE  && scanMode != ScanMode.MISSHAPED_1D && scanMode != ScanMode.DPM && scanMode != ScanMode.DOTCODE && scanMode != ScanMode.MRZ) {
                     makePreferenceVisable(getString(R.string.key_ar_preference))
                 }
+                // Enable related feature
             } else {
                 continuisTresHoldPreferences.isVisible = false
                 if(scanMode != ScanMode.AR_MODE  && scanMode != ScanMode.MISSHAPED_1D && scanMode != ScanMode.DPM && scanMode != ScanMode.DOTCODE) {
                     makePreferenceInvisible(getString(R.string.key_ar_preference))
                 }
             }
-            true
+
+
+
+            true // Return true to indicate click was handled
         }
+
 
         if(continuiusModePreference!!.isChecked == true) {
             if(arModePreference.value.toInt() == 0) {
@@ -250,6 +604,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
             if(scanMode != ScanMode.AR_MODE  && scanMode != ScanMode.MISSHAPED_1D && scanMode != ScanMode.DPM && scanMode != ScanMode.DOTCODE) {
                 makePreferenceInvisible(getString(R.string.key_ar_preference))
             }
+        }
+
+
+        if(scanMode == ScanMode.CONTINUOUS) {
+            makePreferenceVisable(getString(R.string.key_ar_preference))
         }
     }
 
@@ -292,8 +651,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun settingsChangedTemplateMessage() {
         val barkoderSettingsCategory: PreferenceCategory? = findPreference("pref_key_barkoder_settings")
-        val barkodeTypes2DSettingsCategory: PreferenceCategoryWithPadding? = findPreference("pref_key_barkode_types2D_settings")
-        val barkodeTypes1DSettingsCategory: PreferenceCategoryWithPadding? = findPreference("pref_key_barkode_types1D_settings")
+        val barkodeTypes2DSettingsCategory: PreferenceCategory? = findPreference("pref_key_barkode_types2D_settings")
+        val barkodeTypes1DSettingsCategory: PreferenceCategory? = findPreference("pref_key_barkode_types1D_settings")
         val barkodeResultsSettingsCategory: PreferenceCategory? = findPreference("pref_key_barkode_result_settings")
 
 
@@ -570,6 +929,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
+                makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
                 preferenceScreen.getPreference(BARCODE_TYPES_CATEGORY_INDEX).isVisible = true
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
@@ -586,8 +946,12 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
+                makePreferenceInvisible(getString(R.string.key_barkoder_result_settings))
+                makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                val resultSettingsCategory = findPreference<Preference>(getString(R.string.key_barkoder_result_settings))
+                resultSettingsCategory?.isVisible = false
             }
             ScanMode.DOTCODE -> {
                 makePreferenceInvisible(getString(R.string.key_mrz_mode))
@@ -736,12 +1100,15 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_barkoder_result_settings))
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
-                makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
-                makePreferenceVisable(getString(R.string.key_checksum_mrz_preference))
+                makePreferenceInvisible(getString(R.string.key_barkoder_result_settings))
+                makePreferenceVisable(getString(R.string.key_require_master_checksum))
+
                 preferenceScreen.getPreference(BARCODE_TYPES_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(RESULT_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                val resultSettingsCategory = findPreference<Preference>(getString(R.string.key_barkoder_result_settings))
+                resultSettingsCategory?.isVisible = false
             }
 
             ScanMode.GALLERY_SCAN -> {
@@ -953,11 +1320,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         for (item in BarkoderAROverlayRefresh.values()) {
             if(item.ordinal == 0) {
-                entries.add("Standard")
+                entries.add("Smooth")
                 entryValues.add(item.ordinal.toString())
             }
             if(item.ordinal == 1) {
-                entries.add("Smooth")
+                entries.add("Normal")
                 entryValues.add(item.ordinal.toString())
             }
 
@@ -970,25 +1337,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
             preferenceManager.sharedPreferences.getString(arAROverlayFPSPreferences.key)
     }
 
-
-    private fun setMrzCheckSum() {
-        val mrzCheckSumPref =
-            findPreference<ListPreference>(getString(R.string.key_checksum_mrz))!!
-
-        val entries: MutableList<CharSequence> = arrayListOf()
-        val entryValues: MutableList<CharSequence> = arrayListOf()
-
-        for (item in Barkoder.StandardChecksumType.values()) {
-            entries.add(item.name)
-            entryValues.add(item.name)
-        }
-
-        mrzCheckSumPref.entries = entries.toTypedArray()
-        mrzCheckSumPref.entryValues = entryValues.toTypedArray()
-
-        mrzCheckSumPref.value =
-            preferenceManager.sharedPreferences.getString(mrzCheckSumPref.key)
-    }
 
     private fun setBarkoderResolutionEntries() {
         val barkoderResolutionPref =
@@ -1080,9 +1428,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
 
+
     private fun setSymbologyPrefWidgetClickListener(symbologyPref: SwitchWithWidgetPreference) {
+        Log.d("BackStackDebug", "Before transaction: ${parentFragmentManager.backStackEntryCount}")
         symbologyPref.customClickListener = View.OnClickListener {
-            parentFragmentManager
+            (requireActivity() as AppCompatActivity).supportFragmentManager
                 .beginTransaction()
                 .replace(
                     R.id.settings_container,
@@ -1094,8 +1444,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     AdvancedSettingsFragment.TAG
                 )
                 .addToBackStack(AdvancedSettingsFragment.TAG)
-                .commit()
+                .commit() // <-- Add this line
         }
+        // The logs here are misleading because the transaction hasn't happened yet.
+        // They will always show 0.
+        Log.d("BackStackDebug", "After transaction: ${parentFragmentManager.backStackEntryCount}")
     }
 
     private fun setResultParserEntries() {
@@ -1397,7 +1750,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
             webhookEncodeDataPreference.isEnabled = true
             webhookFeedbackPreference.isEnabled = true
             webhookConfigurationPreference.isEnabled = true
-            webhookAutosendPreference.isEnabled = true
             defaultSearchWebPreference.isEnabled = true
             setFrontcamera.isChecked = false
             setCenteredAutoFocus.isChecked = false
@@ -1492,8 +1844,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun openWebHookConfigurationDialog() {
         val webHookPreference = findPreference<Preference>(getString(R.string.key_webhook_configuration))
-
+        webHookPreference?.isSelectable = true
         webHookPreference?.setOnPreferenceClickListener {
+            Log.d("qwewqeq","opeenedeDDIDal")
             val dialogFragment = WebHookConfigurationDialogFragment()
             dialogFragment.show(childFragmentManager, "WebHookConfigurationDialog")
 

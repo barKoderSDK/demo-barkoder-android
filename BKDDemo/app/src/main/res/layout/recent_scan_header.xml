@@ -4,7 +4,6 @@
     android:id="@+id/txtRecentHeader"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#FFF0EF"
     android:paddingStart="10dp"
     android:paddingTop="35dp"
     android:paddingEnd="10dp"
