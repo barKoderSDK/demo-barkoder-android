@@ -14,7 +14,7 @@ android {
         applicationId "com.barkoder.demoscanner"
         minSdkVersion 21
         targetSdkVersion 35
-        versionCode 100
+        versionCode 103
         versionName "1.8.8"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -58,6 +58,11 @@ android {
     buildFeatures {
         viewBinding true
         buildConfig true
+    }
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
+        }
     }
 }
 

@@ -28,6 +28,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -1121,6 +1122,24 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             val inflater = LayoutInflater.from(context)
             val dialogView = inflater.inflate(R.layout.custom_dialog_results, null)
 
+        builder.setView(dialogView)
+        builder.setCancelable(true)
+
+        val dialog = builder.create()
+
+        val window = dialog.window
+        if (window != null) {
+            // Make the status bar visible
+            window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+            window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
+            window.setWindowAnimations(R.style.DialogAnimationDetailsDialog)
+            // Set the status bar background color to white
+            window.statusBarColor = Color.WHITE
+
+            // Make the icons dark (grey)
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        }
+
             // Find the ImageView and set the bitmap image
             val dialogImageView =
                 dialogView.findViewById<ImageView>(R.id.imageViewDialog)
@@ -1330,11 +1349,6 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             Toast.makeText(requireContext(), "Values was copied to clipboard!", Toast.LENGTH_SHORT).show()
         }
 
-            builder.setView(dialogView)
-            builder.setCancelable(true)
-
-            val dialog = builder.create()
-
             closeButton.setOnClickListener { dialog.dismiss() }
 
             dialog.setOnShowListener {
@@ -1373,16 +1387,16 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
                 bottomSheetBehavior.peekHeight = 1200
             }
 
-            val params = binding.constraintLayout4.layoutParams
-            val newHeightInPixels = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                225f,
-                resources.displayMetrics
-            ).toInt()
-            binding.txtBtnExpand.text = "Expand"
-            params.height = newHeightInPixels
+//            val params = binding.constraintLayout4.layoutParams
+//            val newHeightInPixels = TypedValue.applyDimension(
+//                TypedValue.COMPLEX_UNIT_DIP,
+//                225f,
+//                resources.displayMetrics
+//            ).toInt()
+//            binding.txtBtnExpand.text = "Expand"
+//            params.height = newHeightInPixels
 
-            binding.constraintLayout4.layoutParams = params
+//            binding.constraintLayout4.layoutParams = params
         }
 
         }
@@ -1396,6 +1410,19 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         val dialogView = inflater.inflate(R.layout.custom_dialog_barcode_result, null)
 
         dialog.setContentView(dialogView)
+
+        val window = dialog.window
+        if (window != null) {
+            // Make the status bar visible
+            window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+            window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
+            window.setWindowAnimations(R.style.DialogAnimationDetailsDialog)
+            // Set the status bar background color to white
+            window.statusBarColor = Color.WHITE // Or ContextCompat.getColor(this, R.color.white)
+
+            // Make the icons dark (grey)
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        }
 
         val barcodeValueText = dialogView.findViewById<TextView>(R.id.barcodeValueText)
         val barcodeTypeText = dialogView.findViewById<TextView>(R.id.barcodeTypeText)
@@ -1607,16 +1634,16 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
                 bottomSheetBehavior.peekHeight = 1200
             }
 
-            val params = binding.constraintLayout4.layoutParams
-            val newHeightInPixels = TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_DIP,
-                225f,
-                resources.displayMetrics
-            ).toInt()
-            binding.txtBtnExpand.text = "Expand"
-            params.height = newHeightInPixels
-
-            binding.constraintLayout4.layoutParams = params
+//            val params = binding.constraintLayout4.layoutParams
+//            val newHeightInPixels = TypedValue.applyDimension(
+//                TypedValue.COMPLEX_UNIT_DIP,
+//                225f,
+//                resources.displayMetrics
+//            ).toInt()
+//            binding.txtBtnExpand.text = "Expand"
+//            params.height = newHeightInPixels
+//
+//            binding.constraintLayout4.layoutParams = params
         }
     }
 

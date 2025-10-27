@@ -492,15 +492,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
         enabledWebhookPreference?.onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
             val enabled = newValue as Boolean
             // Log to confirm listener triggers
-            Log.d("WebhookPref", "Toggle changed to: $enabled")
             setWebhookPreferencesEnabled(enabled)
 
             // Optional: Show dialog if enabling but URL is empty
-            val urlWebHook = sharedPreferences.getString(getString(R.string.key_url_webhook), "") ?: ""
-            if (urlWebHook.isBlank() && enabled) {
-                val notConfiguredWebHookDialog = NotConfiguredWebHookDialog()
-                notConfiguredWebHookDialog.show(parentFragmentManager, "NotConfiguredWebHookDialog")
-            }
+
 
             true // Allow change
         }
@@ -508,6 +503,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         enabledWebhookPreference?.onPreferenceClickListener = Preference.OnPreferenceClickListener {
             setWebhookPreferencesEnabled(enabledWebhookPreference?.isChecked!!)
+            sharedPreferences = requireActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+            // Or if you are using a custom file name
+            val urlWebHook = sharedPreferences.getString(getString(R.string.key_url_webhook), "") ?: ""
+            if (urlWebHook.isBlank() && enabledWebhookPreference?.isChecked!!) {
+                val notConfiguredWebHookDialog = NotConfiguredWebHookDialog()
+                notConfiguredWebHookDialog.show(parentFragmentManager, "NotConfiguredWebHookDialog")
+            }
             true
         }
     }

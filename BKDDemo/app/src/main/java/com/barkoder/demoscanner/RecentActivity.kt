@@ -25,6 +25,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.AnimationSet
 import android.view.animation.AnimationUtils
@@ -757,12 +758,26 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
             // Create a regular Dialog for more control
             val dialog = Dialog(this, com.barkoder.R.style.FullScreenDialogStyle)
 
+
             // Inflate the custom layout
             val inflater = LayoutInflater.from(this)
             val dialogView = inflater.inflate(R.layout.custom_dialog_barcode_result, null)
 
             // Set the content of the dialog
             dialog.setContentView(dialogView)
+
+            val window = dialog.window
+            if (window != null) {
+                // Make the status bar visible
+                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
+                window.setWindowAnimations(R.style.RecentDialogAnimationDetailsDialog)
+                // Set the status bar background color to white
+                window.statusBarColor = Color.WHITE // Or ContextCompat.getColor(this, R.color.white)
+
+                // Make the icons dark (grey)
+                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            }
 
             val barcodeValueText = dialogView.findViewById<TextView>(R.id.barcodeValueText)
             val barcodeTypeText = dialogView.findViewById<TextView>(R.id.barcodeTypeText)
@@ -1015,6 +1030,24 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
             val inflater = LayoutInflater.from(this)
             val dialogView = inflater.inflate(R.layout.custom_dialog_results, null)
 
+            builder.setView(dialogView)
+            builder.setCancelable(true)
+
+            val dialog = builder.create()
+
+            val window = dialog.window
+            if (window != null) {
+                // Make the status bar visible
+                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
+                window.setWindowAnimations(R.style.RecentDialogAnimationDetailsDialog)
+                // Set the status bar background color to white
+                window.statusBarColor = Color.WHITE
+
+                // Make the icons dark (grey)
+                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            }
+
             // Find the ImageView and set the bitmap image
             val dialogImageView =
                 dialogView.findViewById<ImageView>(R.id.imageViewDialog)
@@ -1057,6 +1090,8 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
             val viewCardDocument = dialogView.findViewById<LinearLayout>(R.id.imageDocumentLayout)
             val viewCardSignature = dialogView.findViewById<LinearLayout>(R.id.imageSignatureLayout)
             val viewCardMain = dialogView.findViewById<LinearLayout>(R.id.imageMainLayout)
+
+
 
 
             // Split the raw string into lines
@@ -1233,10 +1268,7 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
 
             closeButton.visibility = View.GONE
             closeBackButton.visibility = View.VISIBLE
-            builder.setView(dialogView)
-            builder.setCancelable(true)
 
-            val dialog = builder.create()
 
             closeButton.setOnClickListener { dialog.dismiss() }
             closeBackButton.setOnClickListener { dialog.dismiss() }

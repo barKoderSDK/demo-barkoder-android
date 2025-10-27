@@ -7,18 +7,75 @@
     android:background="#FFFFFF"
     android:layout_height="match_parent">
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/toolBarColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageButton
+            android:id="@+id/btn_optionss"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="10dp"
+            android:backgroundTint="@color/transparent"
+            android:src="@drawable/more_vert"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/titleMRZ"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Barcode Details"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/buttonClose"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="15dp"
+            android:backgroundTint="@color/toolBarColor"
+            android:src="@drawable/ic_close_black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/buttonCloseBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:backgroundTint="@color/toolBarColor"
+            android:src="@drawable/ic_arrrow_back_black"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <!-- Scrollable Content -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/scrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:fillViewport="true"
         android:background="@drawable/bg_shape_png"
+        android:fillViewport="true"
         android:paddingBottom="5dp"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/constraintLayout5"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
 
         <!-- Single container for all scrollable views -->
         <LinearLayout
@@ -27,80 +84,27 @@
             android:orientation="vertical">
 
             <!-- Top Bar -->
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:background="@color/toolBarColor">
 
-                <ImageButton
-                    android:id="@+id/btn_optionss"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="10dp"
-                    android:backgroundTint="@color/transparent"
-                    android:src="@drawable/more_vert"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-                <TextView
-                    android:id="@+id/titleMRZ"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Barcode Details"
-                    android:textColor="@color/black"
-                    android:textSize="20sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-                <ImageButton
-                    android:id="@+id/buttonClose"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="15dp"
-                    android:backgroundTint="@color/toolBarColor"
-                    android:src="@drawable/ic_close_black"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-
-                <ImageButton
-                    android:id="@+id/buttonCloseBack"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="15dp"
-                    android:backgroundTint="@color/toolBarColor"
-                    android:src="@drawable/ic_arrrow_back_black"
-                    android:visibility="gone"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardView6"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
                 android:layout_marginHorizontal="15dp"
+                android:layout_marginTop="20dp"
                 android:padding="15dp"
+                app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="10dp"
-                app:cardElevation="1dp"
-                app:cardBackgroundColor="#FFFFFF">
+                app:cardElevation="1dp">
 
                 <ImageView
-                    android:layout_marginVertical="10dp"
                     android:id="@+id/barcodeImage"
                     android:layout_width="200dp"
                     android:layout_height="150dp"
                     android:layout_gravity="center"
+                    android:layout_marginVertical="10dp"
                     android:adjustViewBounds="true"
-                    android:scaleType="fitCenter"
-                    />
+                    android:scaleType="fitCenter" />
 
             </com.google.android.material.card.MaterialCardView>
 
@@ -133,41 +137,41 @@
                     android:id="@+id/cardView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="15dp"
                     android:layout_marginTop="5dp"
-                    android:layout_marginHorizontal="15dp"
                     android:padding="15dp"
-                    app:cardCornerRadius="10dp"
-                    app:cardElevation="1dp"
                     app:cardBackgroundColor="#FFFFFF"
-                >
-                <LinearLayout
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="1dp">
 
-                    android:id="@+id/linearLayout2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:background="@drawable/rounded_background"
-                    android:layout_marginHorizontal="15dp"
-                    android:padding="15dp">
+                    <LinearLayout
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                        android:id="@+id/linearLayout2"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:text="Barcode Type"
-                        android:textColor="#666666"
-                        android:textSize="12sp" />
+                        android:layout_marginHorizontal="15dp"
+                        android:background="@drawable/rounded_background"
+                        android:orientation="horizontal"
+                        android:padding="15dp">
 
-                    <TextView
-                        android:id="@+id/barcodeTypeText"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="23 34 23"
-                        android:textColor="#000000"
-                        android:textSize="14sp" />
-                </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:text="Barcode Type"
+                            android:textColor="#666666"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/barcodeTypeText"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="23 34 23"
+                            android:textColor="#000000"
+                            android:textSize="14sp" />
+                    </LinearLayout>
 
                 </com.google.android.material.card.MaterialCardView>
 
@@ -175,40 +179,39 @@
                     android:id="@+id/cardView2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="15dp"
                     android:layout_marginTop="5dp"
-                    android:layout_marginHorizontal="15dp"
                     android:padding="15dp"
-                    app:cardCornerRadius="10dp"
-                    app:cardElevation="1dp"
                     app:cardBackgroundColor="#FFFFFF"
-                    >
-                <!-- Value -->
-                <LinearLayout
-                    android:id="@+id/aewsf"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#FFFFFF"
-                    android:orientation="horizontal"
-                    android:layout_marginHorizontal="15dp"
-                    android:padding="15dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="1dp">
+                    <!-- Value -->
+                    <LinearLayout
+                        android:id="@+id/aewsf"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Value"
-                        android:textColor="#666666"
-                        android:textSize="12sp" />
+                        android:layout_marginHorizontal="15dp"
+                        android:background="#FFFFFF"
+                        android:orientation="horizontal"
+                        android:padding="15dp">
 
-                    <TextView
-                        android:id="@+id/barcodeValueText"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="23 34 23"
-                        android:textColor="#000000"
-                        android:textSize="14sp" />
-                </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Value"
+                            android:textColor="#666666"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/barcodeValueText"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="23 34 23"
+                            android:textColor="#000000"
+                            android:textSize="14sp" />
+                    </LinearLayout>
 
                 </com.google.android.material.card.MaterialCardView>
 
@@ -216,41 +219,40 @@
                     android:id="@+id/cardView3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="15dp"
                     android:layout_marginTop="5dp"
-                    android:layout_marginHorizontal="15dp"
                     android:padding="15dp"
-                    app:cardCornerRadius="10dp"
-                    app:cardElevation="1dp"
                     app:cardBackgroundColor="#FFFFFF"
-                    >
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="1dp">
 
-                <!-- Times Scanned -->
-                <LinearLayout
-                    android:id="@+id/timesScannedLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#FFFFFF"
-                    android:orientation="horizontal"
-                    android:layout_marginHorizontal="15dp"
-                    android:padding="15dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <!-- Times Scanned -->
+                    <LinearLayout
+                        android:id="@+id/timesScannedLayout"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Times scanned"
-                        android:textColor="#666666"
-                        android:textSize="12sp" />
+                        android:layout_marginHorizontal="15dp"
+                        android:background="#FFFFFF"
+                        android:orientation="horizontal"
+                        android:padding="15dp">
 
-                    <TextView
-                        android:id="@+id/timesScannedText"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="23 34 23"
-                        android:textColor="#000000"
-                        android:textSize="14sp" />
-                </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Times scanned"
+                            android:textColor="#666666"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/timesScannedText"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="23 34 23"
+                            android:textColor="#000000"
+                            android:textSize="14sp" />
+                    </LinearLayout>
 
                 </com.google.android.material.card.MaterialCardView>
 
@@ -258,41 +260,40 @@
                     android:id="@+id/cardView4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="15dp"
                     android:layout_marginTop="5dp"
-                    android:layout_marginHorizontal="15dp"
                     android:padding="15dp"
-                    app:cardCornerRadius="10dp"
-                    app:cardElevation="1dp"
                     app:cardBackgroundColor="#FFFFFF"
-                    >
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="1dp">
 
-                <!-- Formatted -->
-                <LinearLayout
-                    android:id="@+id/formattedTextLayout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#FFFFFF"
-                    android:orientation="horizontal"
-                    android:layout_marginHorizontal="15dp"
-                    android:padding="15dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <!-- Formatted -->
+                    <LinearLayout
+                        android:id="@+id/formattedTextLayout"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Formatted"
-                        android:textColor="#666666"
-                        android:textSize="12sp" />
+                        android:layout_marginHorizontal="15dp"
+                        android:background="#FFFFFF"
+                        android:orientation="horizontal"
+                        android:padding="15dp">
 
-                    <TextView
-                        android:id="@+id/FormattedValueText"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="end"
-                        android:text="23 34 23"
-                        android:textColor="#000000"
-                        android:textSize="14sp" />
-                </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Formatted"
+                            android:textColor="#666666"
+                            android:textSize="12sp" />
+
+                        <TextView
+                            android:id="@+id/FormattedValueText"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="23 34 23"
+                            android:textColor="#000000"
+                            android:textSize="14sp" />
+                    </LinearLayout>
 
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
@@ -305,8 +306,8 @@
                 android:layout_marginStart="15dp"
                 android:layout_marginTop="10dp"
                 android:text="Captured Media"
-                android:textSize="12sp"
-                android:textColor="@color/brand_color" />
+                android:textColor="@color/brand_color"
+                android:textSize="12sp" />
 
             <!-- Image Layout -->
             <LinearLayout
@@ -314,7 +315,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
-                android:background="@color/white"
                 android:orientation="horizontal">
 
                 <androidx.cardview.widget.CardView

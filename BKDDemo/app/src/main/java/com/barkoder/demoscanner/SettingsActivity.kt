@@ -42,7 +42,7 @@ class SettingsActivity : AppCompatActivity() {
             val fm = supportFragmentManager
             if (fm.backStackEntryCount > 0) {
                 fm.popBackStack() // Go back to previous fragment
-            } else if (openedFromSettings || scanMode.ordinal == 14) {
+            } else if (openedFromSettings || scanMode.ordinal == 14 || scanMode.ordinal == 16) {
                 // Just go back normally
                 finish()
             } else {
@@ -63,7 +63,7 @@ class SettingsActivity : AppCompatActivity() {
         if (fm.backStackEntryCount > 0) {
             fm.popBackStack() // Go back to previous fragment
         } else {
-            if (openedFromSettings || scanMode.ordinal == 14) {
+            if (openedFromSettings || scanMode.ordinal == 14 || scanMode.ordinal == 16) {
                 finish()
             } else {
                 val intent = Intent(this@SettingsActivity, ScannerActivity::class.java)

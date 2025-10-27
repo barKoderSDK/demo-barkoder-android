@@ -534,7 +534,7 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
                     }
                    .setPositiveButton("Settings") { dialog, _ ->
                        val settingsIntent = Intent(this@MainActivity, SettingsActivity::class.java)
-                       settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 15)
+                       settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, 16)
                        startActivity(settingsIntent)
                    }
                     .show()

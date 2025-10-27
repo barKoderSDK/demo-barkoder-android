@@ -111,4 +111,14 @@
         <item name="android:windowExitAnimation">@anim/slide_out_down</item>
     </style>
 
+    <style name="DialogAnimationDetailsDialog">
+        <item name="android:windowEnterAnimation">@anim/fade_in_details_dialog</item>
+        <item name="android:windowExitAnimation">@anim/fade_out_details_dialog</item>
+    </style>
+
+    <style name="RecentDialogAnimationDetailsDialog">
+        <item name="android:windowEnterAnimation">@anim/slide_in_recents_detauls_dualog</item>
+        <item name="android:windowExitAnimation">@anim/slide_out_reents_details_dialog</item>
+    </style>
+
 </resources>
