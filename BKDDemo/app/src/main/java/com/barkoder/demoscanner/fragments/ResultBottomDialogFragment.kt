@@ -35,6 +35,8 @@ import android.widget.LinearLayout
 import android.widget.TableLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -88,10 +90,8 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
     var sessionScanCheck : MutableList<SessionScan> = mutableListOf()
 
     private var bottomSheetHeightModeOne = false
-
+    private lateinit var csvSaveLauncher: ActivityResultLauncher<String>
     private lateinit var sharedPreferences : SharedPreferences
-
-    private val REQUEST_CODE = 1001
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
 
@@ -105,12 +105,6 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
     private var _binding: FragmentResultBottomDialogBinding? = null
     private val binding get() = _binding!!
 
-    private val writeStoragePermission by lazy {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S_V2) {
-            Manifest.permission.READ_MEDIA_IMAGES
-        } else
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-    }
 
     interface BottomSheetStateListener {
 
@@ -318,6 +312,15 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         val image = arguments?.getParcelable<Bitmap>("bitmapImage")
         var sessionScan = arguments?.getSerializable("sessionScan") as? MutableList<SessionScan>
         val sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+
+        csvSaveLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("text/csv")) { uri ->
+            if (uri != null) {
+                // New compliance-safe way to save the file
+                saveToCSVViaSAF(uri)
+            } else {
+                Toast.makeText(requireContext(), "Save cancelled.", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         if(sessionScan!!.size == 1) {
             val params = binding.constraintLayout4.layoutParams
@@ -669,20 +672,11 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 
 
 
+
         binding.btnCsvDialog.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(
-                    requireContext(),
-                    writeStoragePermission
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    requireActivity(),
-                    arrayOf(writeStoragePermission),
-                    REQUEST_CODE
-                )
-            } else {
-                saveToCSV(scannedBarcodesTypesList, scannedBarcodesResultList, scannedBarcodesDateList)
-            }
+            // ✅ Compliant: Start the system's "Create Document" intent
+            val defaultFileName = "scans_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())}.csv"
+            csvSaveLauncher.launch(defaultFileName)
         }
 
         binding.btnExpand.setOnClickListener {
@@ -743,6 +737,26 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 
 
 
+    private fun saveToCSVViaSAF(uri: Uri) {
+        try {
+            // Get the CSV content
+            val csvContent = generateCSVContent(
+                scannedBarcodesTypesList,
+                scannedBarcodesResultList,
+                scannedBarcodesDateList
+            )
+
+            // Write to the URI using ContentResolver.openOutputStream()
+            requireContext().contentResolver.openOutputStream(uri)?.use { outputStream ->
+                outputStream.write(csvContent.toByteArray())
+            }
+            Toast.makeText(requireContext(), "Scans saved to CSV successfully!", Toast.LENGTH_LONG).show()
+        } catch (e: Exception) {
+            Log.e("CSV_SAVE", "Failed to save CSV via SAF: ${e.message}", e)
+            Toast.makeText(requireContext(), "Failed to save CSV: ${e.message}", Toast.LENGTH_LONG).show()
+        }
+    }
+
 
     private fun updatePeekHeight(originalHeight: Int, updatedHeight: Int, behavior : BottomSheetBehavior<*>) {
         ValueAnimator.ofInt(originalHeight, updatedHeight).apply {
@@ -763,6 +777,17 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             start()
         }
     }
+
+    private fun generateCSVContent(types: List<String>, results: List<String>, dates: List<String>): String {
+        val csv = StringBuilder()
+        csv.append("Date,Barcode Type,Barcode Result\n")
+        for (i in types.indices) {
+            // Using quotes to handle potential commas or special characters in data
+            csv.append("${dates[i]},\"${types[i]}\",\"${results[i]}\"\n")
+        }
+        return csv.toString()
+    }
+
         private fun saveToCSV(barcodeList: MutableList<String>, typeList: MutableList<String>, dateList : MutableList<String>) {
             val fileName = "ScannedBarcode.csv"
 

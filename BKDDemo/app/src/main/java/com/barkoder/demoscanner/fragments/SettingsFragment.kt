@@ -126,7 +126,6 @@ class SettingsFragment : PreferenceFragmentCompat() {
         scanMode = ScanMode.values()[requireActivity().intent.extras!!.getInt(ARGS_MODE_KEY)]
 
 
-
         if (scanMode != ScanMode.GLOBAL)
             preferenceManager.sharedPreferencesName =
                 requireActivity().packageName + scanMode.prefKey
@@ -321,6 +320,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     "pref_key_symbology_c128",
                     "pref_key_symbology_datamatrix",
                     "pref_key_symbology_qr_micro",
+                    "pref_key_symbology_ocr"
+
                 )
 
                 val customKeyOrderPostal = listOf(
@@ -834,6 +835,9 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun makeSomeInvisiblePreferencesForTemplates(){
         when(scanMode) {
+            ScanMode.ANYSCAN ->{
+                makePreferenceInvisible(getString(R.string.key_symbology_ocr))
+            }
             ScanMode.INDUSTRIAL_1D -> {
                 makePreferenceInvisible(getString(R.string.key_mrz_mode))
                 makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
@@ -950,6 +954,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 makePreferenceInvisible(getString(R.string.key_barkoder_result_settings))
                 makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
+                makePreferenceVisable(getString(R.string.key_symbology_ocr))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
                 val resultSettingsCategory = findPreference<Preference>(getString(R.string.key_barkoder_result_settings))
@@ -1062,6 +1067,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
+                makePreferenceInvisible(getString(R.string.key_symbology_ocr))
                 preferenceScreen.getPreference(WEEBHOOK_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(GENERAL_SETTINGS_CATEGORY_INDEX).isVisible = true
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false

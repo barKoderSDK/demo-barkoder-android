@@ -3,7 +3,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="#FFF0EF"
+    android:background="@drawable/popup_background"
     android:padding="20dp">
 
     <!-- First Item -->

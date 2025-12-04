@@ -18,6 +18,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -53,11 +54,15 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContract
 
 class MainActivity : AppCompatActivity(), BarkoderResultCallback {
 
     private lateinit var binding: ActivityMainBinding
     private var existingFragment: ResultBottomDialogFragment? = null
+
+    private lateinit var pickImageResult: ActivityResultLauncher<Any>
 
     private var pictureBitmap: Bitmap? = null
     private var documentBitmap: Bitmap? = null
@@ -85,49 +90,44 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
     private lateinit var firebaseAnalytics: FirebaseAnalytics
 
 
-    private val storagePermission by lazy {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S_V2) {
-            Manifest.permission.READ_MEDIA_IMAGES
-        } else
-            Manifest.permission.READ_EXTERNAL_STORAGE
-    }
-
-    private val storagePermissionResult =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { result: Boolean ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                when {
-                    result -> startImagePicker()
-                    shouldShowRequestPermissionRationale(storagePermission)
-                    -> showStorageRequestPermissionRationale()
-
-                    else -> {
-                        MaterialAlertDialogBuilder(this)
-                            .setMessage(R.string.storage_final_warning_message)
-                            .setNegativeButton(R.string.close_button) { dialog, _ ->
-                                dialog.dismiss()
-                            }
-                            .setPositiveButton(R.string.settings_button) { dialog, _ ->
-                                openAppSettings()
-                            }
-                            .show()
-                    }
-                }
-            } else
-                startImagePicker()
-        }
-
-    private val pickImageResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-            if (result.resultCode == Activity.RESULT_OK && result.data?.data != null)
-                scanImageFromUri(result.data!!.data)
-        }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         context = this
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+
+
+        pickImageResult = registerForActivityResult(
+            object : ActivityResultContract<Any, Uri?>() {
+                override fun createIntent(context: Context, input: Any): Intent {
+                    return when {
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && input is PickVisualMediaRequest -> {
+                            // The new photo picker
+                            ActivityResultContracts.PickVisualMedia().createIntent(context, input)
+                        }
+                        input is Intent -> input
+                        else -> throw IllegalArgumentException("Invalid input type")
+                    }
+                }
+
+                override fun parseResult(resultCode: Int, intent: Intent?): Uri? {
+                    return when {
+                        Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> {
+                            // On Android 13+, the new picker returns Uri directly
+                            intent?.data
+                        }
+                        else -> intent?.data
+                    }
+                }
+            }
+        ) { uri: Uri? ->
+            if (uri != null) {
+                scanImageFromUri(uri)
+            } else {
+                Toast.makeText(this, "No image selected", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         BKDConfigUtil.configureBKD(
             this,
@@ -310,44 +310,22 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
     //region Scan from gallery
 
     private fun scanFromGallery() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            when {
-                ActivityCompat.checkSelfPermission(
-                    this,
-                    storagePermission
-                ) == PackageManager.PERMISSION_GRANTED -> {
-                    startImagePicker()
-                }
-
-                shouldShowRequestPermissionRationale(storagePermission) -> {
-                    showStorageRequestPermissionRationale()
-                }
-
-                else -> {
-                    storagePermissionResult.launch(storagePermission)
-                }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            // ✅ Compliant: Uses the modern Photo Picker (API 33+)
+            pickImageResult.launch(
+                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        } else {
+            // ✅ Compliant: Uses ACTION_GET_CONTENT for older devices (Pre-API 33).
+            // This is the correct, permission-less method to pick media on older Android.
+            val pickIntent = Intent(Intent.ACTION_GET_CONTENT).apply {
+                addCategory(Intent.CATEGORY_OPENABLE) // Ensures the URI can be opened
+                type = "image/*"
             }
-        } else
-            startImagePicker()
+            pickImageResult.launch(pickIntent)
+        }
     }
 
-    private fun startImagePicker() {
-        val pickImageIntent = Intent(Intent.ACTION_PICK)
-        pickImageIntent.type = "image/*"
-        pickImageResult.launch(pickImageIntent)
-    }
-
-    private fun showStorageRequestPermissionRationale() {
-        MaterialAlertDialogBuilder(this)
-            .setMessage(R.string.storage_permission_rationale_message)
-            .setCancelable(false)
-            .setPositiveButton(R.string.continue_button) { dialog, _ ->
-                dialog.dismiss()
-                storagePermissionResult.launch(storagePermission)
-            }
-            .setNegativeButton(R.string.cancel_button, null)
-            .show()
-    }
 
     private fun scanImageFromUri(uri: Uri?) {
         binding.progressIndicator.isVisible = true
@@ -671,18 +649,6 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
             isGS1 -> "GS1 $barcodeTypeName"
             isComposite -> "$barcodeTypeName Composite"
             else -> barcodeTypeName
-        }
-    }
-
-    fun openAppSettings() {
-        try {
-            val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                data = Uri.parse("package:${applicationContext.packageName}")
-            }
-            startActivity(intent)
-        } catch (e: ActivityNotFoundException) {
-            e.printStackTrace()
-            Toast.makeText(this, "Unable to open app settings.", Toast.LENGTH_SHORT).show()
         }
     }
 

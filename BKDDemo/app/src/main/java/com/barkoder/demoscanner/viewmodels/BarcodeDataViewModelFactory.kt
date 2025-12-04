@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.barkoder.demoscanner.repositories.BarcodeDataRepository
 
 class BarcodeDataViewModelFactory (private val repository: BarcodeDataRepository): ViewModelProvider.Factory {
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+    override fun <T : ViewModel> create(modelClass: Class<T>): T{
         return BarcodeDataViewModel(repository) as T
     }
 }

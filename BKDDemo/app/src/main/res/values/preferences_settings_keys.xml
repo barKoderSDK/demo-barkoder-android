@@ -46,6 +46,7 @@
     <string name="key_symbology_c128">pref_key_symbology_c128</string>
     <string name="key_symbology_c93">pref_key_symbology_c93</string>
     <string name="key_symbology_c39">pref_key_symbology_c39</string>
+    <string name="key_symbology_ocr">pref_key_symbology_ocr</string>
     <string name="key_symbology_c11">pref_key_symbology_c11</string>
     <string name="key_symbology_codabar">pref_key_symbology_codabar</string>
     <string name="key_symbology_msi">pref_key_symbology_msi</string>

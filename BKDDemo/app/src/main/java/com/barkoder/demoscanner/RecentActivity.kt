@@ -117,12 +117,6 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
     private var checkMode: Boolean = false
     private var selectedItems: Int = 0
 
-    private val writeStoragePermission by lazy {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.S_V2) {
-            Manifest.permission.READ_MEDIA_IMAGES
-        } else
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-    }
 
     private var scannedBarcodesTypesList : MutableList<String> = mutableListOf()
     private var scannedBarcodesResultList : MutableList<String> = mutableListOf()

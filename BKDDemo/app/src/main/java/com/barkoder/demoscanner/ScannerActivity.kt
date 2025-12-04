@@ -406,6 +406,10 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
         }
 
 
+        if(scanMode == ScanMode.VIN) {
+            Barkoder.SetCustomOption(binding.bkdView.config.decoderConfig, "enable_ocr_functionality", 1)
+        }
+
         val lastPausedTime = sharedPreferences.getLong(LAST_PAUSED_TIME_KEY, -1L)
         val currentTime = System.currentTimeMillis()
 

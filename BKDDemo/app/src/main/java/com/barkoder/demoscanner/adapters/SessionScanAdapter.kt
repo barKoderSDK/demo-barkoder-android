@@ -111,7 +111,12 @@ class SessionScanAdapter(
 
             // Set the text in resultTextView
             if (currentItem.scanTypeName == "MRZ") {
-                holder.resultTextView.text = "Full name: ${firstName} ${lastName}"
+                if(firstName != null) {
+                    holder.resultTextView.text = "Full name: ${firstName} ${lastName}"
+                } else {
+                    holder.resultTextView.text = "Full name: ${lastName}"
+                }
+
             } else {
                 val cleanedResult = CommonUtil.cleanResultString(currentItem.scanText)
                 holder.resultTextView.text = cleanedResult

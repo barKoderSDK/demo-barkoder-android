@@ -257,6 +257,7 @@
                 app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />
 
+
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_qr_micro"
                 android:title="@string/symbology_qr_micro"
@@ -295,6 +296,13 @@
             <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
                 android:key="@string/key_symbology_maxicode"
                 android:title="@string/symbology_maxiCode"
+                app:allowDividerAbove="false"
+                app:allowDividerBelow="false"
+                app:prefPaddingStart="40" />
+
+            <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
+                android:key="@string/key_symbology_ocr"
+                android:title="OCR Text"
                 app:allowDividerAbove="false"
                 app:allowDividerBelow="false"
                 app:prefPaddingStart="40" />

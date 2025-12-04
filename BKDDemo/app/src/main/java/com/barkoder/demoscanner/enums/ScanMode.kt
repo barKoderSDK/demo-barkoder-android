@@ -140,6 +140,7 @@ enum class ScanMode(
             R.string.key_symbology_datamatrix,
             R.string.key_symbology_qr,
             R.string.key_symbology_c39,
+            R.string.key_symbology_ocr,
         ),),
     DOTCODE("Dot Code", "_dotcode_mode_settings", BarkoderConfigTemplate.DOTCODE,
        ),

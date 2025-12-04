@@ -345,6 +345,7 @@ object BKDConfigUtil {
                 setBarkoderSettings(config,resources,sharedPref)
                 setResultSettings(config, resources, sharedPref)
                 configureCode39Symbology(config, resources, sharedPref)
+                configureOCRTextSymbology(config, resources, sharedPref)
                 configureCode128Symbology(config, resources, sharedPref)
                 configureDatamatrixSymbology(config, resources, sharedPref)
                 configureQRSymbology(config,resources,sharedPref)
@@ -751,6 +752,18 @@ object BKDConfigUtil {
                     resources.getString(R.string.key_symbology_c39)
                 ).toInt()
             )
+    }
+
+    private fun configureOCRTextSymbology(
+        config: BarkoderConfig,
+        resources: Resources,
+        sharedPref: SharedPreferences
+    ) {
+        config.decoderConfig.OCRText.enabled =
+            sharedPref.getBoolean(
+                resources.getString(R.string.key_symbology_ocr)
+            )
+
     }
 
     private fun configureCodabarSymbology(
@@ -1696,6 +1709,13 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_C11_MIN_DEFAULT,
             onlyIfNotContains
         )
+
+        prefsEditor.putBooleanWithOptions(
+            sharedPrefs,
+            context.getString(R.string.key_symbology_ocr),
+            config?.decoderConfig?.OCRText?.enabled ?: true,
+            onlyIfNotContains
+        )
         prefsEditor.putIntWithOptions(
             sharedPrefs,
             context.getString(R.string.key_symbology_c11) + context.getString(R.string.key_max_length),
@@ -1724,6 +1744,8 @@ object BKDConfigUtil {
             config?.decoderConfig?.Code39?.enabled ?: DemoDefaults.SYMBOLOGY_C39_DEFAULT,
             onlyIfNotContains
         )
+
+
         prefsEditor.putIntWithOptions(
             sharedPrefs,
             context.getString(R.string.key_symbology_c39) + context.getString(R.string.key_min_length),
