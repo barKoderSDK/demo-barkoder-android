@@ -665,7 +665,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                                             "croppedBarcodeImage"
                                         )
                                         scannedResults.forEachIndexed { index, i ->
-                                            val existingSessionScan = sessionScansAdapterData.find { it.scanText == i.textualData }
+                                            val existingSessionScan = sessionScansAdapterData.find { it.scanText == i.textualData && it.scanTypeName == i.barcodeTypeName }
 
                                             if (!printedBarcodes.contains(i.textualData)) {
                                                 onNewBarcodeScanned(i.barcodeTypeName, i.textualData)
@@ -821,7 +821,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                                             croppedBarcodePath = null
                                         }
                                         scannedResults.forEachIndexed { index, i ->
-                                            val existingSessionScan = sessionScansAdapterData.find { it.scanText == i.textualData }
+                                            val existingSessionScan = sessionScansAdapterData.find { it.scanText == i.textualData && it.scanTypeName == i.barcodeTypeName}
 
                                             if (!printedBarcodes.contains(i.textualData)) {
                                                 onNewBarcodeScanned(i.barcodeTypeName, i.textualData)
@@ -947,7 +947,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
 
 
                     scannedResults.forEachIndexed { index, i ->
-                        val existingSessionScan = sessionScansAdapterData.find { it.scanText == i.textualData }
+                        val existingSessionScan = sessionScansAdapterData.find { it.scanText == i.textualData && it.scanTypeName == i.barcodeTypeName }
 
 
                         if (!printedBarcodes.contains(i.textualData)) {

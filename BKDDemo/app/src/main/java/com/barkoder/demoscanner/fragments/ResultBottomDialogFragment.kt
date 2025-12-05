@@ -490,9 +490,10 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         binding.btnTapAnyhere.setOnClickListener{
             stateListener?.onStartScanningClicked()
             if(bottomSheetBehavior.peekHeight == 1200) {
+
                 (activity as? MainActivity)?.hideImageView()
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                updatePeekHeight(1200, 0, bottomSheetBehavior)
+                updatePeekHeightInstant(1200, 0, bottomSheetBehavior)
                 binding.layoutTapAnywhere.visibility = View.INVISIBLE
             }
         }
@@ -503,7 +504,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             if(bottomSheetBehavior.peekHeight == 1200) {
                 (activity as? MainActivity)?.hideImageView()
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                updatePeekHeight(1200, 0, bottomSheetBehavior)
+                updatePeekHeightInstant(1200, 0, bottomSheetBehavior)
                 binding.layoutTapAnywhere.visibility = View.INVISIBLE
             }
         }
@@ -516,7 +517,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             if(bottomSheetBehavior.peekHeight == 1200) {
                 (activity as? MainActivity)?.hideImageView()
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                updatePeekHeight(1200, 0, bottomSheetBehavior)
+                updatePeekHeightInstant(1200, 0, bottomSheetBehavior)
                 binding.layoutTapAnywhere.visibility = View.INVISIBLE
 
             }
@@ -775,6 +776,25 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             }
             duration = 500 //
             start()
+        }
+    }
+
+    private fun updatePeekHeightInstant(
+        originalHeight: Int,
+        updatedHeight: Int,
+        behavior: BottomSheetBehavior<*>
+    ) {
+        behavior.peekHeight = updatedHeight  // ✅ Instant change
+
+        if (updatedHeight == 1200) {
+            val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+            val continuousMode = prefs.getBoolean(getString(R.string.key_continuous_scaning), false)
+
+            if (!continuousMode) {
+                binding.layoutTapAnywhere.post {
+                    binding.layoutTapAnywhere.visibility = View.VISIBLE
+                }
+            }
         }
     }
 
