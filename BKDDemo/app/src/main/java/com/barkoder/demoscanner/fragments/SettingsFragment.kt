@@ -837,6 +837,21 @@ class SettingsFragment : PreferenceFragmentCompat() {
         when(scanMode) {
             ScanMode.ANYSCAN ->{
                 makePreferenceInvisible(getString(R.string.key_symbology_ocr))
+                makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
+                makePreferenceVisable(getString(R.string.key_composite_setting))
+                makePreferenceInvisible(getString(R.string.key_narrow_viewfinder))
+                makePreferenceInvisible(getString(R.string.key_bigger_viewfinder))
+                makePreferenceInvisible(getString(R.string.key_dpm_mode))
+                makePreferenceInvisible(getString(R.string.key_mrz_mode))
+                preferenceScreen.getPreference(WEEBHOOK_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(GENERAL_SETTINGS_CATEGORY_INDEX).isVisible = true
+                preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
+                makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_result_searchEngine))
+                makePreferenceInvisible(getString(R.string.key_enable_searchweb))
             }
             ScanMode.INDUSTRIAL_1D -> {
                 makePreferenceInvisible(getString(R.string.key_mrz_mode))

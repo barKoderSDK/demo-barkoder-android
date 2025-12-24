@@ -4,6 +4,8 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.app.Dialog
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
@@ -49,17 +51,20 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.barkoder.demoscanner.adapters.MrzInfoAdapter
 import com.barkoder.demoscanner.adapters.RecentScansAdapter
 import com.barkoder.demoscanner.api.RetrofitIInstance
 import com.barkoder.demoscanner.databinding.ActivityRecentBinding
 import com.barkoder.demoscanner.fragments.NotConfiguredWebHookDialog
 import com.barkoder.demoscanner.fragments.ResultBottomDialogFragment
 import com.barkoder.demoscanner.models.BarcodeScanedData
+import com.barkoder.demoscanner.models.MrzItem
 import com.barkoder.demoscanner.models.RecentScan
 import com.barkoder.demoscanner.models.RecentScan2
 import com.barkoder.demoscanner.repositories.BarcodeDataRepository
@@ -78,6 +83,8 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.coroutines.launch
+import org.json.JSONException
+import org.json.JSONObject
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
@@ -155,12 +162,16 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
         binding.recentScansRecycler.layoutManager = layoutManager
         val recentScansAdapter = RecentScansAdapter(applicationContext, viewModel, WeakReference(this))
         binding.recentScansRecycler.adapter = recentScansAdapter
-        if(sort) {
-            recentScansAdapter.reverseOrderAscending()
-        } else {
-            recentScansAdapter.reverseOrderDescending()
+        recentScansAdapter.addLoadStateListener { loadStates ->
+            // Only do this after the initial load is complete
+            if (loadStates.refresh is LoadState.NotLoading) {
+                if (sort) {
+                    recentScansAdapter.reverseOrderAscending()
+                } else {
+                    recentScansAdapter.reverseOrderDescending()
+                }
+            }
         }
-        val adapter = RecentScansAdapter(applicationContext,viewModel, WeakReference(this))
 
         viewModel.recentScansLiveData.observe(this, Observer { pagingData ->
             lifecycleScope.launch {
@@ -212,7 +223,7 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
                                 if (scanDate.substring(0, 10) != lastDate) {
                                     // Update the list with new item
                                     recentScansAdapterData.add(recentScansAdapterData.indexOf(i),
-                                        RecentScan2(scanDate.substring(0, 10), i.scanText, i.scanTypeName,i.pictureBitmap, i.documentBitmap, i.signatureBitmap,  i.mainBitmap, i.thumbnailBitmap,i.formattedText,i.sadlImageRawBase64, asHeaderOnly = true))
+                                        RecentScan2(scanDate.substring(0, 10), i.scanText, i.scanTypeName,i.pictureBitmap, i.documentBitmap, i.signatureBitmap,  i.mainBitmap, i.thumbnailBitmap,i.formattedText,i.formattedJsonText,i.sadlImageRawBase64, asHeaderOnly = true))
                                     // Notify data set changed
                                     notifyDataSetChanged()
                                 }
@@ -522,7 +533,7 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
             if(item.scanTypeName == "MRZ") {
                 showFullScreenDialog(item.pictureBitmap,item.documentBitmap,item.signatureBitmap, item.mainBitmap, item.scanText, item)
             } else {
-                showBarcodeDetailsDialog(item.thumbnailBitmap, item.scanText, item.scanTypeName, item.formattedText, item, item.scannedTimesInARow, item.sadlImageRawBase64)
+                showBarcodeDetailsDialog(item.thumbnailBitmap, item.scanText, item.scanTypeName, item.formattedText,item.formattedJsonText, item, item.scannedTimesInARow, item.sadlImageRawBase64)
             }
         }
     }
@@ -747,7 +758,7 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
         }
     }
 
-    fun showBarcodeDetailsDialog(barcodePicture: String?, barcodeValue: String, barcodeType: String, formattedTextValue: String, item: RecentScan2, scannedTimes: Int, sadlImageRawBase64 : String) {
+    fun showBarcodeDetailsDialog(barcodePicture: String?, barcodeValue: String, barcodeType: String, formattedTextValue: String,formattedTextJson : String, item: RecentScan2, scannedTimes: Int, sadlImageRawBase64 : String) {
         runOnUiThread {
             // Create a regular Dialog for more control
             val dialog = Dialog(this, com.barkoder.R.style.FullScreenDialogStyle)
@@ -778,12 +789,15 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
             val barcodeBitmap = dialogView.findViewById<ImageView>(R.id.barcodeImage)
             val txtSearch = dialogView.findViewById<TextView>(R.id.txtSearch)
             val formattedText = dialogView.findViewById<TextView>(R.id.FormattedValueText)
+            val formattedJsonValueText = dialogView.findViewById<TextView>(R.id.FormattedJsonValueText)
+            val formattedTextJsonLayout = dialogView.findViewById<LinearLayout>(R.id.formattedTextJsonLayout)
             val formattedLayout = dialogView.findViewById<LinearLayout>(R.id.formattedTextLayout)
             val scannedTimesLayout = dialogView.findViewById<LinearLayout>(R.id.timesScannedLayout)
             val scannedTimesText = dialogView.findViewById<TextView>(R.id.timesScannedText)
             val sadlImage = dialogView.findViewById<ImageView>(R.id.sadlImage)
             val textCapturedMedia = dialogView.findViewById<TextView>(R.id.textCapturedMedia)
             val sadlImagesLayout = dialogView.findViewById<LinearLayout>(R.id.sadlImagesLayout)
+            val buttonCopyJson = dialogView.findViewById<ImageButton>(R.id.buttonCopyJson)
 
             if(scannedTimes > 1) {
                 scannedTimesLayout.visibility = View.VISIBLE
@@ -824,6 +838,13 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
                 formattedLayout.visibility = View.GONE
             }
 
+            if(formattedTextJson.length > 0) {
+                formattedTextJsonLayout.visibility = View.VISIBLE
+            } else {
+                formattedTextJsonLayout.visibility = View.GONE
+            }
+
+
             // Load the image using Glide
             Glide.with(this@RecentActivity)
                 .load(barcodePicture?.let { File(it) })
@@ -835,7 +856,21 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
             barcodeValueText.text = cleanedResult
             barcodeTypeText.text = barcodeType
             formattedText.text = formattedTextValue
+            formattedJsonValueText.text = prettyPrintJson(formattedTextJson)
             scannedTimesText.text = scannedTimes.toString()
+
+            buttonCopyJson.setOnClickListener {
+                // Get the JSON text
+                val jsonText = prettyPrintJson(formattedTextJson) // your formatted JSON string
+
+                // Copy to clipboard
+                val clipboard = this?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                val clip = ClipData.newPlainText("JSON Data", jsonText)
+                clipboard.setPrimaryClip(clip)
+
+                // Show confirmation
+                Toast.makeText(this, "JSON copied to clipboard", Toast.LENGTH_SHORT).show()
+            }
 
 
             val btnCopy = dialogView.findViewById<MaterialButton>(R.id.btnCopy)
@@ -950,6 +985,16 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
             dialog.show()
         }
     }
+
+    fun prettyPrintJson(jsonString: String): String {
+        return try {
+            val jsonObject = JSONObject(jsonString)
+            jsonObject.toString(4) // 4 spaces for indentation
+        } catch (e: JSONException) {
+            // If it's not a valid JSON, just return the original string
+            jsonString
+        }
+    }
     fun showFilterDialog() {
         runOnUiThread {
             // or use `this` if in an Activity
@@ -1046,16 +1091,9 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
             val dialogImageView =
                 dialogView.findViewById<ImageView>(R.id.imageViewDialog)
             val firstNameUser = dialogView.findViewById<TextView>(R.id.firstNameUser)
-            val dateOfBirthUser = dialogView.findViewById<TextView>(R.id.dateOfBirthUser)
-            val issuingCountry = dialogView.findViewById<TextView>(R.id.issuingCountry)
-            val genderUser = dialogView.findViewById<TextView>(R.id.genderUser)
-            val titleText = dialogView.findViewById<TextView>(R.id.titleMRZ)
-            val expirationDateUser =
-                dialogView.findViewById<TextView>(R.id.expirationDateUser)
-            val nationalityUser = dialogView.findViewById<TextView>(R.id.nationalityUser)
-            val documentNumberUser =
-                dialogView.findViewById<TextView>(R.id.documentNumberUser)
-            val documentTypeUser = dialogView.findViewById<TextView>(R.id.documentType)
+
+            val recayclerViewMrzItem = dialogView.findViewById<RecyclerView>(R.id.mrzInfoRecayclerView)
+
             val imageDocument =
                 dialogView.findViewById<ImageView>(R.id.imageDocument)
             val imagePicture =
@@ -1064,47 +1102,55 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
                 dialogView.findViewById<ImageView>(R.id.imageSignature)
             val imageMain =
                 dialogView.findViewById<ImageView>(R.id.imageMain)
-            val verificationLayout =
-                dialogView.findViewById<LinearLayout>(R.id.layoutVerificationUser)
-            val verificationChecksLayout =
-                dialogView.findViewById<LinearLayout>(R.id.layout_verification_checks)
-            val iconVerification =
-                dialogView.findViewById<ImageView>(R.id.icon_verification_user)
-            val textVerification =
-                dialogView.findViewById<TextView>(R.id.text_verification_user)
-            val iconVerificationExpire =
-                dialogView.findViewById<ImageView>(R.id.icon_verification_expires)
-            val iconVerificationOver21 =
-                dialogView.findViewById<ImageView>(R.id.icon_verification_over21)
-            val textVerificationOver21 =
-                dialogView.findViewById<TextView>(R.id.text_verification_over21)
-            val textVerificationExpire =
-                dialogView.findViewById<TextView>(R.id.text_verification_expires)
+
+            val textView5 =
+                dialogView.findViewById<TextView>(R.id.textView5)
+
             val viewCardPicture = dialogView.findViewById<LinearLayout>(R.id.imagePictureLayout)
             val viewCardDocument = dialogView.findViewById<LinearLayout>(R.id.imageDocumentLayout)
             val viewCardSignature = dialogView.findViewById<LinearLayout>(R.id.imageSignatureLayout)
             val viewCardMain = dialogView.findViewById<LinearLayout>(R.id.imageMainLayout)
 
 
+            textView5.text = "MRZ Data"
+            val mrzItems = mutableListOf<MrzItem>()
+
+// Regex to match "label: value" patterns
+            val pattern = Regex("""(\w+):\s*([^\n\r]+)""")
+
+            pattern.findAll(results ?: "").forEach { matchResult ->
+                val rawLabel = matchResult.groups[1]?.value ?: ""
+                val rawValue = matchResult.groups[2]?.value ?: ""
+
+                // Skip "first_name" or "last_name"
+                if (rawLabel.equals("first_name", ignoreCase = true) ||
+                    rawLabel.equals("last_name", ignoreCase = true)) {
+                    return@forEach
+                }
+
+                val formattedLabel = rawLabel
+                    .replace("_", " ")
+                    .lowercase()
+                    .replaceFirstChar { it.titlecase() }
+
+                mrzItems.add(MrzItem(formattedLabel, rawValue.trim()))
+            }
 
 
+// Attach to RecyclerView
+            recayclerViewMrzItem.layoutManager = LinearLayoutManager(this)
+            recayclerViewMrzItem.adapter = MrzInfoAdapter(mrzItems)
             // Split the raw string into lines
-            val lines = results.split("\n".toRegex())?.dropLastWhile { it.isEmpty() }
+
+            val lines = results?.split("\n".toRegex())
+                ?.dropLastWhile { it.isEmpty() }
                 ?.toTypedArray()
 
             // Initialize variables for first name and last name
             var firstName: String? = null
             var lastName: String? = null
-            var documentNumber: String? = null
-            var dateOfBirth: String? = null
-            var expirationDate: String? = null
-            var nationality: String? = null
             var fullName: String? = null
-            var documentType: String? = null
-            var issuing_country: String? = null
-            var gender_user: String? = null
 
-            // Iterate over each line to find the required information
             for (line in lines!!) {
                 if (line.startsWith("first_name:")) {
                     firstName = line.split("first_name:".toRegex()).dropLastWhile { it.isEmpty() }
@@ -1113,63 +1159,19 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
                     lastName =
                         line.split("last_name:".toRegex()).dropLastWhile { it.isEmpty() }
                             .toTypedArray()[1].trim { it <= ' ' }
-                } else if (line.startsWith("document_number:")) {
-                    documentNumber =
-                        line.split("document_number:".toRegex()).dropLastWhile { it.isEmpty() }
-                            .toTypedArray()[1].trim { it <= ' ' }
-                } else if (line.startsWith("date_of_birth:")) {
-                    dateOfBirth =
-                        line.split("date_of_birth:".toRegex()).dropLastWhile { it.isEmpty() }
-                            .toTypedArray()[1].trim { it <= ' ' }
-                } else if (line.startsWith("nationality:")) {
-                    nationality =
-                        line.split("nationality:".toRegex()).dropLastWhile { it.isEmpty() }
-                            .toTypedArray()[1].trim { it <= ' ' }
-                } else if (line.startsWith("date_of_expiry:")) {
-                    expirationDate =
-                        line.split("date_of_expiry:".toRegex()).dropLastWhile { it.isEmpty() }
-                            .toTypedArray()[1].trim { it <= ' ' }
-                } else if (line.startsWith("document_type:")) {
-                    documentType =
-                        line.split("document_type:".toRegex()).dropLastWhile { it.isEmpty() }
-                            .toTypedArray()[1].trim { it <= ' ' }
-                } else if (line.startsWith("issuing_country:")) {
-                    issuing_country =
-                        line.split("issuing_country:".toRegex()).dropLastWhile { it.isEmpty() }
-                            .toTypedArray()[1].trim { it <= ' ' }
-                } else if (line.startsWith("gender:")) {
-                    gender_user =
-                        line.split("gender:".toRegex()).dropLastWhile { it.isEmpty() }
-                            .toTypedArray()[1].trim { it <= ' ' }
                 }
             }
 
             if (firstName == null) firstName = ""
             if (lastName == null) lastName = ""
 
-            val formattedDateBirth =
-                formatDateString(dateOfBirth) // Ensure this method returns a formatted date string
-            val formattedDateExpiry = formatDateString(expirationDate)
-
-
-
-
-//            compareDates(expirationDate!!, textVerificationExpire, iconVerificationExpire, this)
-//            checkOver21(dateOfBirth!!, iconVerificationOver21, textVerificationOver21, this)
 
 
             var bitmapsArray = arrayListOf<Bitmap>()
 
             fullName = "$firstName $lastName"
             firstNameUser.text = firstName + " " + lastName
-            dateOfBirthUser.text = formattedDateBirth
-            expirationDateUser.text = formattedDateExpiry
-            nationalityUser.text = nationality
-            documentNumberUser.text = documentNumber
-            documentTypeUser.text = documentType
-            issuingCountry.text = issuing_country
-            genderUser.text = gender_user
-            titleText.text = documentType
+
 
              viewCardPicture.setOnClickListener {
                     if(pictureBitmap != null) {

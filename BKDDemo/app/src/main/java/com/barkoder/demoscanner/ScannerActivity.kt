@@ -361,7 +361,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
         }
 
 
-        binding.bkdView.startScanning(this)
+
         binding.bkdView.getMaxZoomFactor { maxZoom ->
             maxZoomFactor = maxZoom
             Log.d("CameraParams", "$maxZoomFactor")
@@ -422,6 +422,17 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
             // More than 60 seconds passed
         }
 
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            // Only show app dialog if we cannot show the SDK dialog
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+                // SDK dialog will be shown, so do nothing
+            } else {
+                // SDK dialog won't be shown, show app dialog
+                showPermissionAlert()
+            }
+        } else {
+            binding.bkdView.startScanning(this)
+        }
 
     }
 
@@ -711,6 +722,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                                                     mainPath,
                                                     croppedBarcodePath,
                                                     if (i.extra != null) formattedText(i.extra.toList()) else "",
+                                                    if (i.extra != null) formattedTextJson(i.extra.toList()) else "",
                                                     if (i.extra != null) extractImageRawBase64(i.extra.toList()) else "",
                                                     1, // Initialize scannedInARow to 1
                                                     highLight = true
@@ -729,6 +741,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                                                         mainPath,
                                                         croppedBarcodePath,
                                                         if (i.extra != null) formattedText(i.extra.toList()) else "",
+                                                        if (i.extra != null) formattedTextJson(i.extra.toList()) else "",
                                                         if (i.extra != null) extractImageRawBase64(i.extra.toList()) else "",
                                                         scannedTimesInARow = 1
                                                     )
@@ -866,6 +879,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                                                     mainPath,
                                                     croppedBarcodePath,
                                                     if (i.extra != null) formattedText(i.extra.toList()) else "",
+                                                    if (i.extra != null) formattedTextJson(i.extra.toList()) else "",
                                                     if (i.extra != null) extractImageRawBase64(i.extra.toList()) else "",
                                                     1, // Initialize scannedInARow to 1
                                                     highLight = true
@@ -884,6 +898,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                                                         mainPath,
                                                         croppedBarcodePath,
                                                         if (i.extra != null) formattedText(i.extra.toList()) else "",
+                                                        if (i.extra != null) formattedTextJson(i.extra.toList()) else "",
                                                         if (i.extra != null) extractImageRawBase64(i.extra.toList()) else "",
                                                         scannedTimesInARow = 1
                                                     )
@@ -999,6 +1014,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                                 mainPath,
                                 croppedBarcodePath,
                                 if (i.extra != null) formattedText(i.extra.toList()) else "",
+                                if (i.extra != null) formattedTextJson(i.extra.toList()) else "",
                                 if (i.extra != null) extractImageRawBase64(i.extra.toList()) else "",
                                 1,
                                 highLight = true
@@ -1017,6 +1033,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                                     null,
                                     croppedBarcodePath,
                                     if (i.extra != null) formattedText(i.extra.toList()) else "",
+                                    if (i.extra != null) formattedTextJson(i.extra.toList()) else "",
                                     if (i.extra != null) extractImageRawBase64(i.extra.toList()) else "",
                                     scannedTimesInARow = 1,
                                     highlighted = true
@@ -1122,6 +1139,30 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
 
 
         return filteredText
+    }
+
+    fun formattedTextJson(extra: List<Barkoder.BKKeyValue>?): String {
+        // Check if the extra list is null or empty
+        if (extra.isNullOrEmpty()) {
+            return ""
+        }
+
+        // Find the "formattedJSON" value
+        val jsonText = extra.firstOrNull { it.key == "formattedJSON" }?.value ?: return ""
+
+        // Optionally, remove unnecessary lines (similar to what you did for formattedText)
+        val filteredJson = jsonText
+            .lineSequence()
+            .filterNot { line ->
+                val trimmed = line.trim()
+                trimmed.startsWith("ImageRawBase64:") ||
+                        trimmed.startsWith("Image width:") ||
+                        trimmed.startsWith("Image height:")
+            }
+            .joinToString("\n") // Join lines back together
+
+        Log.d("BarkoderJSON", filteredJson)
+        return filteredJson
     }
 
     fun extractImageRawBase64(extra: List<Barkoder.BKKeyValue>?): String {
@@ -1267,263 +1308,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
         binding.textDps.visibility = View.INVISIBLE
     }
 
-    public fun showFullScreenDialog(context: Context) {
-        runOnUiThread {
-            // or use `this` if in an Activity
-            val builder =
-                AlertDialog.Builder(context, com.barkoder.R.style.FullScreenDialogStyle)
-            // Inflate the custom layout
-            val inflater = LayoutInflater.from(context)
-            val dialogView = inflater.inflate(R.layout.custom_dialog_results, null)
 
-            // Find the ImageView and set the bitmap image
-            val dialogImageView =
-                dialogView.findViewById<ImageView>(R.id.imageViewDialog)
-            val firstNameUser = dialogView.findViewById<TextView>(R.id.firstNameUser)
-            val dateOfBirthUser = dialogView.findViewById<TextView>(R.id.dateOfBirthUser)
-            val issuingCountry = dialogView.findViewById<TextView>(R.id.issuingCountry)
-            val genderUser = dialogView.findViewById<TextView>(R.id.genderUser)
-            val expirationDateUser =
-                dialogView.findViewById<TextView>(R.id.expirationDateUser)
-            val nationalityUser = dialogView.findViewById<TextView>(R.id.nationalityUser)
-            val documentNumberUser =
-                dialogView.findViewById<TextView>(R.id.documentNumberUser)
-            val documentTypeUser = dialogView.findViewById<TextView>(R.id.documentType)
-            val imageDocument =
-                dialogView.findViewById<ImageView>(R.id.imageDocument)
-            val imageMain =
-                dialogView.findViewById<ImageView>(R.id.imageMain)
-            val imagePicture =
-                dialogView.findViewById<ImageView>(R.id.imagePicture)
-            val imageSignature =
-                dialogView.findViewById<ImageView>(R.id.imageSignature)
-            val verificationLayout =
-                dialogView.findViewById<LinearLayout>(R.id.layoutVerificationUser)
-            val verificationChecksLayout =
-                dialogView.findViewById<LinearLayout>(R.id.layout_verification_checks)
-            val iconVerification =
-                dialogView.findViewById<ImageView>(R.id.icon_verification_user)
-            val textVerification =
-                dialogView.findViewById<TextView>(R.id.text_verification_user)
-            val iconVerificationExpire =
-                dialogView.findViewById<ImageView>(R.id.icon_verification_expires)
-            val iconVerificationOver21 =
-                dialogView.findViewById<ImageView>(R.id.icon_verification_over21)
-            val textVerificationOver21 =
-                dialogView.findViewById<TextView>(R.id.text_verification_over21)
-            val textVerificationExpire =
-                dialogView.findViewById<TextView>(R.id.text_verification_expires)
-            val viewCardPicture = dialogView.findViewById<LinearLayout>(R.id.imagePictureLayout)
-            val viewCardDocument = dialogView.findViewById<LinearLayout>(R.id.imageDocumentLayout)
-            val viewCardSignature = dialogView.findViewById<LinearLayout>(R.id.imageSignatureLayout)
-            val viewCardMain = dialogView.findViewById<LinearLayout>(R.id.imageMainLayout)
-
-
-            // Split the raw string into lines
-            val lines = resultsTemp?.get(0)?.textualData?.split("\n".toRegex())
-                ?.dropLastWhile { it.isEmpty() }
-                ?.toTypedArray()
-
-            // Initialize variables for first name and last name
-            var firstName: String? = null
-            var lastName: String? = null
-            var documentNumber: String? = null
-            var dateOfBirth: String? = null
-            var expirationDate: String? = null
-            var nationality: String? = null
-            var fullName: String? = null
-            var documentType: String? = null
-            var issuing_country: String? = null
-            var gender_user: String? = null
-
-            // Iterate over each line to find the required information
-            for (line in lines!!) {
-                if (line.startsWith("first_name:")) {
-                    firstName = line.split("first_name:".toRegex()).dropLastWhile { it.isEmpty() }
-                        .toTypedArray()[1].trim { it <= ' ' }
-                } else if (line.startsWith("last_name:")) {
-                    lastName =
-                        line.split("last_name:".toRegex()).dropLastWhile { it.isEmpty() }
-                            .toTypedArray()[1].trim { it <= ' ' }
-                } else if (line.startsWith("document_number:")) {
-                    documentNumber =
-                        line.split("document_number:".toRegex()).dropLastWhile { it.isEmpty() }
-                            .toTypedArray()[1].trim { it <= ' ' }
-                } else if (line.startsWith("date_of_birth:")) {
-                    dateOfBirth =
-                        line.split("date_of_birth:".toRegex()).dropLastWhile { it.isEmpty() }
-                            .toTypedArray()[1].trim { it <= ' ' }
-                } else if (line.startsWith("nationality:")) {
-                    nationality =
-                        line.split("nationality:".toRegex()).dropLastWhile { it.isEmpty() }
-                            .toTypedArray()[1].trim { it <= ' ' }
-                } else if (line.startsWith("date_of_expiry:")) {
-                    expirationDate =
-                        line.split("date_of_expiry:".toRegex()).dropLastWhile { it.isEmpty() }
-                            .toTypedArray()[1].trim { it <= ' ' }
-                } else if (line.startsWith("document_type:")) {
-                    documentType =
-                        line.split("document_type:".toRegex()).dropLastWhile { it.isEmpty() }
-                            .toTypedArray()[1].trim { it <= ' ' }
-                } else if (line.startsWith("issuing_country:")) {
-                    issuing_country =
-                        line.split("issuing_country:".toRegex()).dropLastWhile { it.isEmpty() }
-                            .toTypedArray()[1].trim { it <= ' ' }
-                } else if (line.startsWith("gender:")) {
-                    gender_user =
-                        line.split("gender:".toRegex()).dropLastWhile { it.isEmpty() }
-                            .toTypedArray()[1].trim { it <= ' ' }
-                }
-            }
-
-            if (firstName == null) firstName = ""
-            if (lastName == null) lastName = ""
-
-            val formattedDateBirth =
-                formatDateString(dateOfBirth) // Ensure this method returns a formatted date string
-            val formattedDateExpiry = formatDateString(expirationDate)
-
-
-
-            fullName = "$firstName $lastName"
-            firstNameUser.text = firstName + " " + lastName
-            dateOfBirthUser.text = formattedDateBirth
-            expirationDateUser.text = formattedDateExpiry
-            nationalityUser.text = nationality
-            documentNumberUser.text = documentNumber
-            documentTypeUser.text = documentType
-            issuingCountry.text = issuing_country
-            genderUser.text = gender_user
-
-
-
-            if (pictureBitmap != null) {
-                // Set visibility and display the image
-                viewCardPicture.visibility = View.VISIBLE
-                imagePicture.setImageBitmap(pictureBitmap)
-                dialogImageView.setImageBitmap(pictureBitmap)
-
-                // Set the OnClickListener only if pictureBitmap is not null
-                viewCardPicture.setOnClickListener {
-                    showFullScreenImage(this, pictureBitmap)
-                }
-            } else {
-                // Hide the view if the picture is null
-                viewCardPicture.visibility = View.GONE
-            }
-
-            if (documentBitmap != null) {
-                viewCardDocument.visibility = View.VISIBLE
-                imageDocument.setImageBitmap(documentBitmap)
-
-                viewCardDocument.setOnClickListener {
-                    showFullScreenImage(this, documentBitmap)
-                }
-            } else {
-                viewCardDocument.visibility = View.GONE
-            }
-
-            if (signatureBitmap != null) {
-                viewCardSignature.visibility = View.VISIBLE
-                imageSignature.setImageBitmap(signatureBitmap)
-                viewCardSignature.setOnClickListener {
-                    showFullScreenImage(this, signatureBitmap)
-                }
-            } else {
-                viewCardSignature.visibility = View.GONE
-            }
-
-            if (mainBitmap != null) {
-                viewCardMain.visibility = View.VISIBLE
-                imageMain.setImageBitmap(mainBitmap)
-                viewCardMain.setOnClickListener {
-                    showFullScreenImage(this, mainBitmap)
-                }
-            } else {
-                viewCardMain.visibility = View.GONE
-            }
-
-            imageDocument.setImageBitmap(documentBitmap)
-            imageSignature.setImageBitmap(signatureBitmap)
-            imageMain.setImageBitmap(mainBitmap)
-
-            val closeButton = dialogView.findViewById<ImageButton>(R.id.buttonClose)
-
-            builder.setView(dialogView)
-            builder.setCancelable(true)
-
-            val dialog = builder.create()
-
-            closeButton.setOnClickListener { dialog.dismiss() }
-
-            dialog.setOnShowListener {
-                val window = dialog.window
-                window?.setLayout(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
-                )
-            }
-            dialog.show()
-
-        }
-    }
-
-    public fun showBarcodeDetailsDialog(context: Context) {
-        runOnUiThread {
-            // or use `this` if in an Activity
-            val dialog = Dialog(this, com.barkoder.R.style.FullScreenDialogStyle)
-
-            // Inflate the custom layout
-            val inflater = LayoutInflater.from(this)
-            val dialogView = inflater.inflate(R.layout.custom_dialog_barcode_result, null)
-
-            dialog.setContentView(dialogView)
-
-            var barcodeValueText = dialogView.findViewById<TextView>(R.id.barcodeValueText)
-            var barcodeTypeText = dialogView.findViewById<TextView>(R.id.barcodeTypeText)
-            var barcodeBitmap = dialogView.findViewById<ImageView>(R.id.barcodeImage)
-
-            barcodeBitmap.setImageBitmap(croppedBarcodeImage)
-            barcodeValueText.text = resultsTemp!!.last().textualData
-            barcodeTypeText.text = resultsTemp!!.last().barcodeTypeName
-
-
-
-            val closeButton = dialogView.findViewById<ImageButton>(R.id.buttonClose)
-
-
-            val btnCopy = dialogView.findViewById<MaterialButton>(R.id.btnCopy)
-            val btnSearch = dialogView.findViewById<MaterialButton>(R.id.btnSearch)
-            updateSearchEngineOnBarcodeDetails(btnSearch, resultsTemp!!.last().textualData)
-
-            if(CommonUtil.isTextURL(resultsTemp!!.last().textualData)) {
-                btnSearch.setIconResource(R.drawable.ico_webhook) // Replace with your new icon
-                btnSearch.text = "Open"
-            }
-
-            btnCopy.setOnClickListener {
-                CommonUtil.copyBarcodeResultText(this, resultsTemp!!.last().textualData)
-                Toast.makeText(this, "Values was copied to clipboard!", Toast.LENGTH_SHORT).show()
-            }
-
-
-
-            closeButton.setOnClickListener { dialog.dismiss() }
-            dialog.setOnShowListener {
-                val window = dialog.window
-                if (window != null) {
-                    window.setLayout(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                    )
-                    window.setBackgroundDrawableResource(android.R.color.transparent) // Optional: Transparent background
-                }
-            }
-            dialog.show()
-        }
-
-
-    }
 
 
     fun formatDateString(inputDate: String?): String? {
@@ -1790,6 +1575,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                         runOnUiThread {
                             if (success) {
                                 if (webHookFeedBack) {
+                                    Log.d("messgae", message!!)
                                     Toast.makeText(
                                         this,
                                         "Webhook accepted : \n$message",

@@ -453,7 +453,7 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
                         }
                     }
 
-                    sessionScansAdapterData.add(SessionScan(scannedDate,result.textualData, if(result.extra != null) formatBarcodeName(result.barcodeTypeName, result.extra.toList()) else result.barcodeTypeName,picturePath, documentPath, signaturePath,mainPath,croppedBarcodePath,if(result.extra != null) formattedText(result.extra.toList()) else "",if(result.extra != null) extractImageRawBase64(result.extra.toList()) else ""))
+                    sessionScansAdapterData.add(SessionScan(scannedDate,result.textualData, if(result.extra != null) formatBarcodeName(result.barcodeTypeName, result.extra.toList()) else result.barcodeTypeName,picturePath, documentPath, signaturePath,mainPath,croppedBarcodePath,if(result.extra != null) formattedText(result.extra.toList()) else "",if(result.extra != null) formattedTextJson(result.extra.toList()) else "",if(result.extra != null) extractImageRawBase64(result.extra.toList()) else ""))
                     recentViewModel.addRecentScan(
                         RecentScan2(
                             scannedDate,
@@ -465,6 +465,7 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
                             mainPath,
                             croppedBarcodePath,
                             if(result.extra != null) formattedText(result.extra.toList()) else "",
+                            if(result.extra != null) formattedTextJson(result.extra.toList()) else "",
                             if(result.extra != null) extractImageRawBase64(result.extra.toList()) else ""
                         )
                     )
@@ -478,7 +479,7 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
                         )
                     }
 
-                    sessionScansAdapterData.add(SessionScan(scannedDate,result.textualData, if(result.extra != null) formatBarcodeName(result.barcodeTypeName, result.extra.toList()) else result.barcodeTypeName,picturePath, documentPath, signaturePath,mainPath,croppedBarcodePath,if(result.extra != null) formattedText(result.extra.toList()) else "",if(result.extra != null) extractImageRawBase64(result.extra.toList()) else ""))
+                    sessionScansAdapterData.add(SessionScan(scannedDate,result.textualData, if(result.extra != null) formatBarcodeName(result.barcodeTypeName, result.extra.toList()) else result.barcodeTypeName,picturePath, documentPath, signaturePath,mainPath,croppedBarcodePath,if(result.extra != null) formattedText(result.extra.toList()) else "",if(result.extra != null) formattedTextJson(result.extra.toList()) else "",if(result.extra != null) extractImageRawBase64(result.extra.toList()) else ""))
                     // Handle barcodes without images (most barcodes will likely not have images)
                     for(i in sessionScansAdapterData) {
                         i.highLight = true
@@ -494,6 +495,7 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
                             null,  // No main
                             croppedBarcodePath,  // May still have cropped barcode image
                             if(result.extra != null) formattedText(result.extra.toList()) else "",
+                            if(result.extra != null) formattedTextJson(result.extra.toList()) else "",
                             if(result.extra != null) extractImageRawBase64(result.extra.toList()) else ""
                         )
                     )
@@ -610,6 +612,32 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
         Log.d("pwqe" , filteredText)
         return filteredText
     }
+
+
+    fun formattedTextJson(extra: List<Barkoder.BKKeyValue>?): String {
+        // Check if the extra list is null or empty
+        if (extra.isNullOrEmpty()) {
+            return ""
+        }
+
+        // Find the "formattedJSON" value
+        val jsonText = extra.firstOrNull { it.key == "formattedJSON" }?.value ?: return ""
+
+        // Optionally, remove unnecessary lines (similar to what you did for formattedText)
+        val filteredJson = jsonText
+            .lineSequence()
+            .filterNot { line ->
+                val trimmed = line.trim()
+                trimmed.startsWith("ImageRawBase64:") ||
+                        trimmed.startsWith("Image width:") ||
+                        trimmed.startsWith("Image height:")
+            }
+            .joinToString("\n") // Join lines back together
+
+        Log.d("BarkoderJSON", filteredJson)
+        return filteredJson
+    }
+
 
     fun extractImageRawBase64(extra: List<Barkoder.BKKeyValue>?): String {
         if (extra.isNullOrEmpty()) return ""

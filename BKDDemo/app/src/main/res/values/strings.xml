@@ -15,7 +15,7 @@
     <string name="storage_final_warning_message">Scan image cannot work without the requested permissions.</string>
     <string name="configuration_from_template_failed">Scanning configuration failed. %s</string>
     <string name="please_wait_message">Please wait…</string>
-    <string name="title_barcodes">Barcodes</string>
+    <string name="title_barcodes">Popular</string>
     <string name="title_barcodes_2d">2D Barcodes</string>
     <string name="title_barcodes_1d_retail">1D Retail</string>
     <string name="title_barcodes_dotcode">DotCode</string>

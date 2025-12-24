@@ -296,6 +296,69 @@
                     </LinearLayout>
 
                 </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/cardViewParsed"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="15dp"
+                    android:layout_marginTop="5dp"
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="1dp">
+
+                    <!-- Formatted -->
+                    <LinearLayout
+                        android:id="@+id/formattedTextJsonLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="#FFFFFF"
+                        android:paddingBottom="15dp"
+                        android:orientation="vertical"
+                        android:paddingHorizontal="15dp">
+
+                        <LinearLayout
+                            android:id="@+id/lineartitle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="#FFFFFF"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:padding="3dp">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:text="Parsed"
+                                android:layout_marginStart="5dp"
+                                android:textColor="#666666"
+                                android:textSize="12sp" />
+
+                            <ImageButton
+                                android:id="@+id/buttonCopyJson"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/ico_copy"
+                                android:backgroundTint="#F4F1F1"
+                                android:contentDescription="Copy JSON"
+                                android:padding="11dp"/>
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/FormattedJsonValueText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:padding="10dp"
+                            android:text="23 34 23"
+                            android:textColor="#000000"
+                            android:textSize="14sp"
+                            android:background="@drawable/text_area_bg"
+                            android:scrollbars="vertical" />
+                    </LinearLayout>
+
+                </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
 
             <!-- Captured Media -->

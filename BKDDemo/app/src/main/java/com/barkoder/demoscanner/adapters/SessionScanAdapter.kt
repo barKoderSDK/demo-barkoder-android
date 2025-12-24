@@ -112,9 +112,9 @@ class SessionScanAdapter(
             // Set the text in resultTextView
             if (currentItem.scanTypeName == "MRZ") {
                 if(firstName != null) {
-                    holder.resultTextView.text = "Full name: ${firstName} ${lastName}"
+                    holder.resultTextView.text = "${firstName} ${lastName}"
                 } else {
-                    holder.resultTextView.text = "Full name: ${lastName}"
+                    holder.resultTextView.text = "${lastName}"
                 }
 
             } else {

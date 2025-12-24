@@ -15,6 +15,7 @@ data class RecentScan2(
     var mainBitmap : String? = null,
     var thumbnailBitmap : String? = null,
     var formattedText : String,
+    var formattedJsonText : String,
     var sadlImageRawBase64 : String,
     val asHeaderOnly: Boolean = false,
     var checkboxActive : Boolean = false,

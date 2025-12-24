@@ -12,6 +12,7 @@ data class SessionScan (
     var mainBitmap : String? = null,
     var thumbnailBitmap : String? = null,
     var formattedText : String,
+    var formattedJsonText : String,
     var sadlImageRawBase64 : String,
     var scannedTimesInARow : Int = 0,
     var highLight: Boolean = false,
