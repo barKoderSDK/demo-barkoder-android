@@ -5,51 +5,33 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.provider.Settings
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.TextUtils
-import android.text.method.ScrollingMovementMethod
-import android.text.style.ForegroundColorSpan
 import android.util.Base64
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.barkoder.BKDPermissionHelper
 import com.barkoder.Barkoder
 import com.barkoder.BarkoderConfig
 import com.barkoder.demoscanner.adapters.BarcodePrintAdapter
-import com.barkoder.demoscanner.adapters.RecentScansAdapter
 import com.barkoder.demoscanner.api.RetrofitIInstance
 import com.barkoder.demoscanner.databinding.ActivityScannerBinding
 import com.barkoder.demoscanner.enums.ScanMode
@@ -69,20 +51,16 @@ import com.barkoder.demoscanner.utils.getString
 import com.barkoder.demoscanner.viewmodels.BarcodeDataViewModel
 import com.barkoder.demoscanner.viewmodels.BarcodeDataViewModelFactory
 import com.barkoder.demoscanner.viewmodels.RecentScanViewModel
-import com.barkoder.enums.BarkoderARHeaderShowMode
 import com.barkoder.enums.BarkoderARMode
 import com.barkoder.enums.BarkoderCameraPosition
-import com.barkoder.enums.BarkoderResolution
 import com.barkoder.interfaces.BarkoderResultCallback
 import com.barkoder.interfaces.CameraCallback
-import com.barkoder.interfaces.MaxZoomAvailableCallback
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import okhttp3.internal.notifyAll
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -92,6 +70,11 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.ktx.Firebase
 
 
 //TODO zoom from pinched can't be reset on resume
@@ -109,7 +92,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
     private var documentBitmap: Bitmap? = null
     private var signatureBitmap: Bitmap? = null
 
-
+    private lateinit var firebaseAnalytics: FirebaseAnalytics
 
     private var pendingBottomSheetArgs: (() -> Unit)? = null
     private var mainBitmap: Bitmap? = null
@@ -193,6 +176,8 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
             finish()
 
         }
+
+        firebaseAnalytics = Firebase.analytics
 
         recyclerViewBarcodePrint = findViewById(R.id.txtScannedResult)
 
@@ -1574,6 +1559,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                     viewModel.createPost(urlWebHook, payload) { success, code, message ->
                         runOnUiThread {
                             if (success) {
+                                logWebhookAttemptAndResults(urlWebHook, code,message,true )
                                 if (webHookFeedBack) {
                                     Log.d("messgae", message!!)
                                     Toast.makeText(
@@ -1583,6 +1569,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                                     ).show()
                                 }
                             } else {
+                                logWebhookAttemptAndResults(urlWebHook, code,message,false )
                                 if (webHookFeedBack) {
                                     Toast.makeText(
                                         this,
@@ -1597,6 +1584,28 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
             }
         }
     }
+
+
+    private fun logWebhookAttemptAndResults(
+        urlHost: String,
+        statusCode: Int?,
+        message: String?,
+        success: Boolean
+    ) {
+        Log.d("FIREBASE_TEST", "Logging webhook analytics event")
+
+        firebaseAnalytics.logEvent("webhook_attempt_android") {
+            param("url_host", urlHost)
+        }
+
+        firebaseAnalytics.logEvent("webhook_result_android") {
+            param("success", success.toString())
+            statusCode?.let { param("status_code", it.toLong()) }
+            message?.let { param("message", it.take(100)) }
+            param("url_host", urlHost)
+        }
+    }
+
 
     private fun materialDialogError(title : String, message : String, context : Context) {
         MaterialAlertDialogBuilder(context)

@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "1092341233953",
     "project_id": "barkodercom-ff546",
-    "storage_bucket": "barkodercom-ff546.appspot.com"
+    "storage_bucket": "barkodercom-ff546.firebasestorage.app"
   },
   "client": [
     {
@@ -12,12 +12,7 @@
           "package_name": "com.barkoder.demoscanner"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "1092341233953-jmm1ngc2qjr3mevp1lmtk9kjc9i14qde.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
           "current_key": "AIzaSyDF455QDSrK8Fc36Elm8kwnluqxjdzbzag"
@@ -25,19 +20,7 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1092341233953-jmm1ngc2qjr3mevp1lmtk9kjc9i14qde.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "1092341233953-3qp6rcjcaqe4emtii2tbglj2ppn2b0s6.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.barkoder.DemoScanner"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     },
@@ -45,15 +28,10 @@
       "client_info": {
         "mobilesdk_app_id": "1:1092341233953:android:384c1367d40d5cd884a660",
         "android_client_info": {
-          "package_name": "com.example.freescanner"
+          "package_name": "com.scan.freescanner"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "1092341233953-jmm1ngc2qjr3mevp1lmtk9kjc9i14qde.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
           "current_key": "AIzaSyDF455QDSrK8Fc36Elm8kwnluqxjdzbzag"
@@ -61,19 +39,7 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1092341233953-jmm1ngc2qjr3mevp1lmtk9kjc9i14qde.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "1092341233953-3qp6rcjcaqe4emtii2tbglj2ppn2b0s6.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.Freescanner"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }
