@@ -89,6 +89,7 @@ import java.util.Locale
 class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapter.OnSessionScanItemClickListener {
 
     private lateinit var viewModel : BarcodeDataViewModel
+    private lateinit var sharedViewModel: com.barkoder.demoscanner.viewmodels.ScanResultSharedViewModel
 
     private var firstName : String? = null
     private var lastName : String? = null
@@ -145,6 +146,11 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
         (activity as? ScannerActivity)?.isBottomSheetDialogShown = false
+        
+        // Clear ViewModel data to free memory and prevent leaks
+        if (::sharedViewModel.isInitialized) {
+            sharedViewModel.clearData()
+        }
     }
 
 
@@ -179,6 +185,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
                 80f,
                 resources.displayMetrics
             ).toInt()
+            Log.d("bottomSHeet", "at 80f")
             params.height = newHeightInPixels
             binding.constraintLayout4.layoutParams = params
 
@@ -189,6 +196,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
                 160f,
                 resources.displayMetrics
             ).toInt()
+            Log.d("bottomSHeet", "at 160f")
             params.height = newHeightInPixels
             binding.constraintLayout4.layoutParams = params
         }
@@ -199,6 +207,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
                 240f,
                 resources.displayMetrics
             ).toInt()
+            Log.d("bottomSHeet", "at 240f")
             params.height = newHeightInPixels
             binding.constraintLayout4.layoutParams = params
         }
@@ -253,14 +262,12 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
                         resultsSize : String? = null, sessionScan : MutableList<SessionScan>): ResultBottomDialogFragment {
             val fragment = ResultBottomDialogFragment()
             val args = Bundle()
-            args.putString("numResult", numResult[0])
-            args.putString("typeResult", typeResult[0])
+            // Only pass minimal data - large data comes from SharedViewModel to prevent TransactionTooLargeException
+            args.putString("numResult", numResult.firstOrNull() ?: "")
+            args.putString("typeResult", typeResult.firstOrNull() ?: "")
             args.putString("resultsSize", resultsSize)
-            args.putParcelable("bitmapImage", image)
-            args.putStringArrayList("resultsList", ArrayList(numResult))
-            args.putStringArrayList("resultsTypes", ArrayList(typeResult))
-            args.putStringArrayList("dateResultsList", ArrayList(dateResult))
-            args.putSerializable("sessionScan", sessionScan as Serializable)
+            // DO NOT pass Bitmap or SessionScan - they cause TransactionTooLargeException!
+            // These are retrieved from SharedViewModel instead
 
             fragment.arguments = args
             return fragment
@@ -308,6 +315,10 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
     @SuppressLint("ClickableViewAccessibility")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        
+        // Initialize SharedViewModel to get large data (prevents TransactionTooLargeException)
+        sharedViewModel = ViewModelProvider(requireActivity()).get(com.barkoder.demoscanner.viewmodels.ScanResultSharedViewModel::class.java)
+        
         sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
         var lastResultsOnFrame = sharedPreferences.getInt("lastResultsOnFrame", 0)
         var galleryScanMode = sharedPreferences.getBoolean("galleryScan", false)
@@ -315,11 +326,13 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
            val numResult = arguments?.getString("numResult")
            val typeResult = arguments?.getString("typeResult")
         val resultsSize = arguments?.getString("resultsSize")
-        val resultsList = arguments?.getStringArrayList("resultsList")?.toMutableList()
-        val typesList = arguments?.getStringArrayList("resultsTypes")?.toMutableList()
-        val dateList = arguments?.getStringArrayList("dateResultsList")?.toMutableList()
-        val image = arguments?.getParcelable<Bitmap>("bitmapImage")
-        var sessionScan = arguments?.getSerializable("sessionScan") as? MutableList<SessionScan>
+        
+        // Get large data from SharedViewModel instead of arguments to prevent TransactionTooLargeException
+        val resultsList = sharedViewModel.resultsList
+        val typesList = sharedViewModel.typesList
+        val dateList = sharedViewModel.datesList
+        val image = sharedViewModel.currentImage
+        var sessionScan = sharedViewModel.sessionScans
         val sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
 
         csvSaveLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("text/csv")) { uri ->
@@ -338,6 +351,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
                 80f,
                 resources.displayMetrics
             ).toInt()
+            Log.d("bottomSHeet onView", "at 80f")
             params.height = newHeightInPixels
             binding.constraintLayout4.layoutParams = params
         }  else if (sessionScan!!.size == 2) {
@@ -347,6 +361,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
                 160f,
                 resources.displayMetrics
             ).toInt()
+            Log.d("bottomSHeet onView", "at 160f")
             params.height = newHeightInPixels
             binding.constraintLayout4.layoutParams = params
         } else {
@@ -356,6 +371,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
                 240f,
                 resources.displayMetrics
             ).toInt()
+            Log.d("bottomSHeet onView", "at 240f")
             params.height = newHeightInPixels
             binding.constraintLayout4.layoutParams = params
         }
@@ -468,28 +484,30 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
                 parentView.isClickable = true
             }
 
-            if(!expandedBottomSheet) {
-                if(sessionScan!!.size == 1) {
-                    val params = binding.constraintLayout4.layoutParams
-                    val newHeightInPixels = TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_DIP,
-                        80f,
-                        resources.displayMetrics
-                    ).toInt()
-                    params.height = newHeightInPixels
-                    binding.constraintLayout4.layoutParams = params
-                }
-                else if (sessionScan!!.size == 2) {
-                    val params = binding.constraintLayout4.layoutParams
-                    val newHeightInPixels = TypedValue.applyDimension(
-                        TypedValue.COMPLEX_UNIT_DIP,
-                        160f,
-                        resources.displayMetrics
-                    ).toInt()
-                    params.height = newHeightInPixels
-                    binding.constraintLayout4.layoutParams = params
-                }
-            }
+//            if(!expandedBottomSheet) {
+//                if(sessionScan!!.size == 1) {
+//                    val params = binding.constraintLayout4.layoutParams
+//                    val newHeightInPixels = TypedValue.applyDimension(
+//                        TypedValue.COMPLEX_UNIT_DIP,
+//                        80f,
+//                        resources.displayMetrics
+//                    ).toInt()
+//                    Log.d("bottomSHeet created", "at 80f")
+//                    params.height = newHeightInPixels
+//                    binding.constraintLayout4.layoutParams = params
+//                }
+//                else if (sessionScan!!.size == 2) {
+//                    val params = binding.constraintLayout4.layoutParams
+//                    val newHeightInPixels = TypedValue.applyDimension(
+//                        TypedValue.COMPLEX_UNIT_DIP,
+//                        160f,
+//                        resources.displayMetrics
+//                    ).toInt()
+//                    Log.d("bottomSHeet created", "at 160f")
+//                    params.height = newHeightInPixels
+//                    binding.constraintLayout4.layoutParams = params
+//                }
+//            }
 
 
         }
@@ -894,9 +912,13 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 
     private fun updateSearchEngine() {
         val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
-        val resultsList = arguments?.getStringArrayList("resultsList")?.toMutableList()
+        // Get data from scannedBarcodesResultList (populated from SharedViewModel in onViewCreated)
+        val numResult = if (scannedBarcodesResultList.isNotEmpty()) {
+            scannedBarcodesResultList.last()
+        } else {
+            "" // Fallback to empty string if no results
+        }
         val searchEngineWeb = prefs.getString(getString(R.string.key_result_searchEngine))
-        val numResult = resultsList!!.last()
         when (searchEngineWeb) {
 
             "Google" ->  binding.btnSearchWeb.setOnClickListener {

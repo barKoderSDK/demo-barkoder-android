@@ -16,6 +16,7 @@ import android.provider.Settings
 import android.util.Base64
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
@@ -87,6 +88,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
     private val latestResults = mutableListOf<Barkoder.Result>()
     private val resultsLock = Any()
     private lateinit var viewModel : BarcodeDataViewModel
+    private lateinit var sharedViewModel: com.barkoder.demoscanner.viewmodels.ScanResultSharedViewModel
 
     private var pictureBitmap: Bitmap? = null
     private var documentBitmap: Bitmap? = null
@@ -158,8 +160,10 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
         scanMode = ScanMode.values()[intent.extras!!.getInt(ARGS_MODE_KEY)]
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         recentViewModel = ViewModelProvider(this).get(RecentScanViewModel::class.java)
+        sharedViewModel = ViewModelProvider(this).get(com.barkoder.demoscanner.viewmodels.ScanResultSharedViewModel::class.java)
         context = this
 
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 recentScansToAdd.forEach { scan ->
@@ -372,6 +376,12 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
 
     }
 
+    override fun onDestroy() {
+        // Optional cleanup (flag would be removed automatically when Activity finishes)
+        window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        super.onDestroy()
+    }
+
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onResume() {
         super.onResume()
@@ -563,6 +573,16 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                 }
 
               if(results.size > 0) {
+                  // Set large data in SharedViewModel to prevent TransactionTooLargeException
+                  sharedViewModel.setData(
+                      image = imageResult,
+                      sessions = ArrayList(sessionScansAdapterData),
+                      results = ArrayList(barcodeListResult),
+                      types = ArrayList(barcodeListType),
+                      dates = ArrayList(barcodeListDate),
+                      size = results.size.toString()
+                  )
+                  
                   bottomSheetFragment = ResultBottomDialogFragment.newInstance(
                       barcodeListResult,
                       barcodeListType, barcodeListDate, imageResult, results.size.toString(), sessionScansAdapterData
@@ -1066,6 +1086,16 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                 )
                 if (automaticShowBottomSheet) existing.changeBottomSheetState()
             } else if (automaticShowBottomSheet && !isBottomSheetDialogShown) {
+                // Set large data in SharedViewModel to prevent TransactionTooLargeException
+                sharedViewModel.setData(
+                    image = imageResult,
+                    sessions = ArrayList(sessionScansAdapterData),
+                    results = ArrayList(barcodeDataList),
+                    types = ArrayList(barcodeTypeList),
+                    dates = ArrayList(barcodeListDate),
+                    size = scannedBarcodes
+                )
+                
                 val frag = ResultBottomDialogFragment.newInstance(
                     barcodeDataList, barcodeTypeList, barcodeListDate, imageResult, scannedBarcodes, sessionScansAdapterData
                 )
@@ -1209,6 +1239,16 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
             // set the flag BEFORE show to avoid double-show races
             isBottomSheetDialogShown = true
 
+            // Set large data in SharedViewModel to prevent TransactionTooLargeException
+            sharedViewModel.setData(
+                image = imageResult,
+                sessions = ArrayList(sessionScansAdapterData),
+                results = ArrayList(barcodeDataList),
+                types = ArrayList(barcodeTypeList),
+                dates = ArrayList(barcodeListDate),
+                size = scannedBarcodes
+            )
+
             val newBottomSheetFragment = ResultBottomDialogFragment.newInstance(
                 barcodeDataList,
                 barcodeTypeList,
@@ -1230,6 +1270,16 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
 
     fun showDialogBtn() {
         if (!isBottomSheetDialogShown) {
+            // Set large data in SharedViewModel to prevent TransactionTooLargeException
+            sharedViewModel.setData(
+                image = croppedBarcodeImage,
+                sessions = ArrayList(sessionScansAdapterData),
+                results = ArrayList(barcodeListResult),
+                types = ArrayList(barcodeListType),
+                dates = ArrayList(barcodeListDate),
+                size = scannedBarcodes.toString()
+            )
+            
             val newBottomSheetFragment =
                 ResultBottomDialogFragment.newInstance(
                     barcodeListResult,
@@ -1316,17 +1366,17 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
     fun saveBitmapToInternalStorage(context: Context, bitmap: Bitmap?, filePrefix: String): String {
         if (bitmap == null) return ""
 
-        val directory = File(context.filesDir, "images")
+        val directory = File(context.filesDir, "images_jpg")
         if (!directory.exists()) {
             directory.mkdirs()
         }
 
-        val fileName = "${filePrefix}_${System.currentTimeMillis()}.png" // Save as JPG
+        val fileName = "${filePrefix}_${System.currentTimeMillis()}.jpg" // Save as JPG
         val file = File(directory, fileName)
 
         try {
             val outputStream = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream) // 50% quality
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 60, outputStream) // 50% quality
             outputStream.flush()
             outputStream.close()
         } catch (e: IOException) {

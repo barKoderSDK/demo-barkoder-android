@@ -61,6 +61,7 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
 
     private lateinit var binding: ActivityMainBinding
     private var existingFragment: ResultBottomDialogFragment? = null
+    private lateinit var sharedViewModel: com.barkoder.demoscanner.viewmodels.ScanResultSharedViewModel
 
     private lateinit var pickImageResult: ActivityResultLauncher<Any>
 
@@ -96,6 +97,8 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
         setContentView(binding.root)
         context = this
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        
+        sharedViewModel = ViewModelProvider(this).get(com.barkoder.demoscanner.viewmodels.ScanResultSharedViewModel::class.java)
 
 
         pickImageResult = registerForActivityResult(
@@ -536,6 +539,16 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
                     )
 
                 } else {
+                    // Set large data in SharedViewModel to prevent TransactionTooLargeException
+                    sharedViewModel.setData(
+                        image = thumbnail?.lastOrNull(),
+                        sessions = ArrayList(sessionScansAdapterData),
+                        results = ArrayList(barcodeResults),
+                        types = ArrayList(barcodeTypes),
+                        dates = ArrayList(barcodesDates),
+                        size = results.size.toString()
+                    )
+                    
                     val bottomSheetFragment = ResultBottomDialogFragment.newInstance(
                         barcodeResults,
                         barcodeTypes, barcodesDates, null, results.size.toString(),
@@ -554,19 +567,19 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
         if (bitmap == null) return ""
 
         // Get the directory for the app's internal storage
-        val directory = File(context.filesDir, "images")
+        val directory = File(context.filesDir, "images_jpg")
         if (!directory.exists()) {
             directory.mkdirs()  // Create the directory if it doesn't exist
         }
 
         // Generate a unique file name using timestamp or UUID
-        val fileName = "${filePrefix}_${System.currentTimeMillis()}.png"
+        val fileName = "${filePrefix}_${System.currentTimeMillis()}.jpg"
         val file = File(directory, fileName)
 
         try {
             // Write the bitmap to the file
             val outputStream = FileOutputStream(file)
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 60, outputStream)
             outputStream.flush()
             outputStream.close()
         } catch (e: IOException) {
