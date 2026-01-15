@@ -58,7 +58,9 @@
             tools:ignore="ContentDescription" />
 
         <ScrollView
+            android:id="@+id/mainScrollView"
             android:layout_marginTop="10dp"
+            android:fillViewport="true"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
@@ -749,19 +751,22 @@
             <!-- Recent Button + Text -->
             <LinearLayout
                 android:id="@+id/layoutRecent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="40dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginEnd="140dp"
                 android:gravity="center"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/layoutAbout"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.33">
 
                 <ImageButton
                     android:id="@+id/txtRecent"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
+                    android:clickable="false"
                     android:backgroundTint="@color/transparent"
                     android:src="@drawable/ico_recent_2" />
 
@@ -776,19 +781,20 @@
             <!-- About Button + Text -->
             <LinearLayout
                 android:id="@+id/layoutAbout"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="40dp"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
                 android:gravity="center"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.33">
 
                 <ImageButton
                     android:id="@+id/txtAbout"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
+                    android:clickable="false"
                     android:backgroundTint="@color/transparent"
                     android:src="@drawable/ic_about" />
 
@@ -804,14 +810,16 @@
         <!-- Scan Button floating above -->
         <LinearLayout
             android:id="@+id/layoutScan"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="-65dp"
             android:gravity="center"
+            android:paddingTop="15dp"
             android:orientation="vertical"
             app:layout_constraintBottom_toTopOf="@+id/constraintLayout2"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintWidth_percent="0.33">
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/txtScan"

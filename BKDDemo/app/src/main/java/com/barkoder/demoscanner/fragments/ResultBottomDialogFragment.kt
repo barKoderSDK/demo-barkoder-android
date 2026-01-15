@@ -231,14 +231,15 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 
         }
 
-        extractDocumentRawText(scannedBarcodesResultList.last())
-        if(scannedBarcodesTypesList.last() == "MRZ") {
-            binding.textBarcodeNumResult.text = "${firstName} ${lastName} \n" +
-                    "Document number: ${documentNumber}"
-        } else {
-            binding.textBarcodeNumResult.text = scannedBarcodesResultList.last()
+        scannedBarcodesResultList.lastOrNull()?.let { lastResult ->
+            extractDocumentRawText(lastResult)
+            if (scannedBarcodesTypesList.lastOrNull() == "MRZ") {
+                binding.textBarcodeNumResult.text = "$firstName $lastName \nDocument number: $documentNumber"
+            } else {
+                binding.textBarcodeNumResult.text = lastResult
+            }
+            binding.textBarcodeTypeResult.text = scannedBarcodesTypesList.lastOrNull() ?: ""
         }
-        binding.textBarcodeTypeResult.text = scannedBarcodesTypesList.last()
         binding.textBarcodeNumResult.movementMethod = ScrollingMovementMethod()
         binding.imageView.setImageBitmap(image)
         recyclerView = requireView().findViewById(R.id.recayclerview_gallery)
@@ -402,8 +403,10 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 
         updateCopyTerminator()
 
-        if(CommonUtil.isTextURL(resultsList?.last())) {
-            binding.btnSearchWeb.setImageResource(R.drawable.ico_webhook) // Replace with your new icon
+        val lastResult = resultsList?.lastOrNull()
+
+        if (lastResult != null && CommonUtil.isTextURL(lastResult)) {
+            binding.btnSearchWeb.setImageResource(R.drawable.ico_webhook)
             binding.txtOpenSearchButton.text = "Open"
         }
 
@@ -567,14 +570,15 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         }
 
 
-        extractDocumentRawText(scannedBarcodesResultList.last())
-        if(scannedBarcodesTypesList.last() == "MRZ") {
-            binding.textBarcodeNumResult.text = "${firstName} ${lastName} \n" +
-                    "Document number: ${documentNumber}"
-        } else {
-            binding.textBarcodeNumResult.text = scannedBarcodesResultList.last()
+        scannedBarcodesResultList.lastOrNull()?.let { lastResult ->
+            extractDocumentRawText(lastResult)
+            if (scannedBarcodesTypesList.lastOrNull() == "MRZ") {
+                binding.textBarcodeNumResult.text = "$firstName $lastName \nDocument number: $documentNumber"
+            } else {
+                binding.textBarcodeNumResult.text = lastResult
+            }
+            binding.textBarcodeTypeResult.text = scannedBarcodesTypesList.lastOrNull() ?: ""
         }
-        binding.textBarcodeTypeResult.text = scannedBarcodesTypesList.last()
         binding.textBarcodeNumResult.movementMethod = ScrollingMovementMethod()
 
         val uri = Uri.parse(urlWebHook)

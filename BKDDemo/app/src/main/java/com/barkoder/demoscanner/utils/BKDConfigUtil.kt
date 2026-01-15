@@ -1402,21 +1402,14 @@ object BKDConfigUtil {
                 onlyIfNotContains
             )
         }
-        if(scanMode == ScanMode.CONTINUOUS || scanMode == ScanMode.ANYSCAN) {
-            prefsEditor.putStringWithOptions(
-                sharedPrefs,
-                context.getString(R.string.key_scanner_resolution),
-                config?.barkoderResolution?.ordinal?.toString()
-                    ?: DemoDefaults.BARKODER_RESOLUTION_DEFAULT.ordinal.toString(),
-                onlyIfNotContains
-            )
-        } else if
-        (scanMode.template == ScanMode.VIN.template || scanMode.template == ScanMode.DPM.template
+
+        if (scanMode.template == ScanMode.VIN.template || scanMode.template == ScanMode.DPM.template
                 || scanMode.template == ScanMode.RETAIL_1D.template || scanMode.template == ScanMode.PDF.template
                 || scanMode.template == ScanMode.QR.template || scanMode.template == ScanMode.ALL_2D.template
                 || scanMode.template == ScanMode.INDUSTRIAL_1D.template || scanMode.template == ScanMode.UPC_EAN_DEBLUR.template
                 || scanMode.template == ScanMode.MISSHAPED_1D.template || scanMode.template == ScanMode.DOTCODE.template || scanMode.template == ScanMode.MRZ.template
-            || scanMode.template == ScanMode.POSTAL_CODES.template || scanMode == ScanMode.COMPOSITE || scanMode == ScanMode.AR_MODE) {
+            || scanMode.template == ScanMode.POSTAL_CODES.template || scanMode == ScanMode.COMPOSITE || scanMode == ScanMode.AR_MODE || scanMode == ScanMode.ANYSCAN || scanMode == ScanMode.CONTINUOUS
+        ) {
             prefsEditor.putStringWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_scanner_resolution),

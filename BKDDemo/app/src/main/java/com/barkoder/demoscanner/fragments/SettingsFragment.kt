@@ -51,6 +51,7 @@ import com.barkoder.enums.BarkoderResolution
 import com.barkoder.overlaymanager.BarkoderAROverlayRefresh
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.internal.ViewUtils.dpToPx
+import kotlin.or
 
 class SettingsFragment : PreferenceFragmentCompat() {
 
@@ -62,14 +63,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private lateinit var sharedPreferences : SharedPreferences
     private val PREFS_NAME = "MyPrefsFile"
 
-    private val BARKODER_SETTINGS_CATEGORY_INDEX = 0
-    private val BARKODER_AR_SETTINGS = 1
-    private val BARCODE_TYPES_CATEGORY_INDEX = 2
-    private val RESULT_CATEGORY_INDEX = 3
-    private val WEEBHOOK_SETTINGS_CATEGORY_INDEX = 4
-    private val GENERAL_SETTINGS_CATEGORY_INDEX = 5
-    private val CAMERA_SETTINGS_CATEGORY_INDEX = 6
-    private val INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX = 7
+    private val BARKODER_SETTINGS_CATEGORY_INDEX = 1
+    private val BARKODER_AR_SETTINGS = 2
+    private val BARCODE_TYPES_CATEGORY_INDEX = 3
+    private val RESULT_CATEGORY_INDEX = 4
+    private val WEEBHOOK_SETTINGS_CATEGORY_INDEX = 5
+    private val GENERAL_SETTINGS_CATEGORY_INDEX = 6
+    private val CAMERA_SETTINGS_CATEGORY_INDEX = 7
+    private val INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX = 8
 
     lateinit var continuisTresHoldPreferences : ListPreference
 
@@ -180,6 +181,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             setResultParserEntries()
             setResultCharsetEntries()
             openWebHookConfigurationDialog()
+            showTutorialDialogs()
             setThreshHoldContiniousEntries()
             onARModeSwitchListener()
             onContiniousModeOnListener()
@@ -850,6 +852,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_show_tutorial))
+                makePreferenceInvisible(getString(R.string.key_tutorial_settings))
                 makePreferenceInvisible(getString(R.string.key_result_searchEngine))
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
             }
@@ -864,6 +868,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_show_tutorial))
+                makePreferenceInvisible(getString(R.string.key_tutorial_settings))
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
@@ -879,6 +885,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_show_tutorial))
+                makePreferenceInvisible(getString(R.string.key_tutorial_settings))
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
@@ -897,6 +905,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_show_tutorial))
+                makePreferenceInvisible(getString(R.string.key_tutorial_settings))
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
@@ -914,6 +924,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_show_tutorial))
+                makePreferenceInvisible(getString(R.string.key_tutorial_settings))
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
@@ -931,6 +943,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_show_tutorial))
+                makePreferenceInvisible(getString(R.string.key_tutorial_settings))
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
@@ -948,6 +962,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_show_tutorial))
+                makePreferenceInvisible(getString(R.string.key_tutorial_settings))
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
@@ -965,6 +981,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_show_tutorial))
+                makePreferenceInvisible(getString(R.string.key_tutorial_settings))
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 makePreferenceInvisible(getString(R.string.key_barkoder_result_settings))
@@ -988,6 +1006,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_show_tutorial))
+                makePreferenceInvisible(getString(R.string.key_tutorial_settings))
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(BARCODE_TYPES_CATEGORY_INDEX).isVisible = false
@@ -1008,6 +1028,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_show_tutorial))
+                makePreferenceInvisible(getString(R.string.key_tutorial_settings))
                 makePreferenceInvisible(getString(R.string.key_scanner_resolution))
                 makePreferenceInvisible(getString(R.string.key_scanner_decoding_speed))
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
@@ -1031,6 +1053,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_show_tutorial))
+                makePreferenceInvisible(getString(R.string.key_tutorial_settings))
                 makePreferenceInvisible(getString(R.string.key_scanner_resolution))
                 makePreferenceInvisible(getString(R.string.key_scanner_decoding_speed))
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
@@ -1052,6 +1076,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_show_tutorial))
+                makePreferenceInvisible(getString(R.string.key_tutorial_settings))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
@@ -1080,6 +1106,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_result_searchEngine))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_show_tutorial))
+                makePreferenceInvisible(getString(R.string.key_tutorial_settings))
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 makePreferenceInvisible(getString(R.string.key_symbology_ocr))
@@ -1097,6 +1125,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_result_searchEngine))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_show_tutorial))
+                makePreferenceInvisible(getString(R.string.key_tutorial_settings))
                 preferenceScreen.getPreference(WEEBHOOK_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(GENERAL_SETTINGS_CATEGORY_INDEX).isVisible = true
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
@@ -1118,6 +1148,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_show_tutorial))
+                makePreferenceInvisible(getString(R.string.key_tutorial_settings))
                 makePreferenceInvisible(getString(R.string.key_bigger_viewfinder))
 //                makePreferenceInvisible(getString(R.string.key_continuous_scaning))
                 makePreferenceInvisible(getString(R.string.key_barkoder_result_settings))
@@ -1141,6 +1173,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_result_searchEngine))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_show_tutorial))
+                makePreferenceInvisible(getString(R.string.key_tutorial_settings))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_scanner_resolution))
                 makePreferenceInvisible(getString(R.string.key_continuous_scaning))
@@ -1170,6 +1204,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_enable_searchweb))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_show_tutorial))
+                makePreferenceInvisible(getString(R.string.key_tutorial_settings))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
@@ -1187,6 +1223,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
+                makePreferenceInvisible(getString(R.string.key_show_tutorial))
+                makePreferenceInvisible(getString(R.string.key_tutorial_settings))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
@@ -1205,6 +1243,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 makePreferenceInvisible(getString(R.string.key_symbology_dotcode))
+                makePreferenceInvisible(getString(R.string.key_show_tutorial))
+                makePreferenceInvisible(getString(R.string.key_tutorial_settings))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(WEEBHOOK_SETTINGS_CATEGORY_INDEX).isVisible = false
@@ -1873,6 +1913,30 @@ class SettingsFragment : PreferenceFragmentCompat() {
             val dialogFragment = WebHookConfigurationDialogFragment()
             dialogFragment.show(childFragmentManager, "WebHookConfigurationDialog")
 
+            true
+        }
+    }
+
+    private fun showTutorialDialogs() {
+        // Replace the key with your actual preference key from `preferences_settings.xml`
+        val tutorialPref = findPreference<Preference>(getString(R.string.key_show_tutorial))
+            ?: findPreference("pref_key_show_tutorial")
+            ?: return
+
+        tutorialPref.isSelectable = true
+        tutorialPref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
+            val intent = Intent(requireContext(), MainActivity::class.java).apply {
+                // Flag so MainActivity knows this navigation came from Settings
+                putExtra("extra_opened_tutorial_from_settings", true)
+
+                // Optional: include the current scanMode too
+                putExtra(SettingsFragment.ARGS_MODE_KEY, scanMode.ordinal)
+
+                // Avoid multiple instances
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            }
+            startActivity(intent)
+            requireActivity().finish()
             true
         }
     }

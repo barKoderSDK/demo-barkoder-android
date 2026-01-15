@@ -8,16 +8,24 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Rect
+import android.graphics.RectF
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup
+import android.view.ViewParent
+import android.widget.ScrollView
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -56,8 +64,21 @@ import java.util.Date
 import java.util.Locale
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.core.view.doOnPreDraw
+import androidx.core.widget.NestedScrollView
+import com.barkoder.demoscanner.fragments.TutorialDialogFragment
+import com.barkoder.demoscanner.utils.SpotlightOverlayView
+import com.google.firebase.analytics.ktx.logEvent
+import kotlin.apply
+import kotlin.compareTo
+import kotlin.div
+import kotlin.math.abs
+import kotlin.math.max
+import kotlin.text.toInt
+import kotlin.times
 
-class MainActivity : AppCompatActivity(), BarkoderResultCallback {
+
+class MainActivity : AppCompatActivity(), BarkoderResultCallback, TutorialDialogFragment.Callbacks {
 
     private lateinit var binding: ActivityMainBinding
     private var existingFragment: ResultBottomDialogFragment? = null
@@ -75,21 +96,28 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
     private lateinit var recentViewModel: RecentScanViewModel
     private var context: Context? = null
     private var resultsTemp: Array<out Barkoder.Result>? = null
-
+    private var showTutorialFromSettings = false
     private var picturePath: String? = null
     private var documentPath: String? = null
     private var signaturePath: String? = null
     private var mainPath: String? = null
     var sessionScansAdapterData: MutableList<SessionScan> = mutableListOf()
 
+
+    private val spotlightHandler = Handler(Looper.getMainLooper())
+    private var pendingSpotlightRunnable: Runnable? = null
+
+
     companion object {
         var barkoderConfig: BarkoderConfig? = null
+        private const val REQUEST_SETTINGS = 1001
+        private const val EXTRA_SHOW_TUTORIAL = "extra_show_tutorial"
+        private const val SHOW_TUTORIAL_ALWAYS = true
     }
     private val activityJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + activityJob)
-
+    private var tutorialOverlay: SpotlightOverlayView? = null
     private lateinit var firebaseAnalytics: FirebaseAnalytics
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,6 +127,38 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         
         sharedViewModel = ViewModelProvider(this).get(com.barkoder.demoscanner.viewmodels.ScanResultSharedViewModel::class.java)
+
+
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    var consumed = false
+
+                    val tutorialDialog =
+                        supportFragmentManager.findFragmentByTag("tutorial_dialog") as? TutorialDialogFragment
+                    if (tutorialDialog != null) {
+                        tutorialDialog.dismissAllowingStateLoss()
+                        consumed = true
+                    }
+
+                    val overlay = tutorialOverlay
+                    if (overlay != null && overlay.isVisible) {
+                        // Ensure it is really gone on the same back press
+                        hideSpotlight()
+                        (overlay.parent as? ViewGroup)?.removeView(overlay)
+                        tutorialOverlay = null
+                        consumed = true
+                    }
+
+                    if (consumed) return
+
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                    isEnabled = true
+                }
+            }
+        )
 
 
         pickImageResult = registerForActivityResult(
@@ -197,14 +257,26 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
 
         binding.cardBarcodesIndustrial1D.setOnClickListener {
             startActivity(getScannerIntent(ScanMode.INDUSTRIAL_1D))
+            firebaseAnalytics.logEvent("scan_mode_opened") {
+                param("scan_mode", "industrial_1d")
+
+            }
         }
 
         binding.cardBarcodesRetail1D.setOnClickListener {
             startActivity(getScannerIntent(ScanMode.RETAIL_1D))
+            firebaseAnalytics.logEvent("scan_mode_opened") {
+                param("scan_mode", "retail_1d")
+
+            }
         }
 
         binding.cardBarcodesPDF.setOnClickListener {
             startActivity(getScannerIntent(ScanMode.PDF))
+            firebaseAnalytics.logEvent("scan_mode_opened") {
+                param("scan_mode", "pdf_optimized")
+
+            }
         }
 
 //        binding.cardBarcodesQR.setOnClickListener {
@@ -213,42 +285,82 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
 
         binding.cardBarcodes2DAll.setOnClickListener {
             startActivity(getScannerIntent(ScanMode.ALL_2D))
+            firebaseAnalytics.logEvent("scan_mode_opened") {
+                param("scan_mode", "all_2d")
+
+            }
         }
 
         binding.cardScanFromGallery.setOnClickListener {
             scanFromGallery()
+            firebaseAnalytics.logEvent("scan_mode_opened") {
+                param("scan_mode", "gallery_scan")
+
+            }
         }
 
         binding.cardContinuousMode.setOnClickListener {
             startActivity(getScannerIntent(ScanMode.CONTINUOUS))
+            firebaseAnalytics.logEvent("scan_mode_opened") {
+                param("scan_mode", "multiscan")
+
+            }
         }
 
         binding.cardDpmMode.setOnClickListener {
             startActivity(getScannerIntent(ScanMode.DPM))
+            firebaseAnalytics.logEvent("scan_mode_opened") {
+                param("scan_mode", "dpm")
+
+            }
         }
         binding.cardVinMode.setOnClickListener {
             startActivity(getScannerIntent(ScanMode.VIN))
+            firebaseAnalytics.logEvent("scan_mode_opened") {
+                param("scan_mode", "vin")
+
+            }
         }
         binding.cardDotCode.setOnClickListener {
             startActivity(getScannerIntent(ScanMode.DOTCODE))
+            firebaseAnalytics.logEvent("scan_mode_opened") {
+                param("scan_mode", "dotcode")
+
+            }
         }
         binding.cardMisshaped1D.setOnClickListener {
             startActivity(getScannerIntent(ScanMode.MISSHAPED_1D))
+            firebaseAnalytics.logEvent("scan_mode_opened") {
+                param("scan_mode", "misshaped")
+
+            }
         }
         binding.cardUpcEanDeblur.setOnClickListener {
             startActivity(getScannerIntent(ScanMode.UPC_EAN_DEBLUR))
+            firebaseAnalytics.logEvent("scan_mode_opened") {
+                param("scan_mode", "deblur")
+
+            }
         }
         binding.cardBarcodes1DALL.setOnClickListener {
             startActivity(getScannerIntent(ScanMode.ALL_1D))
+            firebaseAnalytics.logEvent("scan_mode_opened") {
+                param("scan_mode", "all_1d")
+
+            }
         }
         binding.cardScanWebdemo.setOnClickListener {
             CommonUtil.openURLInBrowser("https://barkoder.com/barkoder-wasm-demo", this)
+            firebaseAnalytics.logEvent("scan_mode_opened") {
+                param("scan_mode", "webdemo")
+
+            }
         }
-        binding.txtRecent.setOnClickListener {
+        binding.layoutRecent.setOnClickListener {
             startActivity(Intent(this@MainActivity, RecentActivity::class.java))
         }
 
-        binding.txtAbout.setOnClickListener {
+        binding.layoutAbout.setOnClickListener {
             startActivity(Intent(this@MainActivity, AboutActivity::class.java))
         }
 
@@ -258,23 +370,44 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
 
         binding.cardScanIdDocument.setOnClickListener {
             startActivity(getScannerIntent(ScanMode.MRZ))
+            firebaseAnalytics.logEvent("scan_mode_opened") {
+                param("scan_mode", "mrz")
+
+            }
         }
         binding.compositeCard.setOnClickListener {
             startActivity(getScannerIntent(ScanMode.COMPOSITE))
-        }
-        binding.compositeCard.setOnClickListener {
-            startActivity(getScannerIntent(ScanMode.COMPOSITE))
+            firebaseAnalytics.logEvent("scan_mode_opened") {
+                param("scan_mode", "composite")
+
+            }
         }
         binding.cardBarcodesPostal.setOnClickListener {
             startActivity(getScannerIntent(ScanMode.POSTAL_CODES))
+            firebaseAnalytics.logEvent("scan_mode_opened") {
+                param("scan_mode", "postal_codes")
+
+            }
         }
 
         binding.cardArMode.setOnClickListener {
             startActivity(getScannerIntent(ScanMode.AR_MODE))
+            firebaseAnalytics.logEvent("scan_mode_opened") {
+                param("scan_mode", "ar")
+
+            }
         }
 
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+
+        if (intent.getBooleanExtra("extra_opened_tutorial_from_settings", false)) {
+          showTutorialEveryTime()
+        }
+    }
 
     private fun createConfig(appContext: Context): BarkoderConfig {
         return BarkoderConfig(
@@ -296,6 +429,8 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
             R.id.menu_item_settings -> {
                 startActivity(Intent(this@MainActivity, SettingsActivity::class.java).apply {
                     putExtra(SettingsFragment.ARGS_MODE_KEY, ScanMode.GLOBAL.ordinal)
+                    putExtra("opened_from_settings", false)
+
                 })
                 true
             }
@@ -307,6 +442,379 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
     private fun getScannerIntent(scanMode: ScanMode): Intent {
         return Intent(this@MainActivity, ScannerActivity::class.java).apply {
             putExtra(ScannerActivity.ARGS_MODE_KEY, scanMode.ordinal)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        maybeShowFirstRunTutorial()
+    }
+
+    private fun maybeShowFirstRunTutorial() {
+        val prefs = getSharedPreferences("onboarding_prefs", Context.MODE_PRIVATE)
+
+        // Show only once
+        val alreadyShown = prefs.getBoolean("tutorial_shown_v1", false)
+        if (alreadyShown) return
+
+        // Mark as shown immediately so it won't trigger again
+        prefs.edit().putBoolean("tutorial_shown_v1", true).apply()
+
+        binding.root.doOnPreDraw {
+            if (isFinishing || isDestroyed) return@doOnPreDraw
+            if (supportFragmentManager.isStateSaved) return@doOnPreDraw
+
+            ensureOverlayAttached()
+            hideSpotlight()
+            showTutorialStep(0)
+        }
+    }
+
+    private fun showTutorialEveryTime() {
+        binding.root.doOnPreDraw {
+            if (isFinishing || isDestroyed) return@doOnPreDraw
+            if (supportFragmentManager.isStateSaved) return@doOnPreDraw
+
+            ensureOverlayAttached()
+            hideSpotlight()
+            showTutorialStep(0)
+        }
+    }
+
+    private fun ensureOverlayAttached() {
+        if (tutorialOverlay != null) return
+
+        val root = window.decorView as ViewGroup
+        tutorialOverlay = SpotlightOverlayView(this).apply {
+            isVisible = false
+            // block clicks so user focuses on tutorial; set to false if you want clicks to pass through
+            blockTouches = true
+        }
+        root.addView(
+            tutorialOverlay,
+            ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        )
+    }
+
+
+    private fun spotlightOnView(target: View) {
+        val overlay = tutorialOverlay ?: return
+        overlay.isVisible = true
+
+        // compute target rect in overlay coordinates
+        val loc = IntArray(2)
+        overlay.getLocationOnScreen(loc)
+        val overlayX = loc[0]
+        val overlayY = loc[1]
+
+        target.getLocationOnScreen(loc)
+        val left = (loc[0] - overlayX).toFloat()
+        val top = (loc[1] - overlayY).toFloat()
+        val right = left + target.width
+        val bottom = top + target.height
+
+        // add padding + rounded corner spotlight
+        val pad = 18f
+        overlay.setSpotlight(
+            RectF(left - pad, top - pad, right + pad, bottom + pad),
+            cornerRadius = 28f
+        )
+    }
+
+    private fun hideSpotlight() {
+        tutorialOverlay?.isVisible = false
+        tutorialOverlay?.clearSpotlight()
+    }
+
+
+
+    override fun onPrev(step: Int) {
+        val from = step
+        val to = (step - 1).coerceAtLeast(0)
+        showTutorialStep(to, fromStep = from)
+    }
+
+    override fun onNext(step: Int) {
+        val from = step
+        val to = step + 1
+        showTutorialStep(to, fromStep = from)
+        if (to > 7) hideSpotlight()
+    }
+
+    override fun onSkip(step: Int) {
+        hideSpotlight()
+    }
+
+    private data class Quad(
+        val title: String,
+        val message: String,
+        val hasPrev: Boolean,
+        val hasNext: Boolean
+    )
+
+    private data class StepCfg(
+        val title: String,
+        val message: String,
+        val hasPrev: Boolean,
+        val hasNext: Boolean,
+        val spotlight: View?,
+        val anchor: View?,
+        val marginDp: Int = 10,
+        val anchorMode: Int = TutorialDialogFragment.MODE_BELOW
+    )
+
+
+    private fun showTutorialStep(step: Int, fromStep: Int? = null) {
+        if(step == 1 || (step == 0 && fromStep == 1) || step == 4 || step == 3) {
+            hideSpotlight()
+        }
+
+        Log.d("fromstep", fromStep.toString())
+        val cfg = when (step) {
+            0 -> StepCfg(
+                title = "Scans all barcode types",
+                message = "The big red Anyscan button is all you need for scanning barcodes on-the-go. On older or slower devices, performance may be reduced.\n" +
+                        "For best speed, choose a specific barcode mode.",
+                hasPrev = false,
+                hasNext = true,
+                spotlight = binding.layoutScan,
+                anchor = binding.layoutScan,
+                marginDp = 0,
+                anchorMode = TutorialDialogFragment.MODE_ABOVE
+            )
+            1 -> StepCfg(
+                title = "All 1D",
+                message = "Scans classic 1D retail barcodes like EAN, UPC, Code 128. Does not scan QR codes.",
+                hasPrev = true,
+                hasNext = true,
+                spotlight = binding.cardBarcodes1DALL,
+                anchor = binding.cardBarcodes1DALL,
+                marginDp = 0,
+                anchorMode = TutorialDialogFragment.MODE_BELOW
+            )
+            2 -> StepCfg(
+                title = "All 2D",
+                message = "Scans QR, Data Matrix, Aztec and other 2D codes.",
+                hasPrev = true,
+                hasNext = true,
+                spotlight = binding.cardBarcodes2DAll,
+                anchor = binding.cardBarcodes2DAll,
+                marginDp = 0,
+                anchorMode = TutorialDialogFragment.MODE_BELOW
+            )
+            3 -> StepCfg(
+                title = "PDF417",
+                message = "Used on IDs, boarding passes and driver licenses.",
+                hasPrev = true,
+                hasNext = true,
+                spotlight = binding.cardBarcodesPDF,
+                anchor = binding.cardBarcodesPDF,
+                marginDp = 0,
+                anchorMode = TutorialDialogFragment.MODE_BELOW
+            )
+            4 -> StepCfg(
+                title = "Scan from gallery",
+                message = "Scan barcodes from existing images on your device.",
+                hasPrev = true,
+                hasNext = true,
+                spotlight = binding.cardScanFromGallery,
+                anchor = binding.cardScanFromGallery,
+                marginDp = 0,
+                anchorMode = TutorialDialogFragment.MODE_ABOVE
+            )
+            5 -> StepCfg(
+                title = "VIN Scan",
+                message = "Scans Vehicle Identification Numbers (VINs).",
+                hasPrev = true,
+                hasNext = true,
+                spotlight = binding.cardVinMode,
+                anchor = binding.cardVinMode,
+                marginDp = 0,
+                anchorMode = TutorialDialogFragment.MODE_ABOVE
+            )
+            6 -> StepCfg(
+                title = "MRZ Scan",
+                message = "Scans passports, ID cards, visas, residence permits, and other travel documents.",
+                hasPrev = true,
+                hasNext = true,
+                spotlight = binding.cardScanIdDocument,
+                anchor = binding.cardScanIdDocument,
+                marginDp = 0,
+                anchorMode = TutorialDialogFragment.MODE_ABOVE
+            )
+            7 -> StepCfg(
+                title = "Augmented Reality Overlay",
+                message = "AR overlay system tracks barcode positions in real time and anchors relevant information over each detected code in the camera preview.",
+                hasPrev = true,
+                hasNext = true,
+                spotlight = binding.cardArMode,
+                anchor = binding.cardArMode,
+                marginDp = 0,
+                anchorMode = TutorialDialogFragment.MODE_ABOVE
+            )
+            else -> return
+        }
+
+        val apply = {
+            applySpotlightWithOptionalDelay(step, cfg.spotlight)
+            showTutorialDialog(step, cfg)
+        }
+
+        // Auto-scroll to top when going back from step 4 to step 3
+        if (step == 3 || step == 1) {
+            val sv: ScrollView = binding.mainScrollView
+            sv.doOnPreDraw {
+                sv.scrollTo(0, 0)
+                cfg.anchor?.doOnPreDraw { apply() } ?: apply()
+            }
+            return
+        }
+
+        // Steps that must NOT scroll at all
+        if (step == 2 || step == 3) {
+            if (cfg.anchor != null) {
+                cfg.anchor.doOnPreDraw { apply() }
+            } else {
+                apply()
+            }
+            return
+        }
+
+        // Keep your existing scroll behavior for the other steps
+        val anchor = cfg.anchor
+        val shouldAutoScroll = step == 0 || step == 4
+
+        if (anchor != null && shouldAutoScroll) {
+            // ✅ Special-case: first time step 0 -> scroll to bottom, then wait for settle, then apply
+            if (step == 0 && fromStep == null) {
+                val sv: ScrollView = binding.mainScrollView
+                sv.doOnPreDraw {
+                    val contentView = sv.getChildAt(0) ?: run {
+                        anchor.doOnPreDraw { apply() }
+                        return@doOnPreDraw
+                    }
+
+                    val maxScrollY = max(0, contentView.height - (sv.height - 500))
+                    sv.smoothScrollTo(0, maxScrollY)
+                    waitForScrollSettle(sv) {
+                        anchor.doOnPreDraw { apply() }
+                    }
+                }
+            } else {
+                scrollMainScrollViewThenRun(anchor) { apply() }
+            }
+            return
+        }
+
+        anchor?.doOnPreDraw { apply() } ?: apply()
+    }
+
+    private fun applySpotlightWithOptionalDelay(step: Int, target: View?) {
+        if (target == null) {
+            hideSpotlight()
+            return
+        }
+
+        binding.root.postDelayed({
+            if (isFinishing || isDestroyed) return@postDelayed
+            spotlightOnView(target)
+        }, 0L)
+    }
+
+    private fun scrollMainScrollViewThenRun(target: View, after: () -> Unit) {
+        val sv: ScrollView = binding.mainScrollView
+
+        sv.doOnPreDraw {
+            val contentView = sv.getChildAt(0) ?: run {
+                target.doOnPreDraw { after() }
+                return@doOnPreDraw
+            }
+
+            val contentH = contentView.height
+            val maxScroll = max(0, contentH )
+
+            // Force the same result as "scrolling fully down with fingers"
+            val desiredY = maxScroll
+
+            if (abs(sv.scrollY - desiredY) <= 1) {
+                target.doOnPreDraw { after() }
+                return@doOnPreDraw
+            }
+
+            sv.scrollTo(0, desiredY)
+            target.doOnPreDraw { after() }
+        }
+    }
+
+
+    private fun waitForScrollSettle(sv: ScrollView, after: () -> Unit) {
+        val checkIntervalMs = 16L
+        val stableFramesNeeded = 3
+        val timeoutMs = 900L
+
+        var lastY = sv.scrollY
+        var stableFrames = 0
+        val start = android.os.SystemClock.uptimeMillis()
+
+        val r = object : Runnable {
+            override fun run() {
+                val y = sv.scrollY
+                if (abs(y - lastY) <= 1) {
+                    stableFrames++
+                } else {
+                    stableFrames = 0
+                    lastY = y
+                }
+
+                val timedOut = (android.os.SystemClock.uptimeMillis() - start) >= timeoutMs
+                if (stableFrames >= stableFramesNeeded || timedOut) {
+                    after()
+                } else {
+                    sv.postDelayed(this, checkIntervalMs)
+                }
+            }
+        }
+
+        sv.post(r)
+    }
+
+    private fun showTutorialDialog(step: Int, cfg: StepCfg) {
+        // Avoid stacking dialogs while switching steps quickly
+        (supportFragmentManager.findFragmentByTag("tutorial_dialog") as? TutorialDialogFragment)
+            ?.dismissAllowingStateLoss()
+
+        TutorialDialogFragment
+            .newInstance(
+                title = cfg.title,
+                message = cfg.message,
+                step = step,
+                hasPrev = cfg.hasPrev,
+                hasNext = cfg.hasNext,
+                anchorViewId = cfg.anchor?.id ?: 0,
+                marginDp = cfg.marginDp,
+                anchorMode = cfg.anchorMode
+            )
+            .show(supportFragmentManager, "tutorial_dialog")
+    }
+
+    private fun scrollIntoViewIfNeeded(target: View) {
+        var p: ViewParent? = target.getParent()
+
+        while (p is View) {
+            when (p) {
+                is NestedScrollView -> {
+                    p.scrollTo(0, target.top)
+                    return
+                }
+                is ScrollView -> {
+                    p.scrollTo(0, target.top)
+                    return
+                }
+            }
+            p = p.getParent()
         }
     }
 
@@ -724,6 +1232,7 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback {
 
 
     }
+
 
     fun onAppUpdate(context: Context) {
         val sharedPreferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)

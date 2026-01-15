@@ -16,6 +16,7 @@
     <string name="configuration_from_template_failed">Scanning configuration failed. %s</string>
     <string name="please_wait_message">Please wait…</string>
     <string name="title_barcodes">Popular</string>
+    <string name="title_1d_barcodes">1D Barcodes</string>
     <string name="title_barcodes_2d">2D Barcodes</string>
     <string name="title_barcodes_1d_retail">1D Retail</string>
     <string name="title_barcodes_dotcode">DotCode</string>
@@ -58,6 +59,7 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
     <string name="auto_start_scan_title">Start scanner automatically</string>
     <string name="auto_start_scan_desc">Use the selected settings to automatically start scanning next time I open the app</string>
     <string name="scanner_settings_title">barKoder Settings</string>
+    <string name="tutorial_settings_title">Tutorial</string>
     <string name="scanner_decoding_speed_title">Decoding Speed</string>
     <string name="scanner_ar_mode_title">AR Mode</string>
     <string name="scanner_ar_location_type_title">Location Type</string>
@@ -176,6 +178,7 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
 
     <string name="webhook_settings_title">Webhook settings</string>
     <string name="webhook_configuration_title">Webhook configuration</string>
+    <string name="show_tutorial_title">Show Tutorial</string>
     <string name="webhook_autosend_title">Auto send to webhook</string>
     <string name="webhook_feedback_title">Webhook Confirmation Feedback</string>
     <string name="webhook_encode_data_title">Encode webhook data</string>

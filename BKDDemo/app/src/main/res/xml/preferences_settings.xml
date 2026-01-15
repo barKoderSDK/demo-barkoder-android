@@ -3,6 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
+    <com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding
+        android:key="@string/key_tutorial_settings"
+        android:title="@string/tutorial_settings_title"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
+        app:iconSpaceReserved="false">
+
+        <com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreferenceWithArrow
+            android:key="@string/key_show_tutorial"
+            android:persistent="false"
+            android:title="@string/show_tutorial_title"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
+            app:iconSpaceReserved="false" />
+
+
+    </com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding>
+
+
 
     <com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding
         android:key="@string/key_barkoder_settings"
@@ -310,7 +329,7 @@
         </com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPaddingGreyText>
 
         <com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPaddingGreyText
-            android:title="@string/title_barcodes"
+            android:title="@string/title_1d_barcodes"
             android:key="@string/key_barkode_types1D_settings"
             app:allowDividerAbove="false"
             app:allowDividerBelow="false"
@@ -654,6 +673,7 @@
             app:allowDividerAbove="false"
             app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
+
 
         <com.barkoder.demoscanner.customcontrols.CustomPreferenceTitleRed
             android:key="@string/key_reset_all_settings"

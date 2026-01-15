@@ -5,6 +5,7 @@
 
     <string name="key_auto_start_scan">pref_key_auto_start_scan</string>
     <string name="key_barkoder_settings">pref_key_barkoder_settings</string>
+    <string name="key_tutorial_settings">pref_key_tutorial_settings</string>
     <string name="key_barkode_types2D_settings">pref_key_barkode_types2D_settings</string>
     <string name="key_barkode_types1D_settings">pref_key_barkode_types1D_settings</string>
     <string name="key_barkoder_result_settings">pref_key_barkode_result_settings</string>
@@ -122,6 +123,7 @@
     <string name="key_expand_to_upca">_expand_to_upca</string>
 
     <string name="key_webhook_configuration">pref_key_webhook_configuration</string>
+    <string name="key_show_tutorial">pref_key_show_tutorial</string>
     <string name="key_webhook_autosend">pref_key_autosend_webhook</string>
     <string name="key_webhook_feedback">pref_key_webhook_feedback</string>
     <string name="key_webhook_encode_data">pref_key_webhook_encode</string>
