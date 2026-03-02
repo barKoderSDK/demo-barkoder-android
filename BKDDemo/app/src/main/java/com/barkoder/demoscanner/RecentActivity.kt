@@ -77,6 +77,7 @@ import com.barkoder.demoscanner.viewmodels.BarcodeDataViewModelFactory
 import com.barkoder.demoscanner.viewmodels.RecentScanViewModel
 import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
@@ -883,60 +884,76 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
                 showCustomPopupMenuItem(it, item, dialog)
             }
 
+            val cardView4 = dialogView.findViewById<MaterialCardView>(R.id.cardView4)
+            val cardView4Index = rowsLayout.indexOfChild(cardView4)
+
             if (formattedTextValue.isNotEmpty()) {
+                var insertIndex = cardView4Index + 1 // Insert right after cardView4
+
                 formattedTextValue.lines().forEach { line ->
                     val parts = line.split(":", limit = 2)
                     if (parts.size == 2) {
                         val key = parts[0].trim()
                         val value = parts[1].trim()
 
-                        // Create parent horizontal LinearLayout
-                        val rowLayout = LinearLayout(applicationContext).apply {
+                        if (value.isEmpty()) {
+                            return@forEach
+                        }
+
+                        // Wrap in MaterialCardView to match existing style
+                        val cardView = MaterialCardView(this).apply {
+                            layoutParams = LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                            ).apply {
+                                setMargins(
+                                    context.resources.getDimensionPixelSize(R.dimen.margin_15),
+                                    context.resources.getDimensionPixelSize(R.dimen.margin_5),
+                                    context.resources.getDimensionPixelSize(R.dimen.margin_15),
+                                    0
+                                )
+                            }
+                            radius = 10f * context.resources.displayMetrics.density
+                            cardElevation = 1f * context.resources.displayMetrics.density
+                            setCardBackgroundColor(Color.WHITE)
+                        }
+
+                        // Create the row layout
+                        val rowLayout = LinearLayout(this).apply {
                             orientation = LinearLayout.HORIZONTAL
                             setBackgroundColor(Color.WHITE)
-                            setPadding(15, 15, 15, 15)
-
-                            val params = LinearLayout.LayoutParams(
+                            setPadding(35, 35, 35, 35)
+                            layoutParams = LinearLayout.LayoutParams(
                                 LinearLayout.LayoutParams.MATCH_PARENT,
                                 LinearLayout.LayoutParams.WRAP_CONTENT
                             )
-                            params.topMargin = 2
-                            layoutParams = params
                         }
 
-                        // Key TextView (left side)
-                        val keyView = TextView(applicationContext).apply {
+                        val keyView = TextView(this).apply {
                             text = key
                             setTextColor(Color.parseColor("#666666"))
-                            textSize = 14f
-                            setPadding(15, 20, 15, 20)
+                            textSize = 12f
                         }
 
-                        // Value TextView (right side)
-                        val valueView = TextView(applicationContext).apply {
+                        val valueView = TextView(this).apply {
                             text = value
                             setTextColor(Color.parseColor("#000000"))
                             textSize = 14f
                             gravity = Gravity.END
-                            setPadding(15, 20, 15, 20)
                             layoutParams = LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f)
                         }
-                        formattedLayout.visibility = View.GONE
-                        // Add views
+
                         rowLayout.addView(keyView)
                         rowLayout.addView(valueView)
-                        rowsLayout.addView(rowLayout)
+                        cardView.addView(rowLayout)
 
-                        // Divider line
-                        val divider = View(applicationContext).apply {
-                            layoutParams = LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.MATCH_PARENT, 2
-                            )
-                            setBackgroundColor(Color.parseColor("#FFF0EF"))
-                        }
-                        rowsLayout.addView(divider)
+                        // Insert at the specific position
+                        rowsLayout.addView(cardView, insertIndex)
+                        insertIndex++ // Increment for next insertion
                     }
                 }
+
+                formattedLayout.visibility = View.GONE
             }
 
             var bitmapsArray = arrayListOf<Bitmap>()
@@ -989,6 +1006,23 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
     fun prettyPrintJson(jsonString: String): String {
         return try {
             val jsonObject = JSONObject(jsonString)
+
+            // Remove unwanted fields from Fields array if it exists
+            if (jsonObject.has("Fields")) {
+                val fieldsArray = jsonObject.getJSONArray("Fields")
+                val keysToRemove = listOf("Image Width", "Image Height", "ImageRawBase64")
+
+                // Iterate backwards to safely remove items
+                for (i in fieldsArray.length() - 1 downTo 0) {
+                    val fieldObj = fieldsArray.getJSONObject(i)
+                    val fieldName = fieldObj.optString("Field", "")
+
+                    if (keysToRemove.contains(fieldName)) {
+                        fieldsArray.remove(i)
+                    }
+                }
+            }
+
             jsonObject.toString(4) // 4 spaces for indentation
         } catch (e: JSONException) {
             // If it's not a valid JSON, just return the original string

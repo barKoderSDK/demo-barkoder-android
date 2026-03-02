@@ -6,4 +6,6 @@
 
     <dimen name="default_button_width">170dp</dimen>
     <dimen name="single_row_button_width">250dp</dimen>
+    <dimen name="margin_15">15dp</dimen>
+    <dimen name="margin_5">5dp</dimen>
 </resources>

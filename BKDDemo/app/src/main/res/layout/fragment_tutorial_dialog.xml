@@ -30,6 +30,32 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
+    <TextView
+        android:id="@+id/tvTitle2"
+        android:layout_width="0dp"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Title"
+        android:textFontWeight="600"
+        android:textSize="19sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvMessage2"
+        android:layout_width="0dp"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="17dp"
+        android:text="Message"
+        android:textFontWeight="400"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle2"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
     <LinearLayout
         android:id="@+id/buttonRow"
         android:layout_width="0dp"
@@ -97,6 +123,70 @@
             app:cornerRadius="12dp"
             app:icon="@drawable/vector__stroke__2"
             app:iconTint="@color/white"
+            app:iconSize="12dp"
+            app:iconPadding="0dp"
+            app:iconGravity="textStart" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/buttonRow2"
+        android:layout_width="0dp"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvMessage2">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnGoBack"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="15dp"
+            android:backgroundTint="@color/white"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="Go Back"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            app:cornerRadius="12dp"
+            app:iconTint="@color/white"
+            android:textColor="#A09D9D"
+            android:textSize="12dp"
+            app:iconSize="6dp"
+            android:textAllCaps="false"
+            app:iconPadding="0dp"
+            app:iconGravity="textStart" />
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="0dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDontShowAgain"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="15dp"
+            android:textAllCaps="false"
+            android:backgroundTint="@color/brand_color"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:text="Don't Show Again"
+            android:minWidth="0dp"
+            android:minHeight="0dp"
+            android:textSize="12dp"
+            app:cornerRadius="6dp"
+            app:iconTint="@color/white"
+            android:textColor="@color/white"
             app:iconSize="12dp"
             app:iconPadding="0dp"
             app:iconGravity="textStart" />

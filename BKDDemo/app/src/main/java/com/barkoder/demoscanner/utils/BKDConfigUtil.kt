@@ -173,6 +173,13 @@ object BKDConfigUtil {
             sharedPref.getString(
                 resources.getString(R.string.key_scanner_resolution)
             ).toInt()]
+
+
+        config.powerSavingMode =
+            sharedPref.getString(
+                resources.getString(R.string.key_power_saving_mode)
+            ).toInt()
+
 //
 //        config.isCloseSessionOnResultEnabled =
 //            sharedPref.getBoolean(
@@ -437,6 +444,7 @@ object BKDConfigUtil {
                 configureDatamatrixSymbology(config, resources, sharedPref)
                 configureDotCodeSymbology(config, resources, sharedPref)
                 configureGalleryScanDPMMode(config, resources, sharedPref)
+                config.isLocationInImageResultEnabled = true;
             }
 
             BarkoderConfigTemplate.COMPOSITE -> {
@@ -1428,6 +1436,14 @@ object BKDConfigUtil {
             )
 
         }
+
+
+        prefsEditor.putStringWithOptions(
+            sharedPrefs,
+            context.getString(R.string.key_power_saving_mode),
+            config?.powerSavingMode?.toString() ?: "0",
+            onlyIfNotContains
+        )
 
 
 //        val closeSessionOnResultDefaultValue =

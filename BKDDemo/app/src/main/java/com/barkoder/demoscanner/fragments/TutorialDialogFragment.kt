@@ -2,6 +2,7 @@
 package com.barkoder.demoscanner.fragments
 
 import android.app.Dialog
+import android.content.Context
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.ColorDrawable
@@ -19,6 +20,7 @@ import com.barkoder.demoscanner.databinding.FragmentTutorialDialogBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
+import kotlin.apply
 import kotlin.div
 import kotlin.math.roundToInt
 import kotlin.or
@@ -42,7 +44,8 @@ class TutorialDialogFragment : DialogFragment() {
 
         binding.tvTitle.text = title
         binding.tvMessage.text = message
-
+        binding.tvTitle2.text = "Skip Tutorial"
+        binding.tvMessage2.text = "This tutorial will not appear again when you lunch the app. To view it again, select Show Tutorial in Settings."
         binding.btnPrev.isEnabled = hasPrev
         binding.btnPrev.isVisible = hasPrev
         binding.btnNext.isEnabled = hasNext
@@ -53,8 +56,38 @@ class TutorialDialogFragment : DialogFragment() {
         }
 
         binding.btnSkip.setOnClickListener {
+            if(shouldShowTutorialSkipTutorial(requireContext())) {
+                binding.buttonRow.visibility = View.GONE
+                binding.buttonRow2.visibility = View.VISIBLE
+                binding.tvTitle.visibility = View.GONE
+                binding.tvMessage.visibility = View.GONE
+                binding.tvTitle2.visibility = View.VISIBLE
+                binding.tvMessage2.visibility = View.VISIBLE
+            } else {
+                (activity as? Callbacks)?.onSkip(step)
+                dismiss()
+            }
+
+
+        }
+
+        binding.btnGoBack.setOnClickListener {
+            binding.buttonRow.visibility = View.VISIBLE
+            binding.buttonRow2.visibility = View.GONE
+            binding.tvTitle.visibility = View.VISIBLE
+            binding.tvMessage.visibility = View.VISIBLE
+            binding.tvTitle2.visibility = View.GONE
+            binding.tvMessage2.visibility = View.GONE
+        }
+
+        binding.btnDontShowAgain.setOnClickListener {
             (activity as? Callbacks)?.onSkip(step)
             dismiss()
+
+            requireContext().getSharedPreferences("tutorial_prefs", Context.MODE_PRIVATE)
+                .edit()
+                .putBoolean("tutorial_skip", true)
+                .apply()
         }
         binding.btnNext.setOnClickListener {
             (activity as? Callbacks)?.onNext(step)
@@ -99,6 +132,10 @@ class TutorialDialogFragment : DialogFragment() {
         return dialog
     }
 
+    fun shouldShowTutorialSkipTutorial(context: Context): Boolean {
+        return !context.getSharedPreferences("tutorial_prefs", Context.MODE_PRIVATE)
+            .getBoolean("tutorial_skip", false)
+    }
     private fun positionRelativeToAnchor(dialog: Dialog) {
         val window = dialog.window ?: return
 

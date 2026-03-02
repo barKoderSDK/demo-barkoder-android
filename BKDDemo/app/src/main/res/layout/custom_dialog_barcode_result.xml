@@ -297,6 +297,42 @@
 
                 </com.google.android.material.card.MaterialCardView>
 
+
+                <TextView
+                    android:id="@+id/textCapturedMedia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginTop="10dp"
+                    android:text="Captured Media"
+                    android:textColor="@color/brand_color"
+                    android:textSize="12sp" />
+
+                <!-- Image Layout -->
+                <LinearLayout
+                    android:id="@+id/sadlImagesLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:orientation="horizontal">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        app:cardCornerRadius="8dp"
+                        app:cardElevation="4dp"
+                        app:cardUseCompatPadding="true">
+
+                        <ImageView
+                            android:id="@+id/sadlImage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
+                            android:scaleType="centerCrop" />
+                    </androidx.cardview.widget.CardView>
+                </LinearLayout>
+
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardViewParsed"
                     android:layout_width="match_parent"
@@ -362,40 +398,7 @@
             </LinearLayout>
 
             <!-- Captured Media -->
-            <TextView
-                android:id="@+id/textCapturedMedia"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
-                android:layout_marginTop="10dp"
-                android:text="Captured Media"
-                android:textColor="@color/brand_color"
-                android:textSize="12sp" />
 
-            <!-- Image Layout -->
-            <LinearLayout
-                android:id="@+id/sadlImagesLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="15dp"
-                android:orientation="horizontal">
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    app:cardCornerRadius="8dp"
-                    app:cardElevation="4dp"
-                    app:cardUseCompatPadding="true">
-
-                    <ImageView
-                        android:id="@+id/sadlImage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:adjustViewBounds="true"
-                        android:scaleType="centerCrop" />
-                </androidx.cardview.widget.CardView>
-            </LinearLayout>
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 

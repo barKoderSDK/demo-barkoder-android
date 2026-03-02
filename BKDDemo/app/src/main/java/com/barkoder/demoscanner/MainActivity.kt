@@ -627,7 +627,7 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback, TutorialDialog
             )
             5 -> StepCfg(
                 title = "VIN Scan",
-                message = "Scans Vehicle Identification Numbers (VINs).",
+                message = "Scans Vehicle Identification Numbers (VIN) and Optical Character Recognition (OCR)",
                 hasPrev = true,
                 hasNext = true,
                 spotlight = binding.cardVinMode,
@@ -848,6 +848,8 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback, TutorialDialog
             true
         )
 
+        Barkoder.SetCustomOption(config.getDecoderConfig(), "SADL_decode_ID", 1)
+        Barkoder.SetCustomOption(config.getDecoderConfig(), "SADL_decode_vehicle_disk", 1)
         // Apply custom options to the decoder config
 
         // Use the same config when scanning the image

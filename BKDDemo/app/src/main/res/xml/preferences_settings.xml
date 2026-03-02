@@ -48,6 +48,15 @@
             app:useSimpleSummaryProvider="true" />
 
 
+        <com.barkoder.demoscanner.customcontrols.ListPreferenceWhiteBg
+            android:key="@string/key_power_saving_mode"
+            android:title="@string/scanner_power_saving_mode"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
+
 
 
 

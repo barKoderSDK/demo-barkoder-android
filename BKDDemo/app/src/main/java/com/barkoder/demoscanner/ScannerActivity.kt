@@ -58,6 +58,10 @@ import com.barkoder.interfaces.BarkoderResultCallback
 import com.barkoder.interfaces.CameraCallback
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.analytics.ktx.logEvent
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -71,11 +75,6 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.analytics.ktx.analytics
-import com.google.firebase.analytics.ktx.logEvent
-import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.google.firebase.ktx.Firebase
 
 
 //TODO zoom from pinched can't be reset on resume
@@ -400,7 +399,8 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
             }
         }
 
-
+        Barkoder.SetCustomOption(binding.bkdView.config.getDecoderConfig(), "SADL_decode_ID", 1)
+        Barkoder.SetCustomOption(binding.bkdView.config.getDecoderConfig(), "SADL_decode_vehicle_disk", 1)
         if(scanMode == ScanMode.VIN) {
             Barkoder.SetCustomOption(binding.bkdView.config.decoderConfig, "enable_ocr_functionality", 1)
         }

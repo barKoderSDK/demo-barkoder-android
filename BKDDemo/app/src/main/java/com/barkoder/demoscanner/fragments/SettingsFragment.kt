@@ -159,6 +159,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             setARHeaderShowModeEntries()
             setAROverlayFPSEntries()
             setBarkoderResolutionEntries()
+            setBarkoderPowerSavingModeEntries()
             setResultParserEntries()
             setResultCharsetEntries()
             setThreshHoldContiniousEntries()
@@ -178,6 +179,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             setARHeaderShowModeEntries()
             setAROverlayFPSEntries()
             setBarkoderResolutionEntries()
+            setBarkoderPowerSavingModeEntries()
             setResultParserEntries()
             setResultCharsetEntries()
             openWebHookConfigurationDialog()
@@ -1184,6 +1186,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_vibrate))
                 makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
                 makePreferenceInvisible(getString(R.string.key_enable_roi))
+                makePreferenceInvisible(getString(R.string.key_power_saving_mode))
                 makePreferenceInvisible(getString(R.string.key_vibrate))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet))
@@ -1422,6 +1425,29 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         barkoderResolutionPref.value =
             preferenceManager.sharedPreferences.getString(barkoderResolutionPref.key)
+    }
+
+    private fun setBarkoderPowerSavingModeEntries() {
+        val barkoderPowerSavingMode =
+            findPreference<ListPreference>(getString(R.string.key_power_saving_mode))!!
+
+        val entries: MutableList<CharSequence> = arrayListOf()
+        val entryValues: MutableList<CharSequence> = arrayListOf()
+
+        for (item in 0..4) {
+            if (item == 0) {
+                entries.add("Disabled")
+            } else {
+                entries.add(item.toString())
+            }
+            entryValues.add(item.toString())
+        }
+
+        barkoderPowerSavingMode.entries = entries.toTypedArray()
+        barkoderPowerSavingMode.entryValues = entryValues.toTypedArray()
+
+        barkoderPowerSavingMode.value =
+            preferenceManager.sharedPreferences?.getString(barkoderPowerSavingMode.key, null)
     }
 
     private fun setThreshHoldContiniousEntries() {
