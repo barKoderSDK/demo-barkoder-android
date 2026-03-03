@@ -70,6 +70,7 @@ import com.barkoder.demoscanner.fragments.TutorialDialogFragment
 import com.barkoder.demoscanner.utils.SpotlightOverlayView
 import com.google.firebase.analytics.ktx.logEvent
 import kotlin.apply
+import kotlin.collections.remove
 import kotlin.compareTo
 import kotlin.div
 import kotlin.math.abs
@@ -451,14 +452,18 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback, TutorialDialog
     }
 
     private fun maybeShowFirstRunTutorial() {
-        val prefs = getSharedPreferences("onboarding_prefs", Context.MODE_PRIVATE)
+        val prefs = getSharedPreferences("tutorial_prefs", Context.MODE_PRIVATE)
 
-        // Show only once
-        val alreadyShown = prefs.getBoolean("tutorial_shown_v1", false)
-        if (alreadyShown) return
+        // Check if tutorial was skipped
+        val tutorialSkipped = prefs.getBoolean("tutorial_skip", false)
+        if (tutorialSkipped) return
 
-        // Mark as shown immediately so it won't trigger again
-        prefs.edit().putBoolean("tutorial_shown_v1", true).apply()
+        // Check if tutorial was completed
+        val tutorialCompleted = prefs.getBoolean("tutorial_completed", false)
+        if (tutorialCompleted) return
+
+        // Get the last saved step (default to 0)
+        val savedStep = prefs.getInt("current_tutorial_step", 0)
 
         binding.root.doOnPreDraw {
             if (isFinishing || isDestroyed) return@doOnPreDraw
@@ -466,11 +471,12 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback, TutorialDialog
 
             ensureOverlayAttached()
             hideSpotlight()
-            showTutorialStep(0)
+            showTutorialStep(savedStep) // Resume from saved step
         }
     }
 
     private fun showTutorialEveryTime() {
+
         binding.root.doOnPreDraw {
             if (isFinishing || isDestroyed) return@doOnPreDraw
             if (supportFragmentManager.isStateSaved) return@doOnPreDraw
@@ -525,7 +531,6 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback, TutorialDialog
     }
 
     private fun hideSpotlight() {
-        tutorialOverlay?.isVisible = false
         tutorialOverlay?.clearSpotlight()
     }
 
@@ -540,12 +545,34 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback, TutorialDialog
     override fun onNext(step: Int) {
         val from = step
         val to = step + 1
+
+        if (to > 7) {
+            // Tutorial completed - mark it and clear saved step
+            getSharedPreferences("tutorial_prefs", Context.MODE_PRIVATE)
+                .edit()
+                .putBoolean("tutorial_completed", true)
+                .remove("current_tutorial_step")
+                .apply()
+
+            hideSpotlight()
+            tutorialOverlay?.isVisible = false
+            return
+        }
+
         showTutorialStep(to, fromStep = from)
         if (to > 7) hideSpotlight()
+        if(step == 7) tutorialOverlay?.isVisible = false
     }
 
     override fun onSkip(step: Int) {
+
+        getSharedPreferences("tutorial_prefs", Context.MODE_PRIVATE)
+            .edit()
+            .remove("current_tutorial_step")
+            .apply()
+
         hideSpotlight()
+     tutorialOverlay?.isVisible = false
     }
 
     private data class Quad(
@@ -568,6 +595,12 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback, TutorialDialog
 
 
     private fun showTutorialStep(step: Int, fromStep: Int? = null) {
+
+        getSharedPreferences("tutorial_prefs", Context.MODE_PRIVATE)
+            .edit()
+            .putInt("current_tutorial_step", step)
+            .apply()
+
         if(step == 1 || (step == 0 && fromStep == 1) || step == 4 || step == 3) {
             hideSpotlight()
         }
