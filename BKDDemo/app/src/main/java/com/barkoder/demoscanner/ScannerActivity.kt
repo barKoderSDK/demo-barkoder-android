@@ -144,6 +144,8 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
     private val activityJob = Job()
     private val uiScope = CoroutineScope(Dispatchers.Main + activityJob)
     private var autoFocusBoolean : Boolean? = null
+    private var gs1StrictRules : Boolean? = null
+    private var gs1DecimalFormatPlaces : Boolean? = null
     private var videoStabilization : Boolean? = null
     private var frontCamera : Boolean? = null
     private var dynamicExposureIntesity : String = "Disabled"
@@ -191,6 +193,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
 
         val prefs = PreferenceManager.getDefaultSharedPreferences(this)
         autoFocusBoolean = prefs.getBoolean("pref_key_autofocus", false)
+        gs1StrictRules = prefs.getBoolean("pref_key_gs1_strict_rules", false)
         videoStabilization = prefs.getBoolean("pref_key_videostabilization", false)
         frontCamera = prefs.getBoolean("pref_key_frontCamera", false)
 
@@ -293,6 +296,23 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
         } else {
             binding.bkdView.setCentricFocusAndExposure(false)
         }
+
+        if(gs1StrictRules!!) {
+            Barkoder.SetCustomOption(binding.bkdView.config.getDecoderConfig(), "strict_gs1_rules", 1);
+        } else {
+            Barkoder.SetCustomOption(binding.bkdView.config.getDecoderConfig(), "strict_gs1_rules", 0);
+        }
+
+
+        val decimalValue = prefs
+            .getString("pref_key_gs1_format_decimal_places", "0")
+            ?.toIntOrNull() ?: 0
+
+        Barkoder.SetCustomOption(
+            binding.bkdView.config.decoderConfig,
+            "gs1_format_decimal_places",
+            decimalValue
+        )
 
 
         if(dynamicExposureIntesity == "Disabled") {
@@ -401,6 +421,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
 
         Barkoder.SetCustomOption(binding.bkdView.config.getDecoderConfig(), "SADL_decode_ID", 1)
         Barkoder.SetCustomOption(binding.bkdView.config.getDecoderConfig(), "SADL_decode_vehicle_disk", 1)
+
         if(scanMode == ScanMode.VIN) {
             Barkoder.SetCustomOption(binding.bkdView.config.decoderConfig, "enable_ocr_functionality", 1)
         }
@@ -1139,7 +1160,6 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
 
         // Find the "formattedText" value
         val originalText = extra.firstOrNull { it.key == "formattedText" }?.value ?: return ""
-
         // Remove any line that starts with "ImageRawBase64:"
         val filteredText = originalText
             .lineSequence()
@@ -1151,7 +1171,6 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
             }
 
             .joinToString("\n") // Join lines back together
-
 
         return filteredText
     }

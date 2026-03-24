@@ -695,6 +695,31 @@
     </com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding>
 
     <com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding
+        android:title="Parsers Settings"
+        app:allowDividerAbove="false"
+        app:allowDividerBelow="false"
+        app:iconSpaceReserved="false">
+
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
+            android:key="pref_key_gs1_strict_rules"
+            android:title="Enforce Strict GS1 Rules"
+            app:defaultValue="false"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
+            app:iconSpaceReserved="false" />
+
+        <com.barkoder.demoscanner.customcontrols.ListPreferenceWhiteBg
+            android:key="pref_key_gs1_format_decimal_places"
+            android:title="Format GS1 Decimal Places"
+            app:defaultValue="false"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
+            app:iconSpaceReserved="false" />
+
+
+    </com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding>
+
+    <com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding
         android:title="Camera Settings"
         app:allowDividerAbove="false"
         app:allowDividerBelow="false"

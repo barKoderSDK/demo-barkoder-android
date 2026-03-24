@@ -952,8 +952,10 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
                         insertIndex++ // Increment for next insertion
                     }
                 }
+                if(formattedTextValue.length > 150) {
+                    formattedLayout.visibility = View.GONE
+                }
 
-                formattedLayout.visibility = View.GONE
             }
 
             var bitmapsArray = arrayListOf<Bitmap>()

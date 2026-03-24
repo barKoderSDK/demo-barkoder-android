@@ -29,6 +29,7 @@ import com.barkoder.demoscanner.R
 import com.barkoder.demoscanner.ScannerActivity
 import com.barkoder.demoscanner.SettingsActivity
 import com.barkoder.demoscanner.customcontrols.CategoryRoundedCornersDecoration
+import com.barkoder.demoscanner.customcontrols.ListPreferenceWhiteBg
 import com.barkoder.demoscanner.customcontrols.MarginDividerItemDecoration
 import com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPadding
 import com.barkoder.demoscanner.customcontrols.PreferenceCategoryWithPaddingGreyText
@@ -69,8 +70,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
     private val RESULT_CATEGORY_INDEX = 4
     private val WEEBHOOK_SETTINGS_CATEGORY_INDEX = 5
     private val GENERAL_SETTINGS_CATEGORY_INDEX = 6
-    private val CAMERA_SETTINGS_CATEGORY_INDEX = 7
-    private val INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX = 8
+
+    private val PARSER_SETTINGS_CATEGORY_INDEX = 7
+    private val CAMERA_SETTINGS_CATEGORY_INDEX = 8
+    private val INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX = 9
 
     lateinit var continuisTresHoldPreferences : ListPreference
 
@@ -154,6 +157,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
         if (scanMode.template != null) {
             setUIForScanModeWithTemplate()
             setDecodingSpeedEntries()
+            setDecimalGs1Entries()
             setARModeEntries()
             setARLocationTypeEntries()
             setARHeaderShowModeEntries()
@@ -174,6 +178,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
             defaultSearchEngine()
             defaultCopyTerminator()
             setDecodingSpeedEntries()
+            setDecimalGs1Entries()
             setARModeEntries()
             setARLocationTypeEntries()
             setARHeaderShowModeEntries()
@@ -851,6 +856,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 preferenceScreen.getPreference(GENERAL_SETTINGS_CATEGORY_INDEX).isVisible = true
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(PARSER_SETTINGS_CATEGORY_INDEX).isVisible = false
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 makePreferenceInvisible(getString(R.string.key_reset_all_settings))
@@ -876,6 +882,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(PARSER_SETTINGS_CATEGORY_INDEX).isVisible = false
             }
             ScanMode.RETAIL_1D -> {
                 makePreferenceInvisible(getString(R.string.key_mrz_mode))
@@ -893,6 +900,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(PARSER_SETTINGS_CATEGORY_INDEX).isVisible = false
             }
 
             ScanMode.PDF -> {
@@ -913,6 +921,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(PARSER_SETTINGS_CATEGORY_INDEX).isVisible = false
             }
             ScanMode.QR -> {
                 makePreferenceInvisible(getString(R.string.key_mrz_mode))
@@ -932,6 +941,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(PARSER_SETTINGS_CATEGORY_INDEX).isVisible = false
             }
             ScanMode.ALL_2D -> {
                 makePreferenceInvisible(getString(R.string.key_mrz_mode))
@@ -951,6 +961,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(PARSER_SETTINGS_CATEGORY_INDEX).isVisible = false
 
             }
             ScanMode.DPM -> {
@@ -972,6 +983,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 preferenceScreen.getPreference(BARCODE_TYPES_CATEGORY_INDEX).isVisible = true
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(PARSER_SETTINGS_CATEGORY_INDEX).isVisible = false
             }
             ScanMode.VIN -> {
                 makePreferenceInvisible(getString(R.string.key_mrz_mode))
@@ -992,6 +1004,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceVisable(getString(R.string.key_symbology_ocr))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(PARSER_SETTINGS_CATEGORY_INDEX).isVisible = false
                 val resultSettingsCategory = findPreference<Preference>(getString(R.string.key_barkoder_result_settings))
                 resultSettingsCategory?.isVisible = false
             }
@@ -1015,6 +1028,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 preferenceScreen.getPreference(BARCODE_TYPES_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(PARSER_SETTINGS_CATEGORY_INDEX).isVisible = false
             }
 
             ScanMode.UPC_EAN_DEBLUR -> {
@@ -1040,6 +1054,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 preferenceScreen.getPreference(WEEBHOOK_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(PARSER_SETTINGS_CATEGORY_INDEX).isVisible = false
             }
 
             ScanMode.MISSHAPED_1D -> {
@@ -1065,6 +1080,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 preferenceScreen.getPreference(WEEBHOOK_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(PARSER_SETTINGS_CATEGORY_INDEX).isVisible = false
 
             }
 
@@ -1083,6 +1099,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(PARSER_SETTINGS_CATEGORY_INDEX).isVisible = false
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
             }
 
@@ -1096,6 +1113,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 preferenceScreen.getPreference(BARCODE_TYPES_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(RESULT_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = true
+                preferenceScreen.getPreference(PARSER_SETTINGS_CATEGORY_INDEX).isVisible = true
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
 
             }
@@ -1117,6 +1135,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 preferenceScreen.getPreference(GENERAL_SETTINGS_CATEGORY_INDEX).isVisible = true
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(PARSER_SETTINGS_CATEGORY_INDEX).isVisible = false
                 var continuisTresHoldPreferences2 = findPreference<ListPreference>("pref_key_continuous_treshold2")!!
                 continuisTresHoldPreferences2.isVisible = true
             }
@@ -1133,6 +1152,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 preferenceScreen.getPreference(GENERAL_SETTINGS_CATEGORY_INDEX).isVisible = true
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(PARSER_SETTINGS_CATEGORY_INDEX).isVisible = false
                 makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
@@ -1164,6 +1184,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 preferenceScreen.getPreference(RESULT_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(PARSER_SETTINGS_CATEGORY_INDEX).isVisible = false
                 val resultSettingsCategory = findPreference<Preference>(getString(R.string.key_barkoder_result_settings))
                 resultSettingsCategory?.isVisible = false
             }
@@ -1195,6 +1216,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 preferenceScreen.getPreference(GENERAL_SETTINGS_CATEGORY_INDEX).isVisible = true
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(PARSER_SETTINGS_CATEGORY_INDEX).isVisible = false
             }
 
             ScanMode.COMPOSITE -> {
@@ -1212,6 +1234,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(PARSER_SETTINGS_CATEGORY_INDEX).isVisible = false
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
                 makePreferenceInvisible(getString(R.string.key_misshaped_code_capture))
             }
@@ -1230,6 +1253,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceInvisible(getString(R.string.key_tutorial_settings))
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(PARSER_SETTINGS_CATEGORY_INDEX).isVisible = false
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
                 makePreferenceInvisible(getString(R.string.key_misshaped_code_capture))
                 makePreferenceInvisible(getString(R.string.key_blured_scan_eanupc))
@@ -1251,6 +1275,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
                 preferenceScreen.getPreference(WEEBHOOK_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(PARSER_SETTINGS_CATEGORY_INDEX).isVisible = false
                 makePreferenceInvisible(getString(R.string.key_dpm_mode))
                 makePreferenceInvisible(getString(R.string.key_misshaped_code_capture))
                 makePreferenceInvisible(getString(R.string.key_blured_scan_eanupc))
@@ -1281,6 +1306,29 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
         decodingSpeedPref.value =
             preferenceManager.sharedPreferences.getString(decodingSpeedPref.key)
+    }
+
+    private fun setDecimalGs1Entries() {
+        val decimalGs1 =
+            findPreference<ListPreference>("pref_key_gs1_format_decimal_places")!!
+
+        val entries = arrayOf<CharSequence>(
+            "Disabled",
+            "Dot (.)",
+            "Comma (,)"
+        )
+
+        val entryValues = arrayOf<CharSequence>(
+            "0",
+            "1",
+            "2"
+        )
+
+        decimalGs1.entries = entries
+        decimalGs1.entryValues = entryValues
+
+        decimalGs1.value =
+            preferenceManager.sharedPreferences.getString(decimalGs1.key, "0")
     }
 
     private fun setARModeEntries() {
@@ -1833,6 +1881,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
             findPreference<SwitchPreference>(getString(R.string.key_autoFocus_centered))!!
         val setVideoStabilization =
             findPreference<SwitchPreference>(getString(R.string.key_video_stabilization))!!
+        val gs1StrictRules =
+            findPreference<SwitchPreference>("pref_key_gs1_strict_rules")!!
+        val gs1DecimalPlaces =
+            findPreference<ListPreferenceWhiteBg>("pref_key_gs1_format_decimal_places")!!
         val setFrontcamera =
             findPreference<SwitchPreference>(getString(R.string.key_frontCamera))!!
         if(scanMode == ScanMode.GLOBAL) {
@@ -1843,6 +1895,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
             setFrontcamera.isChecked = false
             setCenteredAutoFocus.isChecked = false
             setVideoStabilization.isChecked = false
+            gs1StrictRules.isChecked = false
+            gs1DecimalPlaces.value = "0"
             dynamicExposureEntries.value = "Disabled"
             dynamicExposureEntries.setValueIndex(0);
 

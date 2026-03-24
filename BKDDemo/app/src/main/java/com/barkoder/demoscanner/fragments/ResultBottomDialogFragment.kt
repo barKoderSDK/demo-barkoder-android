@@ -32,6 +32,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -380,7 +381,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             binding.constraintLayout4.layoutParams = params
         }
 
-        if(resultsList!!.size < 3) {
+        if(resultsList!!.size < 2) {
             binding.layoutSearchBtn.visibility = View.GONE
             binding.layoutDetailsBtn.visibility = View.GONE
             binding.constraintLayout4.visibility = View.VISIBLE
@@ -402,7 +403,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             binding.layoutExpandBtn.visibility = View.GONE
             binding.layoutSearchBtn.visibility = View.VISIBLE
         }
-        updateSearchEngine()
+//        updateSearchEngine()
 
         updateCopyTerminator()
 
@@ -457,7 +458,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         scannedBarcodesDateList.addAll(dateList!!)
         resultsFromLastFrame.addAll(resultsList)
 
-
+        updateSearchEngineOnBarcodeDetailsButton(binding.btnSearchWeb, resultsList[0])
         if(resultsSize != null) {
             if(galleryScanMode || arMode) {
                 if(lastResultsOnFrame == 1) binding.resultsSize.text = lastResultsOnFrame.toString() + " result found" else binding.resultsSize.text = lastResultsOnFrame.toString() + " results found"
@@ -1077,6 +1078,82 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
     }
 
 
+    private fun updateSearchEngineOnBarcodeDetailsButton(btn : ImageButton? = null, result : String) {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
+        val searchEngineWeb = prefs.getString(getString(R.string.key_result_searchEngine))
+        when (searchEngineWeb) {
+
+            "Google" ->  btn?.setOnClickListener {
+                if (CommonUtil.isTextURL(result)) {
+                    CommonUtil.openURLInBrowser(result, requireActivity())
+                } else {
+                    var encodedURL = URLEncoder.encode(result, "UTF-8")
+                    CommonUtil.openSearchInBrowser("https://www.google.com/search?q=",encodedURL, requireActivity() )
+                }
+            }
+            "Yahoo" -> btn?.setOnClickListener {
+                if (CommonUtil.isTextURL(result)) {
+                    CommonUtil.openURLInBrowser(result, requireActivity())
+                } else {
+                    var encodedURL = URLEncoder.encode(result, "UTF-8")
+                    CommonUtil.openSearchInBrowser(
+                        "https://search.yahoo.com/search?p=",
+                        encodedURL,
+                        requireActivity()
+                    )
+                }
+            }
+            "DuckDuckGo" -> btn?.setOnClickListener {
+                if (CommonUtil.isTextURL(result)) {
+                    CommonUtil.openURLInBrowser(result, requireActivity())
+                } else {
+                    var encodedURL = URLEncoder.encode(result, "UTF-8")
+                    CommonUtil.openSearchInBrowser(
+                        "https://duckduckgo.com/?q=",
+                        encodedURL,
+                        requireActivity()
+                    )
+                }
+            }
+            "Yandex" -> btn?.setOnClickListener {
+                if (CommonUtil.isTextURL(result)) {
+                    CommonUtil.openURLInBrowser(result, requireActivity())
+                } else {
+                    var encodedURL = URLEncoder.encode(result, "UTF-8")
+                    CommonUtil.openSearchInBrowser(
+                        "https://yandex.com/search/?text=",
+                        encodedURL,
+                        requireActivity()
+                    )
+                }
+            }
+            "Bing" -> btn?.setOnClickListener {
+                if (CommonUtil.isTextURL(result)) {
+                    CommonUtil.openURLInBrowser(result, requireActivity())
+                } else {
+                    var encodedURL = URLEncoder.encode(result, "UTF-8")
+                    CommonUtil.openSearchInBrowser(
+                        "https://www.bing.com/search?q=",
+                        encodedURL,
+                        requireActivity()
+                    )
+                }
+            }
+            "Brave" -> btn?.setOnClickListener {
+                if (CommonUtil.isTextURL(result)) {
+                    CommonUtil.openURLInBrowser(result, requireActivity())
+                } else {
+                    var encodedURL = URLEncoder.encode(result, "UTF-8")
+                    CommonUtil.openSearchInBrowser(
+                        "https://search.brave.com/search?q=",
+                        encodedURL,
+                        requireActivity()
+                    )
+                }
+            }
+        }
+    }
+
 
 
 
@@ -1522,7 +1599,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             textCapturedMedia.visibility = View.GONE
             sadlImagesLayout.visibility = View.GONE
         }
-
+  Log.d("preree", formattedTextValue)
         if(formattedTextValue.length > 0) {
             formattedLayout.visibility = View.VISIBLE
         } else {
@@ -1646,8 +1723,9 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
                     insertIndex++ // Increment for next insertion
                 }
             }
-
-            formattedLayout.visibility = View.GONE
+            if(formattedTextValue.length > 150) {
+                formattedLayout.visibility = View.GONE
+            }
         }
 
         if (mainImage != null) {
