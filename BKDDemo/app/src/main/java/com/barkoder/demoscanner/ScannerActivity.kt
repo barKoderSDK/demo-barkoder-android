@@ -702,7 +702,8 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                                             "croppedBarcodeImage"
                                         )
                                         scannedResults.forEachIndexed { index, i ->
-                                            val existingSessionScan = sessionScansAdapterData.find { it.scanText == i.textualData && it.scanTypeName == i.barcodeTypeName }
+                                            val formattedTypeName = if (i.extra != null) formatBarcodeName(i.barcodeTypeName, i.extra.toList()) else i.barcodeTypeName
+                                            val existingSessionScan = sessionScansAdapterData.find { it.scanText == i.textualData && it.scanTypeName == formattedTypeName }
 
                                             if (!printedBarcodes.contains(i.textualData)) {
                                                 onNewBarcodeScanned(i.barcodeTypeName, i.textualData)
@@ -860,7 +861,8 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                                             croppedBarcodePath = null
                                         }
                                         scannedResults.forEachIndexed { index, i ->
-                                            val existingSessionScan = sessionScansAdapterData.find { it.scanText == i.textualData && it.scanTypeName == i.barcodeTypeName}
+                                            val formattedTypeName = if (i.extra != null) formatBarcodeName(i.barcodeTypeName, i.extra.toList()) else i.barcodeTypeName
+                                            val existingSessionScan = sessionScansAdapterData.find { it.scanText == i.textualData && it.scanTypeName == formattedTypeName }
 
                                             if (!printedBarcodes.contains(i.textualData)) {
                                                 onNewBarcodeScanned(i.barcodeTypeName, i.textualData)
@@ -988,7 +990,8 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
 
 
                     scannedResults.forEachIndexed { index, i ->
-                        val existingSessionScan = sessionScansAdapterData.find { it.scanText == i.textualData && it.scanTypeName == i.barcodeTypeName }
+                        val formattedTypeName = if (i.extra != null) formatBarcodeName(i.barcodeTypeName, i.extra.toList()) else i.barcodeTypeName
+                        val existingSessionScan = sessionScansAdapterData.find { it.scanText == i.textualData && it.scanTypeName == formattedTypeName }
 
 
                         if (!printedBarcodes.contains(i.textualData)) {

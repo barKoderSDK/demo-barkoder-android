@@ -6,11 +6,13 @@ import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.ContentProviderOperation
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
+import android.provider.ContactsContract
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -42,6 +44,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
@@ -877,8 +880,18 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
             val btnCopy = dialogView.findViewById<MaterialButton>(R.id.btnCopy)
             val btnSearch = dialogView.findViewById<MaterialButton>(R.id.btnSearch)
             val btnOptions = dialogView.findViewById<ImageButton>(R.id.btn_optionss)
+            val linearLayoutImportContact = dialogView.findViewById<LinearLayout>(R.id.linearLayoutImportContact)
+            val btnImportContact = dialogView.findViewById<MaterialButton>(R.id.btnImportContact)
             val rowsLayout = dialogView.findViewById<LinearLayout>(R.id.rowsLayout)
             btnOptions.visibility = View.VISIBLE
+
+            // Show Import Contact button if result contains vCard data
+            if (barcodeValue.uppercase().contains("VCARD") || barcodeValue.uppercase().contains("BEGIN:VCARD")) {
+                linearLayoutImportContact.visibility = View.VISIBLE
+                btnImportContact.setOnClickListener {
+                    importVCardContact(this, barcodeValue)
+                }
+            }
 
             btnOptions.setOnClickListener {
                 showCustomPopupMenuItem(it, item, dialog)
@@ -1003,6 +1016,182 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
 
             dialog.show()
         }
+    }
+
+    private var pendingVCardData: String? = null
+
+    private val contactPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+        if (isGranted) {
+            pendingVCardData?.let { saveVCardContact(this, it) }
+            pendingVCardData = null
+        } else {
+            showContactPermissionDeniedDialog()
+        }
+    }
+
+    private fun importVCardContact(context: Context, vCardData: String) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+            saveVCardContact(context, vCardData)
+        } else {
+            pendingVCardData = vCardData
+            contactPermissionLauncher.launch(Manifest.permission.WRITE_CONTACTS)
+        }
+    }
+
+    private fun showContactPermissionDeniedDialog() {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Permission Required")
+            .setMessage("Contacts permission is needed to save the contact. Please grant the permission in Settings.")
+            .setPositiveButton("Open Settings") { _, _ ->
+                val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", packageName, null)
+                }
+                startActivity(intent)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun saveVCardContact(context: Context, vCardData: String) {
+        try {
+            val ops = ArrayList<ContentProviderOperation>()
+
+            ops.add(
+                ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
+                    .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
+                    .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
+                    .build()
+            )
+
+            var displayName: String? = null
+            val phones = mutableListOf<String>()
+            val emails = mutableListOf<String>()
+            var organization: String? = null
+            var jobTitle: String? = null
+            var note: String? = null
+            var address: String? = null
+
+            val lines = vCardData.lines()
+            for (line in lines) {
+                val upperLine = line.uppercase()
+                when {
+                    upperLine.startsWith("FN:") || upperLine.startsWith("FN;") -> {
+                        displayName = extractVCardValue(line)
+                    }
+                    upperLine.startsWith("N:") || upperLine.startsWith("N;") -> {
+                        if (displayName == null) {
+                            val value = extractVCardValue(line)
+                            val parts = value.split(";")
+                            val lastName = parts.getOrNull(0) ?: ""
+                            val firstName = parts.getOrNull(1) ?: ""
+                            val name = "$firstName $lastName".trim()
+                            if (name.isNotEmpty()) displayName = name
+                        }
+                    }
+                    upperLine.startsWith("TEL:") || upperLine.startsWith("TEL;") -> {
+                        phones.add(extractVCardValue(line))
+                    }
+                    upperLine.startsWith("EMAIL:") || upperLine.startsWith("EMAIL;") -> {
+                        emails.add(extractVCardValue(line))
+                    }
+                    upperLine.startsWith("ORG:") || upperLine.startsWith("ORG;") -> {
+                        organization = extractVCardValue(line).split(";").firstOrNull() ?: extractVCardValue(line)
+                    }
+                    upperLine.startsWith("TITLE:") || upperLine.startsWith("TITLE;") -> {
+                        jobTitle = extractVCardValue(line)
+                    }
+                    upperLine.startsWith("NOTE:") || upperLine.startsWith("NOTE;") -> {
+                        note = extractVCardValue(line)
+                    }
+                    upperLine.startsWith("ADR:") || upperLine.startsWith("ADR;") -> {
+                        val adr = extractVCardValue(line)
+                        val parts = adr.split(";")
+                        address = listOf(
+                            parts.getOrNull(2) ?: "",
+                            parts.getOrNull(3) ?: "",
+                            parts.getOrNull(4) ?: "",
+                            parts.getOrNull(5) ?: "",
+                            parts.getOrNull(6) ?: ""
+                        ).filter { it.isNotEmpty() }.joinToString(", ")
+                    }
+                }
+            }
+
+            if (!displayName.isNullOrEmpty()) {
+                ops.add(
+                    ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, displayName)
+                        .build()
+                )
+            }
+
+            for (phone in phones) {
+                ops.add(
+                    ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phone)
+                        .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE)
+                        .build()
+                )
+            }
+
+            for (email in emails) {
+                ops.add(
+                    ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.Email.DATA, email)
+                        .withValue(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK)
+                        .build()
+                )
+            }
+
+            if (!organization.isNullOrEmpty() || !jobTitle.isNullOrEmpty()) {
+                ops.add(
+                    ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.Organization.COMPANY, organization ?: "")
+                        .withValue(ContactsContract.CommonDataKinds.Organization.TITLE, jobTitle ?: "")
+                        .build()
+                )
+            }
+
+            if (!note.isNullOrEmpty()) {
+                ops.add(
+                    ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.Note.NOTE, note)
+                        .build()
+                )
+            }
+
+            if (!address.isNullOrEmpty()) {
+                ops.add(
+                    ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS, address)
+                        .withValue(ContactsContract.CommonDataKinds.StructuredPostal.TYPE, ContactsContract.CommonDataKinds.StructuredPostal.TYPE_WORK)
+                        .build()
+                )
+            }
+
+            context.contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
+            Toast.makeText(context, "Contact saved successfully", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Log.e("ImportContact", "Failed to save contact", e)
+            Toast.makeText(context, "Failed to save contact", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun extractVCardValue(line: String): String {
+        val colonIndex = line.indexOf(':')
+        return if (colonIndex >= 0) line.substring(colonIndex + 1).trim() else line.trim()
     }
 
     fun prettyPrintJson(jsonString: String): String {

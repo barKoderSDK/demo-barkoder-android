@@ -461,7 +461,7 @@
             android:orientation="vertical"
             android:layout_marginTop="7dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/linearLayoutImportContact"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/linearLayout5"
             app:layout_constraintTop_toTopOf="parent">
@@ -500,7 +500,48 @@
 
         </LinearLayout>
 
-        <!-- Add more buttons here as before -->
+        <!-- Import Contact Button (visible only for vCard) -->
+        <LinearLayout
+            android:id="@+id/linearLayoutImportContact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="7dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/linearLayout6"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnImportContact"
+                style="?attr/materialButtonOutlinedStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:backgroundTint="@color/transparent"
+                android:gravity="center"
+                android:textAllCaps="false"
+                android:textColor="@color/brand_color"
+                android:textSize="11sp"
+                app:cornerRadius="20dp"
+                app:icon="@drawable/ico_import_contact"
+                app:iconGravity="textStart"
+                app:iconSize="20dp"
+                app:iconTint="@color/brand_color"
+                app:strokeColor="@color/transparent" />
+
+            <TextView
+                android:id="@+id/txtImportContact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="15dp"
+                android:text="Import"
+                android:textSize="12sp" />
+
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

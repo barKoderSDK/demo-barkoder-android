@@ -161,6 +161,35 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/layoutImportContactBtn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:layout_weight="1"
+                android:visibility="gone"
+                android:orientation="vertical">
+
+                <ImageButton
+                    android:id="@+id/btnImportContactBottom"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:backgroundTint="@color/white"
+                    android:src="@drawable/ico_import_contact"
+                    android:text="Import Contact"
+                    android:textAllCaps="false" />
+
+                <TextView
+                    android:id="@+id/txtImportContactButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Import"
+                    android:textSize="12sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
                 android:id="@+id/layoutDetailsBtn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

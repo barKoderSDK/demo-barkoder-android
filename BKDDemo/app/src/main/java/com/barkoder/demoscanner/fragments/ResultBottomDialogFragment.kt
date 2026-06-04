@@ -7,6 +7,7 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.ContentProviderOperation
 import android.content.Context
 import android.content.Context.CLIPBOARD_SERVICE
 import android.content.DialogInterface
@@ -74,6 +75,8 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import org.json.JSONException
 import org.json.JSONObject
+import android.content.ContentValues
+import android.provider.ContactsContract
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
@@ -105,6 +108,8 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 
     private var bottomSheetHeightModeOne = false
     private lateinit var csvSaveLauncher: ActivityResultLauncher<String>
+    private lateinit var contactPermissionLauncher: ActivityResultLauncher<String>
+    private var pendingVCardData: String? = null
     private lateinit var sharedPreferences : SharedPreferences
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
@@ -224,6 +229,18 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             binding.layoutSearchBtn.visibility = View.VISIBLE
             binding.textBarcodeNumResult.visibility = View.GONE
             binding.textBarcodeTypeResult.visibility = View.GONE
+
+            // If single barcode is vCard, show Import Contact instead of Search
+            val singleResult = numResults.firstOrNull() ?: ""
+            if (singleResult.uppercase().contains("VCARD") || singleResult.uppercase().contains("BEGIN:VCARD")) {
+                binding.layoutSearchBtn.visibility = View.GONE
+                binding.layoutImportContactBtn.visibility = View.VISIBLE
+                binding.btnImportContactBottom.setOnClickListener {
+                    importVCardContact(requireContext(), singleResult)
+                }
+            } else {
+                binding.layoutImportContactBtn.visibility = View.GONE
+            }
         } else {
 
             binding.layoutSearchBtn.visibility = View.GONE
@@ -232,6 +249,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             binding.layoutExpandBtn.visibility = View.VISIBLE
             binding.textBarcodeNumResult.visibility = View.GONE
             binding.textBarcodeTypeResult.visibility = View.GONE
+            binding.layoutImportContactBtn.visibility = View.GONE
 
         }
 
@@ -254,6 +272,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         recyclerView.layoutManager = layoutManager
         adapter = SessionScanAdapter(scannedBarcodesResultList!!, scannedBarcodesTypesList!!, lastResultsOnFrame,  sessionScan!!, WeakReference(this))
         recyclerView.adapter = adapter
+        recyclerView.isNestedScrollingEnabled = false
 
 
         Handler(Looper.getMainLooper()).postDelayed({
@@ -349,6 +368,15 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             }
         }
 
+        contactPermissionLauncher = registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                pendingVCardData?.let { saveVCardContact(requireContext(), it) }
+                pendingVCardData = null
+            } else {
+                showContactPermissionDeniedDialog()
+            }
+        }
+
         if(sessionScan!!.size == 1) {
             val params = binding.constraintLayout4.layoutParams
             val newHeightInPixels = TypedValue.applyDimension(
@@ -403,6 +431,15 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             binding.layoutExpandBtn.visibility = View.GONE
             binding.layoutSearchBtn.visibility = View.VISIBLE
         }
+
+        // If only 1 barcode and it contains vCard data, replace Search with Import Contact
+        if (resultsList!!.size == 1 && (resultsList[0].uppercase().contains("VCARD") || resultsList[0].uppercase().contains("BEGIN:VCARD"))) {
+            binding.layoutSearchBtn.visibility = View.GONE
+            binding.layoutImportContactBtn.visibility = View.VISIBLE
+            binding.btnImportContactBottom.setOnClickListener {
+                importVCardContact(requireContext(), resultsList[0])
+            }
+        }
 //        updateSearchEngine()
 
         updateCopyTerminator()
@@ -440,6 +477,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         recyclerView.layoutManager = layoutManager
         adapter = SessionScanAdapter(resultsList!!, typesList!!, lastResultsOnFrame,  sessionScan!!, WeakReference(this))
         recyclerView.adapter = adapter
+        recyclerView.isNestedScrollingEnabled = false
 
         binding.imageView.setImageBitmap(image)
 
@@ -543,17 +581,38 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             }
         }
 
-        (dialog as? BottomSheetDialog)?.window?.findViewById<View>(com.google.android.material.R.id.touch_outside)?.setOnClickListener {
-            if(!expandedBottomSheet){
-                stateListener?.onStartScanningClicked()
-            }
+        // Intercept taps outside the bottom sheet at the Window level.
+        // touch_outside click/touch listeners break after RecyclerView scrolling because
+        // CoordinatorLayout intercepts touch events post-scroll. Window.Callback fires first.
+        dialog?.window?.let { window ->
+            val originalCallback = window.callback
+            window.callback = object : android.view.Window.Callback by originalCallback {
+                override fun dispatchTouchEvent(event: android.view.MotionEvent?): Boolean {
+                    if (event != null && event.action == android.view.MotionEvent.ACTION_DOWN) {
+                        val bottomSheetView = bottomSheet
+                        if (bottomSheetView != null && ::bottomSheetBehavior.isInitialized && bottomSheetBehavior.peekHeight > 0) {
+                            val location = IntArray(2)
+                            bottomSheetView.getLocationOnScreen(location)
+                            val sheetTop = location[1]
+                            val touchY = event.rawY.toInt()
 
-            if(bottomSheetBehavior.peekHeight == 1200) {
-                (activity as? MainActivity)?.hideImageView()
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                updatePeekHeightInstant(1200, 0, bottomSheetBehavior)
-                binding.layoutTapAnywhere.visibility = View.INVISIBLE
+                            if (touchY < sheetTop) {
+                                if (!expandedBottomSheet) {
+                                    stateListener?.onStartScanningClicked()
+                                }
 
+                                if (bottomSheetBehavior.peekHeight == 1200) {
+                                    (activity as? MainActivity)?.hideImageView()
+                                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                                    updatePeekHeightInstant(1200, 0, bottomSheetBehavior)
+                                    binding.layoutTapAnywhere.visibility = View.INVISIBLE
+                                }
+                                return true
+                            }
+                        }
+                    }
+                    return originalCallback.dispatchTouchEvent(event)
+                }
             }
         }
 
@@ -1651,8 +1710,18 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         val btnSearch = dialogView.findViewById<MaterialButton>(R.id.btnSearch)
         val btnPDF = dialogView.findViewById<MaterialButton>(R.id.btnPDF)
         val txtSearch = dialogView.findViewById<TextView>(R.id.txtSearch)
+        val linearLayoutImportContact = dialogView.findViewById<LinearLayout>(R.id.linearLayoutImportContact)
+        val btnImportContact = dialogView.findViewById<MaterialButton>(R.id.btnImportContact)
         var bitmapsArray = mutableListOf<Pair<Bitmap, String>>()
         val rowsLayout = dialogView.findViewById<LinearLayout>(R.id.rowsLayout)
+
+        // Show Import Contact button if result contains vCard data
+        if (result.uppercase().contains("VCARD") || result.uppercase().contains("BEGIN:VCARD")) {
+            linearLayoutImportContact.visibility = View.VISIBLE
+            btnImportContact.setOnClickListener {
+                importVCardContact(requireContext(), result)
+            }
+        }
 
 
         val cardView4 = dialogView.findViewById<MaterialCardView>(R.id.cardView4)
@@ -1801,6 +1870,185 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 //
 //            binding.constraintLayout4.layoutParams = params
         }
+    }
+
+    private fun importVCardContact(context: Context, vCardData: String) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+            saveVCardContact(context, vCardData)
+        } else {
+            pendingVCardData = vCardData
+            // If the system won't show the permission dialog (user selected "Don't ask again"), open Settings
+            if (!shouldShowRequestPermissionRationale(Manifest.permission.WRITE_CONTACTS) &&
+                ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                // Could be first time or permanently denied - try launching the request first
+                contactPermissionLauncher.launch(Manifest.permission.WRITE_CONTACTS)
+            } else {
+                contactPermissionLauncher.launch(Manifest.permission.WRITE_CONTACTS)
+            }
+        }
+    }
+
+    private fun showContactPermissionDeniedDialog() {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Permission Required")
+            .setMessage("Contacts permission is needed to save the contact. Please grant the permission in Settings.")
+            .setPositiveButton("Open Settings") { _, _ ->
+                val intent = Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.fromParts("package", requireContext().packageName, null)
+                }
+                startActivity(intent)
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun saveVCardContact(context: Context, vCardData: String) {
+        try {
+            val ops = ArrayList<ContentProviderOperation>()
+
+            // Insert raw contact
+            ops.add(
+                ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
+                    .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
+                    .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
+                    .build()
+            )
+
+            var displayName: String? = null
+            val phones = mutableListOf<String>()
+            val emails = mutableListOf<String>()
+            var organization: String? = null
+            var jobTitle: String? = null
+            var note: String? = null
+            var address: String? = null
+
+            val lines = vCardData.lines()
+            for (line in lines) {
+                val upperLine = line.uppercase()
+                when {
+                    upperLine.startsWith("FN:") || upperLine.startsWith("FN;") -> {
+                        displayName = extractVCardValue(line)
+                    }
+                    upperLine.startsWith("N:") || upperLine.startsWith("N;") -> {
+                        if (displayName == null) {
+                            val value = extractVCardValue(line)
+                            val parts = value.split(";")
+                            val lastName = parts.getOrNull(0) ?: ""
+                            val firstName = parts.getOrNull(1) ?: ""
+                            val name = "$firstName $lastName".trim()
+                            if (name.isNotEmpty()) displayName = name
+                        }
+                    }
+                    upperLine.startsWith("TEL:") || upperLine.startsWith("TEL;") -> {
+                        phones.add(extractVCardValue(line))
+                    }
+                    upperLine.startsWith("EMAIL:") || upperLine.startsWith("EMAIL;") -> {
+                        emails.add(extractVCardValue(line))
+                    }
+                    upperLine.startsWith("ORG:") || upperLine.startsWith("ORG;") -> {
+                        organization = extractVCardValue(line).split(";").firstOrNull() ?: extractVCardValue(line)
+                    }
+                    upperLine.startsWith("TITLE:") || upperLine.startsWith("TITLE;") -> {
+                        jobTitle = extractVCardValue(line)
+                    }
+                    upperLine.startsWith("NOTE:") || upperLine.startsWith("NOTE;") -> {
+                        note = extractVCardValue(line)
+                    }
+                    upperLine.startsWith("ADR:") || upperLine.startsWith("ADR;") -> {
+                        val adr = extractVCardValue(line)
+                        val parts = adr.split(";")
+                        address = listOf(
+                            parts.getOrNull(2) ?: "",
+                            parts.getOrNull(3) ?: "",
+                            parts.getOrNull(4) ?: "",
+                            parts.getOrNull(5) ?: "",
+                            parts.getOrNull(6) ?: ""
+                        ).filter { it.isNotEmpty() }.joinToString(", ")
+                    }
+                }
+            }
+
+            // Display name
+            if (!displayName.isNullOrEmpty()) {
+                ops.add(
+                    ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, displayName)
+                        .build()
+                )
+            }
+
+            // Phones
+            for (phone in phones) {
+                ops.add(
+                    ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, phone)
+                        .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE)
+                        .build()
+                )
+            }
+
+            // Emails
+            for (email in emails) {
+                ops.add(
+                    ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.Email.DATA, email)
+                        .withValue(ContactsContract.CommonDataKinds.Email.TYPE, ContactsContract.CommonDataKinds.Email.TYPE_WORK)
+                        .build()
+                )
+            }
+
+            // Organization
+            if (!organization.isNullOrEmpty() || !jobTitle.isNullOrEmpty()) {
+                ops.add(
+                    ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.Organization.COMPANY, organization ?: "")
+                        .withValue(ContactsContract.CommonDataKinds.Organization.TITLE, jobTitle ?: "")
+                        .build()
+                )
+            }
+
+            // Note
+            if (!note.isNullOrEmpty()) {
+                ops.add(
+                    ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.Note.NOTE, note)
+                        .build()
+                )
+            }
+
+            // Address
+            if (!address.isNullOrEmpty()) {
+                ops.add(
+                    ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, 0)
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS, address)
+                        .withValue(ContactsContract.CommonDataKinds.StructuredPostal.TYPE, ContactsContract.CommonDataKinds.StructuredPostal.TYPE_WORK)
+                        .build()
+                )
+            }
+
+            context.contentResolver.applyBatch(ContactsContract.AUTHORITY, ops)
+            Toast.makeText(context, "Contact saved successfully", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Log.e("ImportContact", "Failed to save contact", e)
+            Toast.makeText(context, "Failed to save contact", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun extractVCardValue(line: String): String {
+        val colonIndex = line.indexOf(':')
+        return if (colonIndex >= 0) line.substring(colonIndex + 1).trim() else line.trim()
     }
 
     fun prettyPrintJson(jsonString: String): String {
