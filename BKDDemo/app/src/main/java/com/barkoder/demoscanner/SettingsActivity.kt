@@ -8,8 +8,11 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.barkoder.demoscanner.enums.ScanMode
 import com.barkoder.demoscanner.fragments.SettingsFragment
+import androidx.activity.OnBackPressedCallback
 
 class SettingsActivity : AppCompatActivity() {
     private lateinit var scanMode: ScanMode
@@ -35,6 +38,50 @@ class SettingsActivity : AppCompatActivity() {
             .commit()
 
 
+        val root = findViewById<View>(android.R.id.content)
+
+        ViewCompat.setOnApplyWindowInsetsListener(root) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            view.setPadding(
+                systemBars.left,
+                systemBars.top,
+                systemBars.right,
+                systemBars.bottom
+            )
+
+            insets
+        }
+
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+
+                val fm = supportFragmentManager
+
+                if (fm.backStackEntryCount > 0) {
+                    fm.popBackStack()
+                } else {
+                    if (openedFromSettings ||
+                        scanMode == ScanMode.GALLERY_SCAN ||
+                        scanMode == ScanMode.GLOBAL
+                    ) {
+                        finish()
+                    } else {
+                        val intent = Intent(
+                            this@SettingsActivity,
+                            ScannerActivity::class.java
+                        )
+                        intent.putExtra(
+                            ScannerActivity.ARGS_MODE_KEY,
+                            scanMode.ordinal
+                        )
+                        startActivity(intent)
+                        finish()
+                    }
+                }
+            }
+        })
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -42,7 +89,7 @@ class SettingsActivity : AppCompatActivity() {
             val fm = supportFragmentManager
             if (fm.backStackEntryCount > 0) {
                 fm.popBackStack() // Go back to previous fragment
-            } else if (openedFromSettings || scanMode.ordinal == 14 || scanMode.ordinal == 16) {
+            } else if (openedFromSettings || scanMode == ScanMode.GALLERY_SCAN || scanMode == ScanMode.GLOBAL) {
                 // Just go back normally
                 finish()
             } else {
@@ -58,20 +105,6 @@ class SettingsActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() {
-        val fm = supportFragmentManager
-        if (fm.backStackEntryCount > 0) {
-            fm.popBackStack() // Go back to previous fragment
-        } else {
-            if (openedFromSettings || scanMode.ordinal == 14 || scanMode.ordinal == 16) {
-                finish()
-            } else {
-                val intent = Intent(this@SettingsActivity, ScannerActivity::class.java)
-                intent.putExtra(ScannerActivity.ARGS_MODE_KEY, scanMode.ordinal)
-                startActivity(intent)
-                finish()
-            }
-        }
-    }
+
 
 }

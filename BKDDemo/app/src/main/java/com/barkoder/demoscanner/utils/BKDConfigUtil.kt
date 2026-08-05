@@ -160,6 +160,11 @@ object BKDConfigUtil {
             ).toInt()
         ]
 
+        config.arConfig.displayOnlyMatchedResults =
+            sharedPref.getBoolean(
+                resources.getString(R.string.key_ar_display_only_matched)
+            )
+
         if(sharedPref.getString(resources.getString(R.string.key_checksum_mrz))  == "Enabled") {
                 config.decoderConfig.IDDocument.masterChecksumType = Barkoder.StandardChecksumType.Enabled
             } else if (sharedPref.getString(resources.getString(R.string.key_checksum_mrz))  == "Disabled") {
@@ -1337,7 +1342,7 @@ object BKDConfigUtil {
             DemoDefaults.AUTO_START_SCAN_DEFAULT,
             onlyIfNotContains
         )
-        if(scanMode == ScanMode.AR_MODE){
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind){
             prefsEditor.putStringWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_ar_mode_options),
@@ -1369,6 +1374,12 @@ object BKDConfigUtil {
             sharedPrefs,
             context.getString(R.string.key_ar_overlay_fps),
             config?.arConfig?.overlayRefresh?.ordinal?.toString() ?: 0.toString(),
+            onlyIfNotContains
+        )
+        prefsEditor.putBooleanWithOptions(
+            sharedPrefs,
+            context.getString(R.string.key_ar_display_only_matched),
+            config?.arConfig?.displayOnlyMatchedResults ?: false,
             onlyIfNotContains
         )
 
@@ -1416,7 +1427,7 @@ object BKDConfigUtil {
                 || scanMode.template == ScanMode.QR.template || scanMode.template == ScanMode.ALL_2D.template
                 || scanMode.template == ScanMode.INDUSTRIAL_1D.template || scanMode.template == ScanMode.UPC_EAN_DEBLUR.template
                 || scanMode.template == ScanMode.MISSHAPED_1D.template || scanMode.template == ScanMode.DOTCODE.template || scanMode.template == ScanMode.MRZ.template
-            || scanMode.template == ScanMode.POSTAL_CODES.template || scanMode == ScanMode.COMPOSITE || scanMode == ScanMode.AR_MODE || scanMode == ScanMode.ANYSCAN || scanMode == ScanMode.CONTINUOUS
+            || scanMode.template == ScanMode.POSTAL_CODES.template || scanMode == ScanMode.COMPOSITE || scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind || scanMode == ScanMode.ANYSCAN || scanMode == ScanMode.CONTINUOUS
         ) {
             prefsEditor.putStringWithOptions(
                 sharedPrefs,
@@ -1468,7 +1479,7 @@ object BKDConfigUtil {
             onlyIfNotContains
         )
 
-        if(scanMode == ScanMode.AR_MODE) {
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_allow_pinch_to_zoom),
@@ -1626,7 +1637,7 @@ object BKDConfigUtil {
         //endregion Barkoder Settings
 
         //region Barcode Types
-        if(scanMode == ScanMode.AR_MODE){
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind){
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_aztec),
@@ -1642,7 +1653,7 @@ object BKDConfigUtil {
             )
         }
 
-        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.UPC_EAN_DEBLUR){
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.UPC_EAN_DEBLUR || scanMode == ScanMode.SearchAndFind){
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_maxicode),
@@ -1658,7 +1669,7 @@ object BKDConfigUtil {
             )
         }
 
-        if(scanMode == ScanMode.AR_MODE){
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind){
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_aztec_compact),
@@ -1680,7 +1691,7 @@ object BKDConfigUtil {
             config?.decoderConfig?.QR?.enabled ?: DemoDefaults.SYMBOLOGY_QR_DEFAULT,
             onlyIfNotContains
         )
-        if(scanMode == ScanMode.AR_MODE){
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind){
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_qr_micro),
@@ -1696,7 +1707,7 @@ object BKDConfigUtil {
             )
         }
 
-        if(scanMode == ScanMode.AR_MODE){
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind){
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_c11),
@@ -1776,7 +1787,7 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_C39_CHK_DEFAULT.ordinal.toString(),
             onlyIfNotContains
         )
-        if(scanMode == ScanMode.AR_MODE){
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind){
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_c93),
@@ -1835,7 +1846,7 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_C128_MAX_DEFAULT,
             onlyIfNotContains
         )
-        if(scanMode == ScanMode.AR_MODE){
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind){
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_codabar),
@@ -1864,7 +1875,7 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_CODABAR_MAX_DEFAULT,
             onlyIfNotContains
         )
-        if(scanMode == ScanMode.INDUSTRIAL_1D || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.ALL_1D || scanMode == ScanMode.AR_MODE) {
+        if(scanMode == ScanMode.INDUSTRIAL_1D || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.ALL_1D || scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_msi),
@@ -1899,7 +1910,7 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_MSI_CHK_DEFAULT.ordinal.toString(),
             onlyIfNotContains
         )
-        if(scanMode == ScanMode.AR_MODE) {
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_upca),
@@ -1929,7 +1940,7 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_UPCE_EXPAND_DEFAULT,
             onlyIfNotContains
         )
-        if(scanMode == ScanMode.AR_MODE) {
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_upce1),
@@ -1967,7 +1978,7 @@ object BKDConfigUtil {
             config?.decoderConfig?.Ean8?.enabled ?: DemoDefaults.SYMBOLOGY_EAN8_DEFAULT,
             onlyIfNotContains
         )
-        if(scanMode == ScanMode.ALL_2D || scanMode == ScanMode.AR_MODE) {
+        if(scanMode == ScanMode.ALL_2D || scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_pdf417),
@@ -1983,7 +1994,7 @@ object BKDConfigUtil {
             )
         }
 
-        if(scanMode == ScanMode.ALL_2D || scanMode == ScanMode.AR_MODE) {
+        if(scanMode == ScanMode.ALL_2D || scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_pdf417_micro),
@@ -2001,7 +2012,7 @@ object BKDConfigUtil {
             )
         }
 
-        if(scanMode == ScanMode.AR_MODE){
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind){
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_datamatrix),
@@ -2016,7 +2027,7 @@ object BKDConfigUtil {
                 onlyIfNotContains
             )
         }
-        if(scanMode == ScanMode.CONTINUOUS || scanMode == ScanMode.ANYSCAN || scanMode == ScanMode.AR_MODE || scanMode == ScanMode.ALL_2D) {
+        if(scanMode == ScanMode.CONTINUOUS || scanMode == ScanMode.ANYSCAN || scanMode == ScanMode.AR_MODE || scanMode == ScanMode.ALL_2D || scanMode == ScanMode.SearchAndFind) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_dotcode),
@@ -2031,7 +2042,7 @@ object BKDConfigUtil {
                 onlyIfNotContains
             )
         }
-        if(scanMode == ScanMode.AR_MODE){
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind){
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_c25),
@@ -2046,7 +2057,7 @@ object BKDConfigUtil {
                 onlyIfNotContains
             )
         }
-        if(scanMode == ScanMode.AR_MODE){
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind){
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_databar14),
@@ -2061,7 +2072,7 @@ object BKDConfigUtil {
                 onlyIfNotContains
             )
         }
-        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.RETAIL_1D){
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.RETAIL_1D || scanMode == ScanMode.SearchAndFind){
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_databarLimited),
@@ -2076,7 +2087,7 @@ object BKDConfigUtil {
                 onlyIfNotContains
             )
         }
-        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.RETAIL_1D){
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.RETAIL_1D || scanMode == ScanMode.SearchAndFind){
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_databarExpanded),
@@ -2091,7 +2102,7 @@ object BKDConfigUtil {
                 onlyIfNotContains
             )
         }
-        if(scanMode == ScanMode.AR_MODE) {
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_postalImb),
@@ -2108,7 +2119,7 @@ object BKDConfigUtil {
         }
 
 
-        if(scanMode == ScanMode.AR_MODE) {
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_royalMail),
@@ -2211,7 +2222,7 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_C25_CHK_DEFAULT.ordinal.toString(),
             onlyIfNotContains
         )
-        if(scanMode == ScanMode.AR_MODE){
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind){
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_i2o5),
@@ -2248,7 +2259,7 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_I2O5_CHK_DEFAULT.ordinal.toString(),
             onlyIfNotContains
         )
-        if(scanMode == ScanMode.AR_MODE){
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind){
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_itf14),
@@ -2263,7 +2274,7 @@ object BKDConfigUtil {
                 onlyIfNotContains
             )
         }
-        if(scanMode == ScanMode.INDUSTRIAL_1D || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.ALL_1D || scanMode == ScanMode.AR_MODE) {
+        if(scanMode == ScanMode.INDUSTRIAL_1D || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.ALL_1D || scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_iata25),
@@ -2300,7 +2311,7 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_IATA25_CHK_DEFAULT.ordinal.toString(),
             onlyIfNotContains
         )
-        if(scanMode == ScanMode.INDUSTRIAL_1D || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.ALL_1D || scanMode == ScanMode.AR_MODE) {
+        if(scanMode == ScanMode.INDUSTRIAL_1D || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.ALL_1D || scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_matrix25),
@@ -2365,7 +2376,7 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_DATALOGIC25_CHK_DEFAULT.ordinal.toString(),
             onlyIfNotContains
         )
-        if(scanMode == ScanMode.INDUSTRIAL_1D || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.ALL_1D || scanMode == ScanMode.AR_MODE) {
+        if(scanMode == ScanMode.INDUSTRIAL_1D || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.ALL_1D || scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_coop25),
@@ -2402,7 +2413,7 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_COOP25_CHK_DEFAULT.ordinal.toString(),
             onlyIfNotContains
         )
-        if(scanMode == ScanMode.INDUSTRIAL_1D || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.ALL_1D || scanMode == ScanMode.AR_MODE) {
+        if(scanMode == ScanMode.INDUSTRIAL_1D || scanMode == ScanMode.MISSHAPED_1D || scanMode == ScanMode.ALL_1D || scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind) {
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_c32),
@@ -2450,7 +2461,7 @@ object BKDConfigUtil {
                 ?: DemoDefaults.SYMBOLOGY_C32_MAX_DEFAULT,
             onlyIfNotContains
         )
-        if(scanMode == ScanMode.AR_MODE){
+        if(scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind){
             prefsEditor.putBooleanWithOptions(
                 sharedPrefs,
                 context.getString(R.string.key_symbology_telepen),

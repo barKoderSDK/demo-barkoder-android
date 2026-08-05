@@ -103,6 +103,13 @@
         <item name="dialogCornerRadius">16dp</item>
     </style>
 
+    <style name="FullScreenDialogStylex">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowFullscreen">false</item>
+        <item name="android:windowSoftInputMode">adjustResize</item>
+    </style>
+
     <style name="DialogAnimation">
         <item name="android:windowEnterAnimation">@anim/slide_in_up</item>
         <item name="android:windowExitAnimation">@anim/slide_out_down</item>

@@ -216,6 +216,15 @@
             app:iconSpaceReserved="false"
             app:useSimpleSummaryProvider="true" />
 
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
+            android:key="@string/key_ar_display_only_matched"
+            android:title="@string/scanner_ar_display_only_matched_title"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
+            app:isPreferenceVisible="false"
+            android:defaultValue="false"
+            app:prefPaddingStart="40" />
+
         <com.barkoder.demoscanner.customcontrols.ListPreferenceWhiteBg
             android:key="@string/key_ar_location_type"
             android:title="@string/scanner_ar_location_type_title"
@@ -904,9 +913,9 @@
             app:iconSpaceReserved="false" />
 
         <com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreference
-            android:key="@string/key_arMode_settings"
+            android:key="@string/key_filterMode_settings"
             android:persistent="false"
-            android:title="@string/ar_mode_title"
+            android:title="@string/filter_settings_title"
             app:allowDividerAbove="false"
             app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />

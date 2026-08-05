@@ -186,7 +186,8 @@
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/cardViewImageDialog"
-                app:layout_constraintTop_toBottomOf="@+id/constraintLayout3">
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout3"
+                tools:ignore="NotSibling">
 
 
 
@@ -444,7 +445,8 @@
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnSearch"
-            app:layout_constraintStart_toEndOf="@+id/txtCopy" />
+            app:layout_constraintStart_toEndOf="@+id/txtCopy"
+            tools:ignore="NotSibling" />
 
         <LinearLayout
             android:id="@+id/linearLayout6"
@@ -512,7 +514,8 @@
             app:layout_constraintEnd_toStartOf="@+id/btnSearch"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/btnCopy"
-            app:strokeColor="@color/transparent" />
+            app:strokeColor="@color/transparent"
+            tools:ignore="NotSibling" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

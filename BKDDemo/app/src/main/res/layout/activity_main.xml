@@ -208,7 +208,8 @@
                             app:layout_constraintEnd_toStartOf="@+id/frameLayout30"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintWidth_percent="0.33">
+                            app:layout_constraintWidth_percent="0.33"
+                            tools:ignore="NotSibling">
 
                             <androidx.cardview.widget.CardView
                                 android:id="@+id/cardBarcodesIndustrial1D"
@@ -331,7 +332,8 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toStartOf="@+id/frameLayout4"
                             app:layout_constraintStart_toEndOf="@+id/frameLayout2"
-                            app:layout_constraintTop_toTopOf="parent">
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:ignore="NotSibling">
 
 
 
@@ -593,10 +595,10 @@
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toStartOf="@+id/frameLayout21"
                                 app:layout_constraintStart_toEndOf="@+id/frameLayout24"
                                 app:layout_constraintTop_toTopOf="parent"
-                                app:layout_constraintWidth_percent="0.33">
+                                app:layout_constraintWidth_percent="0.33"
+                                tools:ignore="NotSibling">
 
                                 <androidx.cardview.widget.CardView
                                     android:id="@+id/cardScanIdDocument"
@@ -604,8 +606,8 @@
 
                                     <TextView
                                         style="@style/BarcodesTemplateTitle"
-                                        android:text="MRZ Scan"
                                         android:drawablePadding="4dp"
+                                        android:text="MRZ Scan"
                                         app:drawableTopCompat="@drawable/ico_mrz__1_" />
 
                                 </androidx.cardview.widget.CardView>
@@ -616,7 +618,9 @@
                                 android:id="@+id/frameLayout21"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
+                                android:layout_marginEnd="3dp"
                                 app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toStartOf="@+id/frameLayout25"
                                 app:layout_constraintStart_toEndOf="@+id/frameLayout16"
                                 app:layout_constraintTop_toTopOf="parent"
                                 app:layout_constraintWidth_percent="0.33">
@@ -627,9 +631,32 @@
 
                                     <TextView
                                         style="@style/BarcodesTemplateTitle"
-                                        android:text="@string/title_ar_mode"
                                         android:drawablePadding="4dp"
+                                        android:text="@string/title_ar_mode"
                                         app:drawableTopCompat="@drawable/ico_ar" />
+
+                                </androidx.cardview.widget.CardView>
+
+                            </FrameLayout>
+
+                            <FrameLayout
+                                android:id="@+id/frameLayout25"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintTop_toTopOf="parent"
+                                app:layout_constraintWidth_percent="0.33">
+
+                                <androidx.cardview.widget.CardView
+                                    android:id="@+id/cardSearchAndFind"
+                                    style="@style/BarcodesTemplateCardView">
+
+                                    <TextView
+                                        style="@style/BarcodesTemplateTitle"
+                                        android:drawablePadding="4dp"
+                                        android:text="Search &amp; Find"
+                                        app:drawableTopCompat="@drawable/ico_ar_find" />
 
                                 </androidx.cardview.widget.CardView>
 

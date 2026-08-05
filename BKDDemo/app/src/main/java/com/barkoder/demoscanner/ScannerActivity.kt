@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -20,10 +21,14 @@ import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -54,6 +59,7 @@ import com.barkoder.demoscanner.viewmodels.BarcodeDataViewModelFactory
 import com.barkoder.demoscanner.viewmodels.RecentScanViewModel
 import com.barkoder.enums.BarkoderARMode
 import com.barkoder.enums.BarkoderCameraPosition
+import com.barkoder.enums.BarkoderRoiCenterMark
 import com.barkoder.interfaces.BarkoderResultCallback
 import com.barkoder.interfaces.CameraCallback
 import com.google.android.material.button.MaterialButton
@@ -150,8 +156,60 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
     private var frontCamera : Boolean? = null
     private var dynamicExposureIntesity : String = "Disabled"
     private var frontCameraEnabled = false
+    private var searchAndFindTargetBarcode: String? = null
+    private var searchAndFindPreviewBarcode: String? = null
+    private var searchAndFindIsFrozen = false
     private val barcodeList = mutableListOf<BarcodeDataPrint>()
     private val recentScansToAdd = mutableListOf<RecentScan2>()
+
+    private fun shouldAddToRecentInCurrentMode(resultText: String): Boolean {
+        if (scanMode != ScanMode.SearchAndFind) {
+            return true
+        }
+
+        val target = searchAndFindTargetBarcode ?: return false
+        return resultText == target
+    }
+
+    private fun resetSearchAndFindArCacheSafely() {
+        val candidates = listOf("resetARCache", "resetArCache", "resetARcache", "resetARSession", "resetArSession")
+
+        for (methodName in candidates) {
+            try {
+                val method = binding.bkdView.javaClass.methods.firstOrNull {
+                    it.name == methodName && it.parameterCount == 0
+                }
+
+                if (method != null) {
+                    method.invoke(binding.bkdView)
+                    return
+                }
+            } catch (e: Exception) {
+                Log.w("SearchAndFind", "AR cache reset invocation failed for $methodName", e)
+            }
+        }
+    }
+
+    private fun resetSearchAndFindToStepOne() {
+        searchAndFindTargetBarcode = null
+        searchAndFindPreviewBarcode = null
+        searchAndFindIsFrozen = false
+        scannedBarcodes = 0
+        binding.textScannedNumber.visibility = View.GONE
+        binding.btnShowDialog.visibility = View.GONE
+        binding.textSearchAndFindHint.visibility = View.VISIBLE
+        binding.textSearchAndFindMatchFound.visibility = View.GONE
+        getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean("searchAndFindMatchedSingleScan", false)
+            .apply()
+        binding.bkdView.config.getDecoderConfig().matchFilter = "[]"
+        binding.bkdView.config.getDecoderConfig().returnOnlyMatchedResults = false
+        binding.bkdView.config.arConfig.arMode = BarkoderARMode.NonInteractive
+        binding.bkdView.config.arConfig.returnOnlyMatchedResults = false
+        binding.bkdView.config.roiCenterMark = BarkoderRoiCenterMark.POINT
+        binding.bkdView.config.isRegionOfInterestVisible = true
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -163,6 +221,26 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
         recentViewModel = ViewModelProvider(this).get(RecentScanViewModel::class.java)
         sharedViewModel = ViewModelProvider(this).get(com.barkoder.demoscanner.viewmodels.ScanResultSharedViewModel::class.java)
         context = this
+
+
+        window.statusBarColor = Color.BLACK
+        window.navigationBarColor = Color.BLACK
+
+        WindowCompat.getInsetsController(window, window.decorView)
+            .isAppearanceLightStatusBars = false
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            view.setPadding(
+                view.paddingLeft,
+                systemBars.top,
+                view.paddingRight,
+                systemBars.bottom
+            )
+
+            insets
+        }
 
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -257,6 +335,9 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
 
         binding.imageScanned.setOnClickListener {
             binding.imageScanned.visibility = View.GONE
+            if (scanMode == ScanMode.SearchAndFind) {
+                resetSearchAndFindToStepOne()
+            }
             isScanning = true
             isBottomSheetDialogShown = false
             binding.bkdView.startScanning(this)
@@ -285,7 +366,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
         } else {
             binding.continiousModeOn.visibility = View.GONE
         }
-
+ 
         val prefs2 = PreferenceManager.getDefaultSharedPreferences(this)
         dynamicExposureIntesity = prefs2.getString("pref_key_dynamic_exposureee", "0").toString()
         val sharedPreferences2: SharedPreferences =
@@ -345,6 +426,25 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
             binding.bkdView.config.isImageResultEnabled = false
         } else {
             binding.bkdView.config.isImageResultEnabled = true
+        }
+
+        if (scanMode == ScanMode.SearchAndFind) {
+            getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+                .edit()
+                .putBoolean("searchAndFindMatchedSingleScan", false)
+                .apply()
+
+            binding.textSearchAndFindHint.visibility = View.VISIBLE
+            binding.textSearchAndFindMatchFound.visibility = View.GONE
+
+            // Step 1 defaults: allow scanning a target barcode first in NonInteractive AR mode.
+            binding.bkdView.config.getDecoderConfig().matchFilter = "[]"
+            binding.bkdView.config.getDecoderConfig().returnOnlyMatchedResults = false
+            binding.bkdView.config.arConfig.arMode = BarkoderARMode.NonInteractive
+            binding.bkdView.config.arConfig.returnOnlyMatchedResults = false
+            binding.bkdView.config.roiCenterMark = BarkoderRoiCenterMark.POINT
+            binding.bkdView.config.arConfig.imageResultEnabled = true
+            binding.bkdView.config.isRegionOfInterestVisible = true
         }
 
         binding.bkdView.setCameraCallback(this)
@@ -534,6 +634,175 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
             // Add all results to the list
             scannedResults.addAll(results)
 
+        }
+
+        if (scanMode == ScanMode.SearchAndFind && searchAndFindTargetBarcode.isNullOrBlank() && !results.isNullOrEmpty()) {
+            sharedPreferences.edit().putBoolean("searchAndFindMatchedSingleScan", false).apply()
+
+            val selectedResult = results.last()
+            val selectedText = selectedResult.textualData
+
+            if (searchAndFindPreviewBarcode != selectedText) {
+                searchAndFindPreviewBarcode = selectedText
+                binding.bkdView.config.getDecoderConfig().matchFilter = "[]"
+                binding.bkdView.config.arConfig.arMode = BarkoderARMode.NonInteractive
+                binding.bkdView.config.roiCenterMark = BarkoderRoiCenterMark.POINT
+                binding.bkdView.config.isRegionOfInterestVisible = true
+            }
+
+            val firstTypeName = if (selectedResult.extra != null) {
+                formatBarcodeName(selectedResult.barcodeTypeName, selectedResult.extra.toList())
+            } else {
+                selectedResult.barcodeTypeName
+            }
+            val firstDate = SimpleDateFormat("yyyy/MM/dd/HH:mm:ss.SSS", Locale.getDefault()).format(Date())
+
+            barcodeListResult.clear()
+            barcodeListType.clear()
+            barcodeListDate.clear()
+            sessionScansAdapterData.clear()
+
+            barcodeListResult.add(selectedText)
+            barcodeListType.add(firstTypeName)
+            barcodeListDate.add(firstDate)
+
+            sessionScansAdapterData.add(
+                SessionScan(
+                    firstDate,
+                    selectedText,
+                    firstTypeName,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    if (selectedResult.extra != null) formattedText(selectedResult.extra.toList()) else "",
+                    if (selectedResult.extra != null) formattedTextJson(selectedResult.extra.toList()) else "",
+                    if (selectedResult.extra != null) extractImageRawBase64(selectedResult.extra.toList()) else "",
+                    1,
+                    highLight = true
+                )
+            )
+
+            sharedPreferences.edit().putInt("lastResultsOnFrame", 1).apply()
+            scannedBarcodes = 1
+            binding.textScannedNumber.visibility = View.VISIBLE
+            binding.textScannedNumber.text = "(1)"
+            binding.btnShowDialog.visibility = View.VISIBLE
+            scannedResults.clear()
+
+            onBarcodeScanned(
+                barcodeListResult,
+                barcodeListType,
+                barcodeListDate,
+                "1",
+                imageResult
+            )
+
+            return
+        }
+
+        if (scanMode == ScanMode.SearchAndFind && !searchAndFindTargetBarcode.isNullOrBlank() && !results.isNullOrEmpty()) {
+            if (searchAndFindIsFrozen) {
+                return
+            }
+
+            val matchedResult = results.lastOrNull { it.textualData == searchAndFindTargetBarcode }
+            if (matchedResult != null) {
+                val matchedTypeName = if (matchedResult.extra != null) {
+                    formatBarcodeName(matchedResult.barcodeTypeName, matchedResult.extra.toList())
+                } else {
+                    matchedResult.barcodeTypeName
+                }
+                val matchedDate = SimpleDateFormat("yyyy/MM/dd/HH:mm:ss.SSS", Locale.getDefault()).format(Date())
+
+                barcodeListResult.clear()
+                barcodeListType.clear()
+                barcodeListDate.clear()
+                sessionScansAdapterData.clear()
+
+                barcodeListResult.add(matchedResult.textualData)
+                barcodeListType.add(matchedTypeName)
+                barcodeListDate.add(matchedDate)
+
+                sessionScansAdapterData.add(
+                    SessionScan(
+                        matchedDate,
+                        matchedResult.textualData,
+                        matchedTypeName,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        if (matchedResult.extra != null) formattedText(matchedResult.extra.toList()) else "",
+                        if (matchedResult.extra != null) formattedTextJson(matchedResult.extra.toList()) else "",
+                        if (matchedResult.extra != null) extractImageRawBase64(matchedResult.extra.toList()) else "",
+                        1,
+                        highLight = true
+                    )
+                )
+
+                if (recentScansToAdd.none { it.scanText == matchedResult.textualData && it.scanTypeName == matchedTypeName }) {
+                    recentScansToAdd.add(
+                        RecentScan2(
+                            matchedDate,
+                            matchedResult.textualData,
+                            matchedTypeName,
+                            null,
+                            null,
+                            null,
+                            null,
+                            null,
+                            if (matchedResult.extra != null) formattedText(matchedResult.extra.toList()) else "",
+                            if (matchedResult.extra != null) formattedTextJson(matchedResult.extra.toList()) else "",
+                            if (matchedResult.extra != null) extractImageRawBase64(matchedResult.extra.toList()) else "",
+                            scannedTimesInARow = 1,
+                            highlighted = true
+                        )
+                    )
+                }
+
+                sharedPreferences.edit().putInt("lastResultsOnFrame", 1).apply()
+                sharedPreferences.edit().putBoolean("searchAndFindMatchedSingleScan", true).apply()
+                scannedBarcodes = 0
+                binding.textScannedNumber.visibility = View.GONE
+                binding.btnShowDialog.visibility = View.GONE
+                binding.textSearchAndFindHint.visibility = View.GONE
+                binding.textSearchAndFindMatchFound.visibility = View.VISIBLE
+                scannedResults.clear()
+
+                resetSearchAndFindArCacheSafely()
+
+                val freezeBitmap = imageResult ?: thumbnails?.lastOrNull()
+                if (freezeBitmap != null) {
+                    binding.imageScanned.visibility = View.VISIBLE
+                    binding.imageScanned.setImageBitmap(freezeBitmap)
+                } else {
+                    binding.imageScanned.visibility = View.GONE
+                }
+
+                if (isScanning) {
+                    binding.bkdView.pauseScanning()
+                }
+                isScanning = false
+                searchAndFindIsFrozen = false
+
+                isBottomSheetDialogShown = false
+                onBarcodeScanned(
+                    barcodeListResult,
+                    barcodeListType,
+                    barcodeListDate,
+                    "1",
+                    freezeBitmap
+                )
+
+                if (!isBottomSheetDialogShown) {
+                    showDialogBtn()
+                }
+
+                return
+            }
         }
 
         for (i in sessionScansAdapterData) {
@@ -757,22 +1026,24 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
 
                                                 sessionScansAdapterData.add(newSessionScan)
 
-                                                recentScansToAdd.add(
-                                                    RecentScan2(
-                                                        scannedDate,
-                                                        i.textualData,
-                                                        if (i.extra != null) formatBarcodeName(i.barcodeTypeName, i.extra.toList()) else i.barcodeTypeName,
-                                                        picturePath,
-                                                        documentPath,
-                                                        signaturePath,
-                                                        mainPath,
-                                                        croppedBarcodePath,
-                                                        if (i.extra != null) formattedText(i.extra.toList()) else "",
-                                                        if (i.extra != null) formattedTextJson(i.extra.toList()) else "",
-                                                        if (i.extra != null) extractImageRawBase64(i.extra.toList()) else "",
-                                                        scannedTimesInARow = 1
+                                                if (shouldAddToRecentInCurrentMode(i.textualData)) {
+                                                    recentScansToAdd.add(
+                                                        RecentScan2(
+                                                            scannedDate,
+                                                            i.textualData,
+                                                            if (i.extra != null) formatBarcodeName(i.barcodeTypeName, i.extra.toList()) else i.barcodeTypeName,
+                                                            picturePath,
+                                                            documentPath,
+                                                            signaturePath,
+                                                            mainPath,
+                                                            croppedBarcodePath,
+                                                            if (i.extra != null) formattedText(i.extra.toList()) else "",
+                                                            if (i.extra != null) formattedTextJson(i.extra.toList()) else "",
+                                                            if (i.extra != null) extractImageRawBase64(i.extra.toList()) else "",
+                                                            scannedTimesInARow = 1
+                                                        )
                                                     )
-                                                )
+                                                }
                                                 Log.d("Scanning", "New Result Added: ${i.textualData}")
                                             }
                                         }
@@ -915,22 +1186,24 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
 
                                                 sessionScansAdapterData.add(newSessionScan)
 
-                                                recentScansToAdd.add(
-                                                    RecentScan2(
-                                                        scannedDate,
-                                                        i.textualData,
-                                                        if (i.extra != null) formatBarcodeName(i.barcodeTypeName, i.extra.toList()) else i.barcodeTypeName,
-                                                        null,
-                                                        null,
-                                                        null,
-                                                        mainPath,
-                                                        croppedBarcodePath,
-                                                        if (i.extra != null) formattedText(i.extra.toList()) else "",
-                                                        if (i.extra != null) formattedTextJson(i.extra.toList()) else "",
-                                                        if (i.extra != null) extractImageRawBase64(i.extra.toList()) else "",
-                                                        scannedTimesInARow = 1
+                                                if (shouldAddToRecentInCurrentMode(i.textualData)) {
+                                                    recentScansToAdd.add(
+                                                        RecentScan2(
+                                                            scannedDate,
+                                                            i.textualData,
+                                                            if (i.extra != null) formatBarcodeName(i.barcodeTypeName, i.extra.toList()) else i.barcodeTypeName,
+                                                            null,
+                                                            null,
+                                                            null,
+                                                            mainPath,
+                                                            croppedBarcodePath,
+                                                            if (i.extra != null) formattedText(i.extra.toList()) else "",
+                                                            if (i.extra != null) formattedTextJson(i.extra.toList()) else "",
+                                                            if (i.extra != null) extractImageRawBase64(i.extra.toList()) else "",
+                                                            scannedTimesInARow = 1
+                                                        )
                                                     )
-                                                )
+                                                }
                                                 Log.d("Scanning", "New Result Added: ${i.textualData}")
                                             }
                                         }
@@ -1051,23 +1324,25 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
 
                             sessionScansAdapterData.add(newSessionScan)
 
-                            recentScansToAdd.add(
-                                RecentScan2(
-                                    scannedDate,
-                                    i.textualData,
-                                    if (i.extra != null) formatBarcodeName(i.barcodeTypeName, i.extra.toList()) else i.barcodeTypeName,
-                                    null,
-                                    null,
-                                    null,
-                                    null,
-                                    croppedBarcodePath,
-                                    if (i.extra != null) formattedText(i.extra.toList()) else "",
-                                    if (i.extra != null) formattedTextJson(i.extra.toList()) else "",
-                                    if (i.extra != null) extractImageRawBase64(i.extra.toList()) else "",
-                                    scannedTimesInARow = 1,
-                                    highlighted = true
+                            if (shouldAddToRecentInCurrentMode(i.textualData)) {
+                                recentScansToAdd.add(
+                                    RecentScan2(
+                                        scannedDate,
+                                        i.textualData,
+                                        if (i.extra != null) formatBarcodeName(i.barcodeTypeName, i.extra.toList()) else i.barcodeTypeName,
+                                        null,
+                                        null,
+                                        null,
+                                        null,
+                                        croppedBarcodePath,
+                                        if (i.extra != null) formattedText(i.extra.toList()) else "",
+                                        if (i.extra != null) formattedTextJson(i.extra.toList()) else "",
+                                        if (i.extra != null) extractImageRawBase64(i.extra.toList()) else "",
+                                        scannedTimesInARow = 1,
+                                        highlighted = true
+                                    )
                                 )
-                            )
+                            }
                             Log.d("Scanning", "New Result Added: ${i.textualData}")
                         }
                     }
@@ -1241,6 +1516,11 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
             automaticShowBottomSheet = prefs.getBoolean("showBottomSHeet")
         }
 
+        if (scanMode == ScanMode.SearchAndFind && searchAndFindTargetBarcode.isNullOrBlank()) {
+            // In SearchAndFind step 1, show the latest single candidate automatically.
+            automaticShowBottomSheet = true
+        }
+
         existingFragment = supportFragmentManager
             .findFragmentByTag("ResultBottomDialogFragment") as ResultBottomDialogFragment?
 
@@ -1342,10 +1622,65 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
     @SuppressLint("SuspiciousIndentation")
     override fun onStartScanningClicked() {
         binding.imageScanned.visibility = View.GONE
+        if (scanMode == ScanMode.SearchAndFind) {
+            // Keep current pre-Find candidate visible when user only closes/collapses bottom sheet.
+            if (searchAndFindTargetBarcode.isNullOrBlank() && barcodeListResult.isNotEmpty()) {
+                scannedBarcodes = 1
+                binding.textScannedNumber.visibility = View.VISIBLE
+                binding.textScannedNumber.text = "(1)"
+                binding.btnShowDialog.visibility = View.VISIBLE
+                binding.textSearchAndFindHint.visibility = View.VISIBLE
+                binding.textSearchAndFindMatchFound.visibility = View.GONE
+            } else {
+                // After Find/match flow, return to clean step 1.
+                resetSearchAndFindToStepOne()
+            }
+        }
         isScanning = true
         isBottomSheetDialogShown = false
         binding.bkdView.startScanning(this)
 
+    }
+
+    override fun onSearchAndFindClicked(targetBarcode: String) {
+        if (targetBarcode.isBlank()) {
+            Toast.makeText(this, "Invalid barcode for Find", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        searchAndFindTargetBarcode = targetBarcode
+        searchAndFindPreviewBarcode = null
+        searchAndFindIsFrozen = false
+        binding.textSearchAndFindHint.visibility = View.GONE
+        binding.textSearchAndFindMatchFound.visibility = View.GONE
+        getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+            .edit()
+            .putBoolean("searchAndFindMatchedSingleScan", false)
+            .apply()
+        val escapedBarcode = targetBarcode.replace("\\", "\\\\").replace("\"", "\\\"")
+
+        // Step 2: apply MatchFilter config with scanned target barcode.
+        binding.bkdView.config.getDecoderConfig().matchFilter = "[\"$escapedBarcode\"]"
+        binding.bkdView.config.getDecoderConfig().returnOnlyMatchedResults = false
+        binding.bkdView.config.arConfig.arMode = BarkoderARMode.MatchFilter
+        binding.bkdView.config.arConfig.returnOnlyMatchedResults = false
+        binding.bkdView.config.roiCenterMark = BarkoderRoiCenterMark.NONE
+        binding.bkdView.config.isRegionOfInterestVisible = false
+
+        binding.bkdView.config.isCloseSessionOnResultEnabled = false
+        binding.bkdView.config.thresholdBetweenDuplicatesScans = 0
+        binding.bkdView.config.isImageResultEnabled = true
+        binding.bkdView.config.setThumbnailOnResultEnabled(true)
+        BarkoderConfig.SetMulticodeCachingEnabled(true)
+        resetSearchAndFindArCacheSafely()
+
+        binding.imageScanned.visibility = View.GONE
+        if (isScanning) {
+            binding.bkdView.pauseScanning()
+        }
+        isScanning = true
+        isBottomSheetDialogShown = false
+        binding.bkdView.startScanning(this)
     }
 
     fun getCurrentTimeWithTimestamp(): String {

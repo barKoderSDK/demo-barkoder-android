@@ -50,6 +50,9 @@ import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.MenuCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -146,7 +149,18 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
 
+            view.setPadding(
+                systemBars.left,
+                systemBars.top,
+                systemBars.right,
+                systemBars.bottom
+            )
+
+            insets
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             window.statusBarColor = ContextCompat.getColor(this, R.color.toolBarColor)
@@ -639,6 +653,10 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
         isBottomSheetDialogShown = false
     }
 
+    override fun onSearchAndFindClicked(targetBarcode: String) {
+        // Not used in Recent screen.
+    }
+
     private fun extractEndpointFromUrl(url: String): String {
         val trimmedUrl = url.trimEnd('/')
         val uriParts = trimmedUrl.split('/')
@@ -765,7 +783,7 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
     fun showBarcodeDetailsDialog(barcodePicture: String?, barcodeValue: String, barcodeType: String, formattedTextValue: String,formattedTextJson : String, item: RecentScan2, scannedTimes: Int, sadlImageRawBase64 : String) {
         runOnUiThread {
             // Create a regular Dialog for more control
-            val dialog = Dialog(this, com.barkoder.R.style.FullScreenDialogStyle)
+            val dialog = Dialog(this, R.style.FullScreenDialogStylex)
 
 
             // Inflate the custom layout
@@ -776,16 +794,39 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
             dialog.setContentView(dialogView)
 
             val window = dialog.window
-            if (window != null) {
-                // Make the status bar visible
-                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
-                window.setWindowAnimations(R.style.RecentDialogAnimationDetailsDialog)
-                // Set the status bar background color to white
-                window.statusBarColor = Color.WHITE // Or ContextCompat.getColor(this, R.color.white)
 
-                // Make the icons dark (grey)
-                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            if (window != null) {
+
+                window.setWindowAnimations(R.style.RecentDialogAnimationDetailsDialog)
+
+                // Enable edge-to-edge for the dialog window
+                WindowCompat.setDecorFitsSystemWindows(window, false)
+
+                // Colors
+                window.statusBarColor = Color.WHITE
+                window.navigationBarColor = Color.WHITE
+
+                // Dark status bar + navigation bar icons
+                WindowCompat.getInsetsController(window, window.decorView).apply {
+                    isAppearanceLightStatusBars = true
+                    isAppearanceLightNavigationBars = true
+                }
+
+                ViewCompat.setOnApplyWindowInsetsListener(dialogView) { view, insets ->
+
+                    val bars = insets.getInsets(
+                        WindowInsetsCompat.Type.systemBars()
+                    )
+
+                    view.setPadding(
+                        view.paddingLeft,
+                        bars.top,
+                        view.paddingRight,
+                        bars.bottom
+                    )
+
+                    insets
+                }
             }
 
             val barcodeValueText = dialogView.findViewById<TextView>(R.id.barcodeValueText)
@@ -1289,7 +1330,7 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
         runOnUiThread {
             // or use `this` if in an Activity
             val builder =
-                android.app.AlertDialog.Builder(this, com.barkoder.R.style.FullScreenDialogStyle)
+                android.app.AlertDialog.Builder(this, R.style.FullScreenDialogStylex)
             // Inflate the custom layout
             val inflater = LayoutInflater.from(this)
             val dialogView = inflater.inflate(R.layout.custom_dialog_results, null)
@@ -1300,16 +1341,39 @@ class RecentActivity : AppCompatActivity(), RecentScansAdapter.OnRecentScanItemC
             val dialog = builder.create()
 
             val window = dialog.window
-            if (window != null) {
-                // Make the status bar visible
-                window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
-                window.setWindowAnimations(R.style.RecentDialogAnimationDetailsDialog)
-                // Set the status bar background color to white
-                window.statusBarColor = Color.WHITE
 
-                // Make the icons dark (grey)
-                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            if (window != null) {
+
+                window.setWindowAnimations(R.style.RecentDialogAnimationDetailsDialog)
+
+                // Enable edge-to-edge for the dialog window
+                WindowCompat.setDecorFitsSystemWindows(window, false)
+
+                // Colors
+                window.statusBarColor = Color.WHITE
+                window.navigationBarColor = Color.WHITE
+
+                // Dark status bar + navigation bar icons
+                WindowCompat.getInsetsController(window, window.decorView).apply {
+                    isAppearanceLightStatusBars = true
+                    isAppearanceLightNavigationBars = true
+                }
+
+                ViewCompat.setOnApplyWindowInsetsListener(dialogView) { view, insets ->
+
+                    val bars = insets.getInsets(
+                        WindowInsetsCompat.Type.systemBars()
+                    )
+
+                    view.setPadding(
+                        view.paddingLeft,
+                        bars.top,
+                        view.paddingRight,
+                        bars.bottom
+                    )
+
+                    insets
+                }
             }
 
             // Find the ImageView and set the bitmap image

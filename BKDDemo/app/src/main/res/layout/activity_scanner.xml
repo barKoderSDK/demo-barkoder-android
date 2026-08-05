@@ -87,6 +87,43 @@
         app:layout_constraintTop_toBottomOf="@+id/btnSettings"
         android:text="(Continous 2s/delay)" />
 
+    <TextView
+        android:id="@+id/textSearchAndFindHint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/bg_search_find_overlay"
+        android:paddingLeft="14dp"
+        android:paddingTop="8dp"
+        android:paddingRight="14dp"
+        android:paddingBottom="8dp"
+        android:text="@string/search_and_find_step1_overlay_text"
+        android:textColor="@color/white"
+        android:textSize="13sp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/continiousModeOn" />
+
+    <TextView
+        android:id="@+id/textSearchAndFindMatchFound"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_search_find_overlay"
+        android:paddingLeft="18dp"
+        android:paddingTop="10dp"
+        android:paddingRight="18dp"
+        android:paddingBottom="10dp"
+        android:text="@string/search_and_find_match_found_text"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@+id/bkdView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/bkdView" />
+
     <ImageButton
         android:id="@+id/btnClose"
         android:layout_width="wrap_content"

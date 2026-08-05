@@ -46,6 +46,7 @@ import com.barkoder.demoscanner.models.SessionScan
 import com.barkoder.demoscanner.utils.BKDConfigUtil
 import com.barkoder.demoscanner.utils.CommonUtil
 import com.barkoder.demoscanner.utils.ImageUtil
+import com.barkoder.demoscanner.utils.AgeSignalsHelper
 import com.barkoder.demoscanner.viewmodels.RecentScanViewModel
 import com.barkoder.interfaces.BarkoderResultCallback
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -64,6 +65,8 @@ import java.util.Date
 import java.util.Locale
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnPreDraw
 import androidx.core.widget.NestedScrollView
 import com.barkoder.demoscanner.fragments.TutorialDialogFragment
@@ -128,6 +131,18 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback, TutorialDialog
         window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         
         sharedViewModel = ViewModelProvider(this).get(com.barkoder.demoscanner.viewmodels.ScanResultSharedViewModel::class.java)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            view.setPadding(
+                systemBars.left,
+                systemBars.top,
+                systemBars.right,
+                systemBars.bottom
+            )
+
+            insets
+        }
 
 
         onBackPressedDispatcher.addCallback(
@@ -255,6 +270,9 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback, TutorialDialog
 //        )
 
         firebaseAnalytics = Firebase.analytics
+
+        // Play Age Signals API - Texas SB2420 compliance
+        checkAgeSignals()
 
         binding.cardBarcodesIndustrial1D.setOnClickListener {
             startActivity(getScannerIntent(ScanMode.INDUSTRIAL_1D))
@@ -395,6 +413,14 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback, TutorialDialog
             startActivity(getScannerIntent(ScanMode.AR_MODE))
             firebaseAnalytics.logEvent("scan_mode_opened") {
                 param("scan_mode", "ar")
+
+            }
+        }
+
+        binding.cardSearchAndFind.setOnClickListener {
+            startActivity(getScannerIntent(ScanMode.SearchAndFind))
+            firebaseAnalytics.logEvent("scan_mode_opened") {
+                param("scan_mode", "SearchAndFind")
 
             }
         }
@@ -1277,6 +1303,60 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback, TutorialDialog
             convertPngToJpg(context)
             sharedPreferences.edit().putBoolean("png_to_jpg_converted", true).apply()
         }
+    }
+
+    /**
+     * Checks age signals via Play Age Signals API for Texas SB2420 compliance.
+     * If parental approval is denied, restricts app access.
+     */
+    private fun checkAgeSignals() {
+        val ageSignalsHelper = AgeSignalsHelper(this)
+
+        ageSignalsHelper.requestAgeSignals(object : AgeSignalsHelper.AgeSignalsCallback {
+            override fun onAgeSignalsReceived(result: AgeSignalsHelper.AgeSignalsInfo) {
+                Log.d("AgeSignals", "Status: ${ageSignalsHelper.getUserStatusDescription(result.userStatus)}, " +
+                        "Age range: ${result.ageLower}-${result.ageUpper}")
+
+                // App target age: 13-15, 16-17, 18+
+                // Block users confirmed to be under 13
+                val isUnderAge = result.ageLower != null && result.ageUpper != null && result.ageUpper!! < 13
+
+                if (result.isAccessDenied) {
+                    runOnUiThread {
+                        MaterialAlertDialogBuilder(this@MainActivity)
+                            .setTitle("Access Restricted")
+                            .setMessage("A parent or guardian has denied access to this app. Please contact your parent or guardian for approval.")
+                            .setCancelable(false)
+                            .setPositiveButton("OK") { _, _ -> finish() }
+                            .show()
+                    }
+                } else if (isUnderAge) {
+                    runOnUiThread {
+                        MaterialAlertDialogBuilder(this@MainActivity)
+                            .setTitle("Age Restriction")
+                            .setMessage("This app is intended for users aged 13 and over. You are not eligible to use this app.")
+                            .setCancelable(false)
+                            .setPositiveButton("OK") { _, _ -> finish() }
+                            .show()
+                    }
+                }
+
+                // Store age signals in SharedPreferences for use elsewhere in the app
+                val prefs = getSharedPreferences("age_signals", Context.MODE_PRIVATE)
+                prefs.edit()
+                    .putInt("user_status", result.userStatus ?: -1)
+                    .putInt("age_lower", result.ageLower ?: -1)
+                    .putInt("age_upper", result.ageUpper ?: -1)
+                    .putString("install_id", result.installId)
+                    .putBoolean("is_minor", result.isMinor)
+                    .apply()
+            }
+
+            override fun onAgeSignalsError(errorCode: Int, message: String) {
+                Log.w("AgeSignals", "Age signals check failed: " +
+                        "${ageSignalsHelper.getErrorDescription(errorCode)} ($message)")
+            }
+        })
     }
 
 }

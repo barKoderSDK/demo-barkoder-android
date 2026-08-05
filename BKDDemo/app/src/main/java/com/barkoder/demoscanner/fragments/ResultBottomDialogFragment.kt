@@ -57,6 +57,7 @@ import com.barkoder.demoscanner.adapters.MrzInfoAdapter
 import com.barkoder.demoscanner.adapters.SessionScanAdapter
 import com.barkoder.demoscanner.api.RetrofitIInstance
 import com.barkoder.demoscanner.databinding.FragmentResultBottomDialogBinding
+import com.barkoder.demoscanner.enums.ScanMode
 import com.barkoder.demoscanner.models.BarcodeScanedData
 import com.barkoder.demoscanner.models.MrzItem
 import com.barkoder.demoscanner.models.SessionScan
@@ -77,6 +78,9 @@ import org.json.JSONException
 import org.json.JSONObject
 import android.content.ContentValues
 import android.provider.ContactsContract
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import java.io.File
 import java.io.FileWriter
 import java.io.IOException
@@ -113,6 +117,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
     private lateinit var sharedPreferences : SharedPreferences
 
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<*>
+    private var originalWindowCallback: android.view.Window.Callback? = null
 
     var bottomSheet: View? = null
 
@@ -128,6 +133,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
     interface BottomSheetStateListener {
 
         fun onStartScanningClicked()
+        fun onSearchAndFindClicked(targetBarcode: String)
     }
 
     private var stateListener: BottomSheetStateListener? = null
@@ -154,6 +160,11 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 
     override fun onDismiss(dialog: DialogInterface) {
         super.onDismiss(dialog)
+        val dlg = this.dialog
+        if (dlg != null && originalWindowCallback != null) {
+            dlg.window?.callback = originalWindowCallback
+            originalWindowCallback = null
+        }
         (activity as? ScannerActivity)?.isBottomSheetDialogShown = false
         
         // Clear ViewModel data to free memory and prevent leaks
@@ -358,6 +369,14 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         val image = sharedViewModel.currentImage
         var sessionScan = sharedViewModel.sessionScans
         val sharedPreferences = requireContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+        val activeScanMode = ScanMode.values()[
+            requireActivity().intent.getIntExtra(ScannerActivity.ARGS_MODE_KEY, ScanMode.ANYSCAN.ordinal)
+        ]
+        val isSearchAndFindMatchedSingleScan =
+            activeScanMode == ScanMode.SearchAndFind &&
+                sharedPreferences.getBoolean("searchAndFindMatchedSingleScan", false)
+        val shouldUseSearchAndFindFindUi =
+            activeScanMode == ScanMode.SearchAndFind && !isSearchAndFindMatchedSingleScan
 
         csvSaveLauncher = registerForActivityResult(ActivityResultContracts.CreateDocument("text/csv")) { uri ->
             if (uri != null) {
@@ -432,8 +451,83 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             binding.layoutSearchBtn.visibility = View.VISIBLE
         }
 
+        if (shouldUseSearchAndFindFindUi) {
+            binding.layoutTapAnywhere.visibility = View.GONE
+            binding.layoutCopyBtn.visibility = View.GONE
+            binding.layoutCSVBtn.visibility = View.GONE
+            binding.layoutSearchBtn.visibility = View.VISIBLE
+            binding.layoutDetailsBtn.visibility = View.GONE
+            binding.layoutExpandBtn.visibility = View.GONE
+            binding.layoutImportContactBtn.visibility = View.GONE
+
+            binding.layoutSearchBtn.orientation = LinearLayout.HORIZONTAL
+            binding.layoutSearchBtn.gravity = Gravity.CENTER
+            binding.layoutSearchBtn.background = ContextCompat.getDrawable(requireContext(), R.drawable.bg_find_button_rounded)
+
+            val minHeightPx = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                44f,
+                resources.displayMetrics
+            ).toInt()
+            val verticalPaddingPx = TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP,
+                8f,
+                resources.displayMetrics
+            ).toInt()
+            binding.layoutSearchBtn.minimumHeight = minHeightPx
+            binding.layoutSearchBtn.setPadding(
+                resources.getDimensionPixelSize(R.dimen.margin_15),
+                verticalPaddingPx,
+                resources.getDimensionPixelSize(R.dimen.margin_15),
+                verticalPaddingPx
+            )
+
+            binding.txtOpenSearchButton.text = "Find"
+            binding.txtOpenSearchButton.setTextColor(Color.WHITE)
+            binding.txtOpenSearchButton.textSize = 14f
+            binding.btnSearchWeb.setImageResource(R.drawable.ico_find)
+            binding.btnSearchWeb.setColorFilter(Color.WHITE)
+            binding.btnSearchWeb.backgroundTintList = null
+            binding.btnSearchWeb.setBackgroundColor(Color.TRANSPARENT)
+
+            val iconLayoutParams = binding.btnSearchWeb.layoutParams as LinearLayout.LayoutParams
+            iconLayoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
+            iconLayoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+            iconLayoutParams.weight = 0f
+            iconLayoutParams.marginEnd = verticalPaddingPx
+            binding.btnSearchWeb.layoutParams = iconLayoutParams
+
+            val findTextLayoutParams = binding.txtOpenSearchButton.layoutParams as LinearLayout.LayoutParams
+            findTextLayoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
+            findTextLayoutParams.height = ViewGroup.LayoutParams.WRAP_CONTENT
+            findTextLayoutParams.gravity = Gravity.CENTER_VERTICAL
+            binding.txtOpenSearchButton.layoutParams = findTextLayoutParams
+
+            val searchLayoutParams = binding.layoutSearchBtn.layoutParams as LinearLayout.LayoutParams
+            searchLayoutParams.width = 0
+            searchLayoutParams.weight = 1f
+            searchLayoutParams.marginStart = resources.getDimensionPixelSize(R.dimen.margin_15)
+            searchLayoutParams.marginEnd = resources.getDimensionPixelSize(R.dimen.margin_15)
+            binding.layoutSearchBtn.layoutParams = searchLayoutParams
+
+            val onFindClick = View.OnClickListener {
+                val targetBarcode = scannedBarcodesResultList.lastOrNull()
+                    ?: resultsList.lastOrNull()
+                    ?: ""
+                val normalizedTargetBarcode = targetBarcode.trim()
+                if (normalizedTargetBarcode.isNotEmpty()) {
+                    stateListener?.onSearchAndFindClicked(normalizedTargetBarcode)
+                    dismiss()
+                } else {
+                    Toast.makeText(requireContext(), "No barcode selected to find", Toast.LENGTH_SHORT).show()
+                }
+            }
+            binding.btnSearchWeb.setOnClickListener(onFindClick)
+            binding.layoutSearchBtn.setOnClickListener(onFindClick)
+        }
+
         // If only 1 barcode and it contains vCard data, replace Search with Import Contact
-        if (resultsList!!.size == 1 && (resultsList[0].uppercase().contains("VCARD") || resultsList[0].uppercase().contains("BEGIN:VCARD"))) {
+        if (activeScanMode != ScanMode.SearchAndFind && resultsList!!.size == 1 && (resultsList[0].uppercase().contains("VCARD") || resultsList[0].uppercase().contains("BEGIN:VCARD"))) {
             binding.layoutSearchBtn.visibility = View.GONE
             binding.layoutImportContactBtn.visibility = View.VISIBLE
             binding.btnImportContactBottom.setOnClickListener {
@@ -446,7 +540,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 
         val lastResult = resultsList?.lastOrNull()
 
-        if (lastResult != null && CommonUtil.isTextURL(lastResult)) {
+        if ((activeScanMode != ScanMode.SearchAndFind || isSearchAndFindMatchedSingleScan) && lastResult != null && CommonUtil.isTextURL(lastResult)) {
             binding.btnSearchWeb.setImageResource(R.drawable.ico_webhook)
             binding.txtOpenSearchButton.text = "Open"
         }
@@ -496,7 +590,9 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         scannedBarcodesDateList.addAll(dateList!!)
         resultsFromLastFrame.addAll(resultsList)
 
-        updateSearchEngineOnBarcodeDetailsButton(binding.btnSearchWeb, resultsList[0])
+        if (activeScanMode != ScanMode.SearchAndFind || isSearchAndFindMatchedSingleScan) {
+            updateSearchEngineOnBarcodeDetailsButton(binding.btnSearchWeb, resultsList[0])
+        }
         if(resultsSize != null) {
             if(galleryScanMode || arMode) {
                 if(lastResultsOnFrame == 1) binding.resultsSize.text = lastResultsOnFrame.toString() + " result found" else binding.resultsSize.text = lastResultsOnFrame.toString() + " results found"
@@ -561,24 +657,14 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 
         binding.btnTapAnyhere.setOnClickListener{
             stateListener?.onStartScanningClicked()
-            if(bottomSheetBehavior.peekHeight == 1200) {
-
-                (activity as? MainActivity)?.hideImageView()
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                updatePeekHeightInstant(1200, 0, bottomSheetBehavior)
-                binding.layoutTapAnywhere.visibility = View.INVISIBLE
-            }
+            (activity as? MainActivity)?.hideImageView()
+            dismissAllowingStateLoss()
         }
 
         binding.layoutTapAnywhere.setOnClickListener{
             stateListener?.onStartScanningClicked()
-
-            if(bottomSheetBehavior.peekHeight == 1200) {
-                (activity as? MainActivity)?.hideImageView()
-                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                updatePeekHeightInstant(1200, 0, bottomSheetBehavior)
-                binding.layoutTapAnywhere.visibility = View.INVISIBLE
-            }
+            (activity as? MainActivity)?.hideImageView()
+            dismissAllowingStateLoss()
         }
 
         // Intercept taps outside the bottom sheet at the Window level.
@@ -586,6 +672,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         // CoordinatorLayout intercepts touch events post-scroll. Window.Callback fires first.
         dialog?.window?.let { window ->
             val originalCallback = window.callback
+            originalWindowCallback = originalCallback
             window.callback = object : android.view.Window.Callback by originalCallback {
                 override fun dispatchTouchEvent(event: android.view.MotionEvent?): Boolean {
                     if (event != null && event.action == android.view.MotionEvent.ACTION_DOWN) {
@@ -597,16 +684,12 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
                             val touchY = event.rawY.toInt()
 
                             if (touchY < sheetTop) {
-                                if (!expandedBottomSheet) {
+                                if (!expandedBottomSheet || activeScanMode == ScanMode.SearchAndFind) {
                                     stateListener?.onStartScanningClicked()
                                 }
 
-                                if (bottomSheetBehavior.peekHeight == 1200) {
-                                    (activity as? MainActivity)?.hideImageView()
-                                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                                    updatePeekHeightInstant(1200, 0, bottomSheetBehavior)
-                                    binding.layoutTapAnywhere.visibility = View.INVISIBLE
-                                }
+                                (activity as? MainActivity)?.hideImageView()
+                                dismissAllowingStateLoss()
                                 return true
                             }
                         }
@@ -620,12 +703,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_UP) {
                 (activity as? MainActivity)?.hideImageView()
                stateListener?.onStartScanningClicked()
-                if(bottomSheetBehavior.peekHeight == 1200) {
-                    updatePeekHeight(1200, 0, bottomSheetBehavior)
-                    binding.layoutTapAnywhere.visibility = View.INVISIBLE
-
-                }
-                dismiss()
+                dismissAllowingStateLoss()
                 true
             } else {
                 false
@@ -1337,7 +1415,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
     public fun showFullScreenDialog(context: Context , picutreImage : String?, documentImage : String?, signatureImage : String?, mainImage : String?, results: String?) {
             // or use `this` if in an Activity
             val builder =
-                AlertDialog.Builder(context, com.barkoder.R.style.FullScreenDialogStyle)
+                AlertDialog.Builder(context, R.style.FullScreenDialogStylex)
             // Inflate the custom layout
             val inflater = LayoutInflater.from(context)
             val dialogView = inflater.inflate(R.layout.custom_dialog_results, null)
@@ -1351,16 +1429,39 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 
         val window = dialog.window
         if (window != null) {
-            // Make the status bar visible
-            window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-            window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
-            window.setWindowAnimations(R.style.DialogAnimationDetailsDialog)
-            // Set the status bar background color to white
-            window.statusBarColor = Color.WHITE
 
-            // Make the icons dark (grey)
-            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            window.setWindowAnimations(R.style.RecentDialogAnimationDetailsDialog)
+
+            // Enable edge-to-edge for the dialog window
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+
+            // Colors
+            window.statusBarColor = Color.WHITE
+            window.navigationBarColor = Color.WHITE
+
+            // Dark status bar + navigation bar icons
+            WindowCompat.getInsetsController(window, window.decorView).apply {
+                isAppearanceLightStatusBars = true
+                isAppearanceLightNavigationBars = true
+            }
+
+            ViewCompat.setOnApplyWindowInsetsListener(dialogView) { view, insets ->
+
+                val bars = insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                )
+
+                view.setPadding(
+                    view.paddingLeft,
+                    bars.top,
+                    view.paddingRight,
+                    bars.bottom
+                )
+
+                insets
+            }
         }
+
 
             // Find the ImageView and set the bitmap image
             val dialogImageView =
@@ -1591,7 +1692,7 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 
     @SuppressLint("MissingInflatedId")
     public fun showBarcodeDetailsDialog(context: Context, mainImage: String, result: String, typname: String, formattedTextValue : String,formattedTextJson : String, scannedTimes: Int, sadlImageRawBase64 : String) {
-        val dialog = Dialog(requireContext(), com.barkoder.R.style.FullScreenDialogStyle)
+        val dialog = Dialog(requireContext(), R.style.FullScreenDialogStylex)
 
         // Inflate the custom layout
         val inflater = LayoutInflater.from(requireContext())
@@ -1601,16 +1702,39 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
 
         val window = dialog.window
         if (window != null) {
-            // Make the status bar visible
-            window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-            window.addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN)
-            window.setWindowAnimations(R.style.DialogAnimationDetailsDialog)
-            // Set the status bar background color to white
-            window.statusBarColor = Color.WHITE // Or ContextCompat.getColor(this, R.color.white)
 
-            // Make the icons dark (grey)
-            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+            window.setWindowAnimations(R.style.RecentDialogAnimationDetailsDialog)
+
+            // Enable edge-to-edge for the dialog window
+            WindowCompat.setDecorFitsSystemWindows(window, false)
+
+            // Colors
+            window.statusBarColor = Color.WHITE
+            window.navigationBarColor = Color.WHITE
+
+            // Dark status bar + navigation bar icons
+            WindowCompat.getInsetsController(window, window.decorView).apply {
+                isAppearanceLightStatusBars = true
+                isAppearanceLightNavigationBars = true
+            }
+
+            ViewCompat.setOnApplyWindowInsetsListener(dialogView) { view, insets ->
+
+                val bars = insets.getInsets(
+                    WindowInsetsCompat.Type.systemBars()
+                )
+
+                view.setPadding(
+                    view.paddingLeft,
+                    bars.top,
+                    view.paddingRight,
+                    bars.bottom
+                )
+
+                insets
+            }
         }
+
 
         val barcodeValueText = dialogView.findViewById<TextView>(R.id.barcodeValueText)
         val barcodeTypeText = dialogView.findViewById<TextView>(R.id.barcodeTypeText)

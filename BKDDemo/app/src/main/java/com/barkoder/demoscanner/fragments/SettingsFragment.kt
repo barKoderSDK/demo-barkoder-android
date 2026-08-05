@@ -426,7 +426,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                         newOrder = customKeyOrderDeblur.indexOf(pref.key)
                     } else if (scanMode == ScanMode.MISSHAPED_1D) {
                         newOrder = customKeyOrderMisshapped.indexOf(pref.key)
-                    }  else if (scanMode == ScanMode.AR_MODE) {
+                    }  else if (scanMode == ScanMode.AR_MODE || scanMode == ScanMode.SearchAndFind) {
                         newOrder = customKeyOrderArMode.indexOf(pref.key)
                     }
 
@@ -586,13 +586,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     continuisTresHoldPreferences.isVisible = true
                 }
 //
-                if(scanMode != ScanMode.AR_MODE  && scanMode != ScanMode.MISSHAPED_1D && scanMode != ScanMode.DPM && scanMode != ScanMode.DOTCODE && scanMode != ScanMode.MRZ) {
+                if(scanMode != ScanMode.AR_MODE  && scanMode != ScanMode.SearchAndFind && scanMode != ScanMode.MISSHAPED_1D && scanMode != ScanMode.DPM && scanMode != ScanMode.DOTCODE && scanMode != ScanMode.MRZ) {
                     makePreferenceVisable(getString(R.string.key_ar_preference))
                 }
                 // Enable related feature
             } else {
                 continuisTresHoldPreferences.isVisible = false
-                if(scanMode != ScanMode.AR_MODE  && scanMode != ScanMode.MISSHAPED_1D && scanMode != ScanMode.DPM && scanMode != ScanMode.DOTCODE) {
+                if(scanMode != ScanMode.AR_MODE  && scanMode != ScanMode.SearchAndFind && scanMode != ScanMode.MISSHAPED_1D && scanMode != ScanMode.DPM && scanMode != ScanMode.DOTCODE) {
                     makePreferenceInvisible(getString(R.string.key_ar_preference))
                 }
             }
@@ -607,13 +607,13 @@ class SettingsFragment : PreferenceFragmentCompat() {
             if(arModePreference.value.toInt() == 0) {
                 continuisTresHoldPreferences.isVisible = true
             }
-            if(scanMode != ScanMode.AR_MODE  && scanMode != ScanMode.MISSHAPED_1D && scanMode != ScanMode.DPM && scanMode != ScanMode.DOTCODE) {
+            if(scanMode != ScanMode.AR_MODE  && scanMode != ScanMode.SearchAndFind && scanMode != ScanMode.MISSHAPED_1D && scanMode != ScanMode.DPM && scanMode != ScanMode.DOTCODE) {
                 makePreferenceVisable(getString(R.string.key_ar_preference))
             }
 
         } else {
             continuisTresHoldPreferences.isVisible = false
-            if(scanMode != ScanMode.AR_MODE  && scanMode != ScanMode.MISSHAPED_1D && scanMode != ScanMode.DPM && scanMode != ScanMode.DOTCODE) {
+            if(scanMode != ScanMode.AR_MODE  && scanMode != ScanMode.SearchAndFind && scanMode != ScanMode.MISSHAPED_1D && scanMode != ScanMode.DPM && scanMode != ScanMode.DOTCODE) {
                 makePreferenceInvisible(getString(R.string.key_ar_preference))
             }
         }
@@ -756,79 +756,79 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     private fun onClickTemplateSettings() {
         findPreference<Preference>(getString(R.string.key_All1D_settings))?.setOnPreferenceClickListener {
-            openSettingsActivity(13)
+            openSettingsActivity(ScanMode.ALL_1D)
             false
         }
         findPreference<Preference>(getString(R.string.key_1d_industrial_settings))?.setOnPreferenceClickListener {
-            openSettingsActivity(0)
+            openSettingsActivity(ScanMode.INDUSTRIAL_1D)
             false
         }
         findPreference<Preference>(getString(R.string.key_1d_retail_settings))?.setOnPreferenceClickListener {
-            openSettingsActivity(1)
+            openSettingsActivity(ScanMode.RETAIL_1D)
             false
         }
         findPreference<Preference>(getString(R.string.key_PDF_settings))?.setOnPreferenceClickListener {
-            openSettingsActivity(2)
+            openSettingsActivity(ScanMode.PDF)
             false
         }
         findPreference<Preference>(getString(R.string.key_All2D_settings))?.setOnPreferenceClickListener {
-            openSettingsActivity(4)
+            openSettingsActivity(ScanMode.ALL_2D)
             false
         }
         findPreference<Preference>(getString(R.string.key_BatchMultiscan_settings))?.setOnPreferenceClickListener {
-            openSettingsActivity(5)
+            openSettingsActivity(ScanMode.CONTINUOUS)
             false
         }
         findPreference<Preference>(getString(R.string.key_anyscan_settings))?.setOnPreferenceClickListener {
-            openSettingsActivity(6)
+            openSettingsActivity(ScanMode.ANYSCAN)
             false
         }
         findPreference<Preference>(getString(R.string.key_DPM_settings))?.setOnPreferenceClickListener {
-            openSettingsActivity(8)
+            openSettingsActivity(ScanMode.DPM)
             false
         }
         findPreference<Preference>(getString(R.string.key_VIN_settings))?.setOnPreferenceClickListener {
-            openSettingsActivity(9)
+            openSettingsActivity(ScanMode.VIN)
             false
         }
         findPreference<Preference>(getString(R.string.key_Dotcode_settings))?.setOnPreferenceClickListener {
-            openSettingsActivity(10)
+            openSettingsActivity(ScanMode.DOTCODE)
             false
         }
         findPreference<Preference>(getString(R.string.key_Deblur_settings))?.setOnPreferenceClickListener {
-            openSettingsActivity(11)
+            openSettingsActivity(ScanMode.UPC_EAN_DEBLUR)
             false
         }
         findPreference<Preference>(getString(R.string.key_Misshaped_settings))?.setOnPreferenceClickListener {
-            openSettingsActivity(12)
+            openSettingsActivity(ScanMode.MISSHAPED_1D)
             false
         }
         findPreference<Preference>(getString(R.string.key_mrz_settings))?.setOnPreferenceClickListener {
-            openSettingsActivity(15)
+            openSettingsActivity(ScanMode.MRZ)
             false
         }
         findPreference<Preference>(getString(R.string.key_gallery_scan_settings))?.setOnPreferenceClickListener {
-            openSettingsActivity(16)
+            openSettingsActivity(ScanMode.GALLERY_SCAN)
             false
         }
         findPreference<Preference>(getString(R.string.key_composite_settings))?.setOnPreferenceClickListener {
-            openSettingsActivity(17)
+            openSettingsActivity(ScanMode.COMPOSITE)
             false
         }
         findPreference<Preference>(getString(R.string.key_postal_settings))?.setOnPreferenceClickListener {
-            openSettingsActivity(18)
+            openSettingsActivity(ScanMode.POSTAL_CODES)
             false
         }
-        findPreference<Preference>(getString(R.string.key_arMode_settings))?.setOnPreferenceClickListener {
-            openSettingsActivity(7)
+        findPreference<Preference>(getString(R.string.key_filterMode_settings))?.setOnPreferenceClickListener {
+            openSettingsActivity(ScanMode.SearchAndFind)
             false
         }
     }
 
 
-    private fun openSettingsActivity(mode: Int) {
+    private fun openSettingsActivity(mode: ScanMode) {
         val settingsIntent = Intent(requireActivity(), SettingsActivity::class.java)
-        settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, mode)
+        settingsIntent.putExtra(SettingsFragment.ARGS_MODE_KEY, mode.ordinal)
         settingsIntent.putExtra("opened_from_settings", true)
         startActivity(settingsIntent)
     }
@@ -1285,6 +1285,39 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 makePreferenceVisable(getString(R.string.key_ar_preference))
 
             }
+            ScanMode.SearchAndFind -> {
+                makePreferenceInvisible(getString(R.string.key_mrz_mode))
+                makePreferenceInvisible(getString(R.string.key_enable_location_in_preview))
+                makePreferenceInvisible(getString(R.string.key_enable_roi))
+                makePreferenceInvisible(getString(R.string.key_bigger_viewfinder))
+                makePreferenceInvisible(getString(R.string.key_narrow_viewfinder))
+                makePreferenceInvisible(getString(R.string.key_result_searchEngine))
+                makePreferenceInvisible(getString(R.string.key_enable_searchweb))
+                makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet2))
+                makePreferenceInvisible(getString(R.string.key_reset_all_settings))
+                makePreferenceInvisible(getString(R.string.key_result_copyTerminator))
+                makePreferenceInvisible(getString(R.string.key_symbology_dotcode))
+                makePreferenceInvisible(getString(R.string.key_show_tutorial))
+                makePreferenceInvisible(getString(R.string.key_tutorial_settings))
+                preferenceScreen.getPreference(INDIVIDUAL_TEMPLATES_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(CAMERA_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(WEEBHOOK_SETTINGS_CATEGORY_INDEX).isVisible = false
+                preferenceScreen.getPreference(PARSER_SETTINGS_CATEGORY_INDEX).isVisible = false
+                makePreferenceInvisible(getString(R.string.key_dpm_mode))
+                makePreferenceInvisible(getString(R.string.key_misshaped_code_capture))
+                makePreferenceInvisible(getString(R.string.key_blured_scan_eanupc))
+                makePreferenceInvisible(getString(R.string.key_continuous_scaning))
+                makePreferenceInvisible(getString(R.string.key_vibrate))
+                makePreferenceInvisible(getString(R.string.key_automatic_show_bottomsheet))
+                makePreferenceVisable(getString(R.string.key_ar_preference))
+                makePreferenceInvisible(getString(R.string.key_ar_mode_options))
+                makePreferenceInvisible(getString(R.string.key_double_tap_to_freez))
+                makePreferenceVisable(getString(R.string.key_ar_display_only_matched))
+                makePreferenceVisable(getString(R.string.key_ar_location_type))
+                makePreferenceVisable(getString(R.string.key_ar_header_show_mode))
+                makePreferenceVisable(getString(R.string.key_ar_overlay_fps))
+
+            }
         }
     }
 
@@ -1655,7 +1688,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 )
                 reloadAllPrefsValues()
                 continuisTresHoldPreferences.isVisible = false
-                if(scanMode != ScanMode.AR_MODE) {
+                if(scanMode != ScanMode.AR_MODE && scanMode != ScanMode.SearchAndFind) {
                     makePreferenceInvisible("pref_key_ar_preferenece")
                 }
             }
@@ -1722,6 +1755,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val sharedPrefNameARMode = requireActivity().packageName + ScanMode.AR_MODE.prefKey
         val sharedPrefARMode = requireActivity().getSharedPreferences(sharedPrefNameARMode, Context.MODE_PRIVATE)
 
+        val sharedPrefNameSearchAndFindMode = requireActivity().packageName + ScanMode.SearchAndFind.prefKey
+        val sharedPrefSearchAndFindMode = requireActivity().getSharedPreferences(sharedPrefNameSearchAndFindMode, Context.MODE_PRIVATE)
 
 
         MaterialAlertDialogBuilder(requireContext())
@@ -1866,6 +1901,14 @@ class SettingsFragment : PreferenceFragmentCompat() {
                     requireContext(),
                     false,
                     ScanMode.AR_MODE,
+                    null
+                )
+
+                BKDConfigUtil.setDefaultValuesInPrefs(
+                    sharedPrefSearchAndFindMode,
+                    requireContext(),
+                    false,
+                    ScanMode.SearchAndFind,
                     null
                 )
 

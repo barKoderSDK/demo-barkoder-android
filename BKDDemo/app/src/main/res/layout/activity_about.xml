@@ -58,7 +58,8 @@
             android:paddingBottom="60dp"
             android:scrollbars="vertical"
             app:layout_constraintBottom_toTopOf="@id/rlBottomBar"
-            app:layout_constraintTop_toBottomOf="@id/appBarLayout">
+            app:layout_constraintTop_toBottomOf="@id/appBarLayout"
+            tools:ignore="NotSibling">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constLayout"

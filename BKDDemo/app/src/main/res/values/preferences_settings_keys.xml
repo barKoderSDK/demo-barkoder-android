@@ -11,6 +11,7 @@
     <string name="key_barkoder_result_settings">pref_key_barkode_result_settings</string>
     <string name="key_scanner_decoding_speed">pref_key_scanner_decoding_speed</string>
     <string name="key_ar_mode_options">pref_key_ar_mode_options</string>
+    <string name="key_ar_display_only_matched">pref_key_ar_display_only_matched</string>
     <string name="key_ar_location_type">pref_key_ar_location_type</string>
     <string name="key_ar_header_show_mode">pref_key_ar_header_show_mode</string>
     <string name="key_ar_overlay_fps">pref_key_ar_overlay_fps</string>
@@ -114,6 +115,7 @@
     <string name="key_composite_settings">pref_key_composite_settings</string>
     <string name="key_postal_settings">pref_key_postal_settings</string>
     <string name="key_arMode_settings">pref_key_arMode_settings</string>
+    <string name="key_filterMode_settings">pref_key_filterMode_settings</string>
 
     <string name="key_length">_length</string>
     <string name="key_min_length">_min_length</string>

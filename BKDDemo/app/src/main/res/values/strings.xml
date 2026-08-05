@@ -62,6 +62,7 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
     <string name="tutorial_settings_title">Tutorial</string>
     <string name="scanner_decoding_speed_title">Decoding Speed</string>
     <string name="scanner_ar_mode_title">AR Mode</string>
+    <string name="scanner_ar_display_only_matched_title">Display Only Matched Results</string>
     <string name="scanner_ar_location_type_title">Location Type</string>
     <string name="scanner_ar_header_show_title">Header Show Mode</string>
     <string name="scanner_ar_overlay_fps_title">Overlay refresh</string>
@@ -84,6 +85,8 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
     <string name="narrow_viewfinder_dpm_title">Narrow viewfinder</string>
     <string name="automatically_show_bottomsheet_title">Automatically show bottomsheet</string>
     <string name="double_tap_to_freez_title">Double Tap to Freeze</string>
+    <string name="search_and_find_step1_overlay_text">Scan the code that you want to find</string>
+    <string name="search_and_find_match_found_text">Match Found</string>
 
     <string name="symbologies_settings_title">Barcode Types (Scan Mode) </string>
     <string name="barkodes_types_key">barkode_types_key</string>
@@ -158,6 +161,7 @@ You can test the barKoder Barcode Scanner SDK at your convenience by signing up 
     <string name="anyscan_settings_title">Anycode</string>
     <string name="mrz_settings_title">MRZ Mode</string>
     <string name="gallery_scan_settings_title">Gallery Scan</string>
+    <string name="filter_settings_title">Search &amp; Find</string>
     <string name="composite_mode_title">Composite</string>
     <string name="postal_mode_title">Postal codes</string>
     <string name="ar_mode_title">AR</string>
