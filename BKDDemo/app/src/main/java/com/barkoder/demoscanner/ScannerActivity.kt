@@ -208,7 +208,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
         binding.bkdView.config.arConfig.arMode = BarkoderARMode.NonInteractive
         binding.bkdView.config.arConfig.returnOnlyMatchedResults = false
         binding.bkdView.config.roiCenterMark = BarkoderRoiCenterMark.POINT
-        binding.bkdView.config.isRegionOfInterestVisible = true
+        binding.bkdView.config.isRegionOfInterestVisible = false
     }
 
 
@@ -444,7 +444,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
             binding.bkdView.config.arConfig.returnOnlyMatchedResults = false
             binding.bkdView.config.roiCenterMark = BarkoderRoiCenterMark.POINT
             binding.bkdView.config.arConfig.imageResultEnabled = true
-            binding.bkdView.config.isRegionOfInterestVisible = true
+            binding.bkdView.config.isRegionOfInterestVisible = false
         }
 
         binding.bkdView.setCameraCallback(this)
@@ -455,7 +455,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
 //            binding.bkdView.startCamera()
 
 
-        binding.bkdView.config.roiLineColor = ContextCompat.getColor(this, R.color.brand_color)
+        binding.bkdView.config.roiLineColor = -1711341568
         binding.bkdView.config.locationLineColor = ContextCompat.getColor(this, R.color.brand_color)
 
         if(binding.bkdView.config.isCloseSessionOnResultEnabled) {
@@ -647,7 +647,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                 binding.bkdView.config.getDecoderConfig().matchFilter = "[]"
                 binding.bkdView.config.arConfig.arMode = BarkoderARMode.NonInteractive
                 binding.bkdView.config.roiCenterMark = BarkoderRoiCenterMark.POINT
-                binding.bkdView.config.isRegionOfInterestVisible = true
+                binding.bkdView.config.isRegionOfInterestVisible = false
             }
 
             val firstTypeName = if (selectedResult.extra != null) {
@@ -1445,7 +1445,8 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                 val trimmed = line.trim()
                 trimmed.startsWith("ImageRawBase64:") ||
                         trimmed.startsWith("Image width:") ||
-                        trimmed.startsWith("Image height:")
+                        trimmed.startsWith("Image height:") ||
+                        trimmed.startsWith("FormatCode")
             }
 
             .joinToString("\n") // Join lines back together

@@ -1186,7 +1186,8 @@ class MainActivity : AppCompatActivity(), BarkoderResultCallback, TutorialDialog
                 val trimmed = line.trim()
                 trimmed.startsWith("ImageRawBase64:") ||
                         trimmed.startsWith("Image width:") ||
-                        trimmed.startsWith("Image height:")
+                        trimmed.startsWith("Image height:") ||
+                        trimmed.startsWith("FormatCode")
             }
 
             .joinToString("\n") // Join lines back together
