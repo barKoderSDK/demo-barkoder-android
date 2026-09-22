@@ -546,7 +546,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                 // SDK dialog won't be shown, show app dialog
                 showPermissionAlert()
             }
-        } else {
+        } else if (isScanning && !isBottomSheetDialogShown) {
             binding.bkdView.startScanning(this)
         }
 
@@ -554,7 +554,9 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
 
     override fun onPause() {
         onPauseBool = true
-//        binding.bkdView.stopScanning()
+        if (isScanning) {
+            binding.bkdView.pauseScanning()
+        }
         val sharedPreferences: SharedPreferences =
             getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         val editor: SharedPreferences.Editor = sharedPreferences.edit()

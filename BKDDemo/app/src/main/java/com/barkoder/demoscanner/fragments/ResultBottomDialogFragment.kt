@@ -526,12 +526,14 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
             binding.layoutSearchBtn.setOnClickListener(onFindClick)
         }
 
+        val firstResult = resultsList.firstOrNull()
+
         // If only 1 barcode and it contains vCard data, replace Search with Import Contact
-        if (activeScanMode != ScanMode.SearchAndFind && resultsList!!.size == 1 && (resultsList[0].uppercase().contains("VCARD") || resultsList[0].uppercase().contains("BEGIN:VCARD"))) {
+        if (activeScanMode != ScanMode.SearchAndFind && resultsList!!.size == 1 && firstResult != null && (firstResult.uppercase().contains("VCARD") || firstResult.uppercase().contains("BEGIN:VCARD"))) {
             binding.layoutSearchBtn.visibility = View.GONE
             binding.layoutImportContactBtn.visibility = View.VISIBLE
             binding.btnImportContactBottom.setOnClickListener {
-                importVCardContact(requireContext(), resultsList[0])
+                importVCardContact(requireContext(), firstResult)
             }
         }
 //        updateSearchEngine()
@@ -591,7 +593,10 @@ class ResultBottomDialogFragment : BottomSheetDialogFragment(), SessionScanAdapt
         resultsFromLastFrame.addAll(resultsList)
 
         if (activeScanMode != ScanMode.SearchAndFind || isSearchAndFindMatchedSingleScan) {
-            updateSearchEngineOnBarcodeDetailsButton(binding.btnSearchWeb, resultsList[0])
+            Log.d("updaets", "reeqweqe")
+            firstResult?.let { barcode ->
+                updateSearchEngineOnBarcodeDetailsButton(binding.btnSearchWeb, barcode)
+            }
         }
         if(resultsSize != null) {
             if(galleryScanMode || arMode) {
