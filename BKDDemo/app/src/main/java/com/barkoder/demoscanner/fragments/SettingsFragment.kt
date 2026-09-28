@@ -819,6 +819,10 @@ class SettingsFragment : PreferenceFragmentCompat() {
             openSettingsActivity(ScanMode.POSTAL_CODES)
             false
         }
+        findPreference<Preference>(getString(R.string.key_arMode_settings))?.setOnPreferenceClickListener {
+            openSettingsActivity(ScanMode.AR_MODE)
+            false
+        }
         findPreference<Preference>(getString(R.string.key_filterMode_settings))?.setOnPreferenceClickListener {
             openSettingsActivity(ScanMode.SearchAndFind)
             false
@@ -1918,6 +1922,8 @@ class SettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun reloadAllPrefsValues() {
+        val threadsLimitPreference =
+            findPreference<ListPreference>(getString(R.string.key_threads_limit))!!
         val dynamicExposureEntries =
             findPreference<ListPreference>(getString(R.string.key_dynamic_exposure_entries))!!
         val setCenteredAutoFocus =
@@ -1930,16 +1936,20 @@ class SettingsFragment : PreferenceFragmentCompat() {
             findPreference<ListPreferenceWhiteBg>("pref_key_gs1_format_decimal_places")!!
         val setFrontcamera =
             findPreference<SwitchPreference>(getString(R.string.key_frontCamera))!!
+        val setMirrorFrontCameraPreview =
+            findPreference<SwitchPreference>(getString(R.string.key_mirror_front_camera_preview))!!
         if(scanMode == ScanMode.GLOBAL) {
             webhookEncodeDataPreference.isEnabled = true
             webhookFeedbackPreference.isEnabled = true
             webhookConfigurationPreference.isEnabled = true
             defaultSearchWebPreference.isEnabled = true
             setFrontcamera.isChecked = false
+            setMirrorFrontCameraPreview.isChecked = true
             setCenteredAutoFocus.isChecked = false
             setVideoStabilization.isChecked = false
             gs1StrictRules.isChecked = false
             gs1DecimalPlaces.value = "0"
+            threadsLimitPreference.value = "2"
             dynamicExposureEntries.value = "Disabled"
             dynamicExposureEntries.setValueIndex(0);
 

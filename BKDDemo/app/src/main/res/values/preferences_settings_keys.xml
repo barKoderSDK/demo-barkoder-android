@@ -36,10 +36,12 @@
     <string name="key_narrow_viewfinder">pref_key_narrow_viewfinder</string>
     <string name="key_automatic_show_bottomsheet">pref_key_automatic_show_bottomsheet</string>
     <string name="key_automatic_show_bottomsheet2">pref_key_automatic_show_bottomsheet2</string>
+    <string name="key_threads_limit">pref_key_threads_limit</string>
     <string name="key_dynamic_exposure_entries">pref_key_dynamic_exposureee</string>
     <string name="key_autoFocus_centered">pref_key_autofocus</string>
     <string name="key_video_stabilization">pref_key_videostabilization</string>
     <string name="key_frontCamera">pref_key_frontCamera</string>
+    <string name="key_mirror_front_camera_preview">pref_key_mirror_front_camera_preview</string>
     <string name="key_double_tap_to_freez">pref_key_double_tap_to_freez</string>
 
     <string name="key_symbology_aztec">pref_key_symbology_aztec</string>

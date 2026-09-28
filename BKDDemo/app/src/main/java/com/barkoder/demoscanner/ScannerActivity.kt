@@ -132,6 +132,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
     var scannedBarcodes = 0
     private var isZoomed = false
     private var maxZoomFactor: Float = -1f
+    private val targetZoomFactor = 3.0f
     private var isFlashOn = false
     private var isScanning = true
     private var automaticShowBottomSheet: Boolean = false
@@ -154,6 +155,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
     private var gs1DecimalFormatPlaces : Boolean? = null
     private var videoStabilization : Boolean? = null
     private var frontCamera : Boolean? = null
+    private var mirrorFrontCameraPreview = true
     private var dynamicExposureIntesity : String = "Disabled"
     private var frontCameraEnabled = false
     private var searchAndFindTargetBarcode: String? = null
@@ -209,6 +211,10 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
         binding.bkdView.config.arConfig.returnOnlyMatchedResults = false
         binding.bkdView.config.roiCenterMark = BarkoderRoiCenterMark.POINT
         binding.bkdView.config.isRegionOfInterestVisible = false
+    }
+
+    private fun applyPreviewMirroring() {
+        binding.bkdView.setPreviewMirrored(mirrorFrontCameraPreview)
     }
 
 
@@ -274,6 +280,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
         gs1StrictRules = prefs.getBoolean("pref_key_gs1_strict_rules", false)
         videoStabilization = prefs.getBoolean("pref_key_videostabilization", false)
         frontCamera = prefs.getBoolean("pref_key_frontCamera", false)
+        mirrorFrontCameraPreview = prefs.getBoolean("pref_key_mirror_front_camera_preview", true)
 
 
 
@@ -318,6 +325,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
                     binding.btnFlash.setBackgroundResource(R.drawable.ic_flash_off)
                 }
             }
+            applyPreviewMirroring()
         }
 
         binding.btnShowDialog.setOnClickListener {
@@ -345,6 +353,7 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
         }
 
         binding.bkdView.config = BKDConfigUtil.configureBKD(this, scanMode)
+        applyPreviewMirroring()
         binding.textFps.text = "fps"
         binding.textDps.text = "dps"
         binding.txtEnabledTypes.text =
@@ -368,6 +377,11 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
         }
  
         val prefs2 = PreferenceManager.getDefaultSharedPreferences(this)
+        val threadsLimit = prefs2
+            .getString("pref_key_threads_limit", "2")
+            ?.toIntOrNull()
+            ?.coerceIn(1, 6) ?: 2
+        BarkoderConfig.SetThreadsLimit(threadsLimit)
         dynamicExposureIntesity = prefs2.getString("pref_key_dynamic_exposureee", "0").toString()
         val sharedPreferences2: SharedPreferences =
             getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
@@ -1602,9 +1616,12 @@ class ScannerActivity : AppCompatActivity(), BarkoderResultCallback,
     private fun setZoom() {
         factor = 1.0f
         if (isZoomed) {
-            factor = maxZoomFactor / 2f
+            factor = if (maxZoomFactor > 0f) {
+                minOf(targetZoomFactor, maxZoomFactor)
+            } else {
+                targetZoomFactor
+            }
         }
-
         binding.bkdView.setZoomFactor(factor)
         binding.bkdView.setZoomFactorInitial(factor)
     }

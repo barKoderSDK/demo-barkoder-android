@@ -734,6 +734,17 @@
         app:allowDividerBelow="false"
         app:iconSpaceReserved="false">
 
+        <com.barkoder.demoscanner.customcontrols.ListPreferenceWhiteBg
+            android:key="pref_key_threads_limit"
+            android:title="Threads limit"
+            android:entries="@array/threads_limit_entries"
+            android:entryValues="@array/threads_limit_values"
+            android:defaultValue="2"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
+            app:iconSpaceReserved="false"
+            app:useSimpleSummaryProvider="true" />
+
 
         <com.barkoder.demoscanner.customcontrols.ListPreferenceWhiteBg
             android:key="pref_key_dynamic_exposureee"
@@ -768,6 +779,14 @@
             android:title="Front Camera"
             app:isPreferenceVisible="false"
             app:defaultValue="false"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
+            app:iconSpaceReserved="false" />
+
+        <com.barkoder.demoscanner.customcontrols.SwitchWithPaddingPreference
+            android:key="pref_key_mirror_front_camera_preview"
+            android:title="Mirror Front Camera Preview"
+            app:defaultValue="true"
             app:allowDividerAbove="false"
             app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
@@ -908,6 +927,14 @@
             android:key="@string/key_postal_settings"
             android:persistent="false"
             android:title="@string/postal_mode_title"
+            app:allowDividerAbove="false"
+            app:allowDividerBelow="false"
+            app:iconSpaceReserved="false" />
+
+        <com.barkoder.demoscanner.customcontrols.WhiteBackgroundPreference
+            android:key="@string/key_arMode_settings"
+            android:persistent="false"
+            android:title="@string/scanner_ar_mode_title"
             app:allowDividerAbove="false"
             app:allowDividerBelow="false"
             app:iconSpaceReserved="false" />
